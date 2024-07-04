@@ -1,0 +1,83 @@
+/* src/App.css */
+.App {
+  text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.App-background {
+  position: absolute;
+  z-index: -1;
+  overflow: hidden;
+  height: 85%;
+  width: 100%;
+  top: 15%;
+}
+
+.App-header {
+  background-color: rgba(255, 255, 255, 0.4);
+  /* 背景を半透明に設定 */
+  padding: 20px;
+  border-radius: 10px;
+  height: 60%;
+}
+
+.App-title {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin: 0;
+}
+
+.App-subtitle {
+  font-size: 1.2em;
+  margin: 10px 0;
+}
+
+.App-buttons {
+  margin: 80px 0;
+}
+
+.App-button {
+  display: block;
+  width: 150px;
+  height: 50px;
+  padding: 10px;
+  margin: 15px auto;
+  font-size: 1em;
+  font-weight: bold;
+  color: white;
+  background-color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.App-button:hover {
+  background-color: #333;
+}
+
+.App-language {
+  margin-top: 20px;
+  text-align: center;
+}
+
+select {
+  padding: 10px;
+  font-size: 1em;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+
+.App-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  margin: 10px 0;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+}
