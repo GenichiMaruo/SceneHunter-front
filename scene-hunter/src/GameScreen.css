@@ -1,0 +1,71 @@
+/* src/GameScreen.css */
+.GameScreen {
+    text-align: center;
+    padding: 20px;
+    width: 85%;
+    height: 85%;
+}
+
+.GameScreen-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.GameScreen-logo {
+    width: 100px;
+    height: 100px;
+}
+
+.GameScreen-title img {
+    width: 50px;
+}
+
+.GameScreen-room {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 20px;
+}
+
+.GameScreen-roomCode {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 5px 20px;
+}
+
+.GameScreen-qr img {
+    width: 100px;
+}
+
+.GameScreen-main {
+    margin-top: 20px;
+}
+
+.GameScreen-url {
+    align-items: center;
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.GameScreen-participants {
+    margin: 20px 0;
+}
+
+.GameScreen-participants ul {
+    list-style: none;
+    padding: 0;
+}
+
+.GameScreen-participants li {
+    padding: 10px 0;
+}
+
+.GameScreen-startButton {
+    background-color: #000;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
