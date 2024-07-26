@@ -11,6 +11,7 @@ function App() {
   const [playerName, setPlayerName] = useState('');
   const [roomNumber, setRoomNumber] = useState('');
   const [screen, setScreen] = useState('main');
+  const [playerId] = useState(() => 'uuid'); // UUIDを生成する部分を追加
 
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
@@ -34,15 +35,58 @@ function App() {
     setRoomNumber(event.target.value);
   };
 
-  const handleEnterRoom = () => {
-    setShowJoinInput(false);
-    setShowCreateInput(true);
+  const handleEnterRoom = async () => {
+    // 部屋参加APIを呼び出す
+    try {
+      const response = await fetch(`http://sh.yashikota.com/api/join_room?room_id=${roomNumber}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: playerId,
+          name: playerName,
+          lang: language,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Room joined:', data);
+        setScreen('game');
+      } else {
+        console.error('Failed to join room');
+      }
+    } catch (error) {
+      console.error('Error joining room:', error);
+    }
   };
 
-  const handleEnterPlayerName = () => {
-    // Handle player name submission and transition to game screen
-    console.log(`Player name entered: ${playerName}`);
-    setScreen('game');
+  const handleEnterPlayerName = async () => {
+    // 部屋作成APIを呼び出す
+    try {
+      const response = await fetch('http://sh.yashikota.com/api/create_room', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: playerId,
+          name: playerName,
+          lang: language,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Room created:', data);
+        setScreen('game');
+      } else {
+        console.error('Failed to create room');
+      }
+    } catch (error) {
+      console.error('Error creating room:', error);
+    }
   };
 
   return (
