@@ -1,5 +1,4 @@
-// src/App.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { ReactComponent as Background } from './background.svg';
 import GameScreen from './GameScreen';
@@ -11,7 +10,24 @@ function App() {
   const [playerName, setPlayerName] = useState('');
   const [roomNumber, setRoomNumber] = useState('');
   const [screen, setScreen] = useState('main');
-  const [playerId] = useState(() => 'uuid'); // UUIDを生成する部分を追加
+  const [playerId, setPlayerId] = useState('');
+
+  useEffect(() => {
+    const fetchPlayerId = async () => {
+      try {
+        const response = await fetch('https://sh.yashikota.com/api/generate_user_id');
+        if (response.ok) {
+          const data = await response.json();
+          setPlayerId(data.user_id);
+        } else {
+          console.error('Failed to generate user ID');
+        }
+      } catch (error) {
+        console.error('Error generating user ID:', error);
+      }
+    };
+    fetchPlayerId();
+  }, []);
 
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
@@ -36,9 +52,8 @@ function App() {
   };
 
   const handleEnterRoom = async () => {
-    // 部屋参加APIを呼び出す
     try {
-      const response = await fetch(`http://sh.yashikota.com/api/join_room?room_id=${roomNumber}`, {
+      const response = await fetch(`https://sh.yashikota.com/api/join_room?room_id=${roomNumber}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,9 +78,8 @@ function App() {
   };
 
   const handleEnterPlayerName = async () => {
-    // 部屋作成APIを呼び出す
     try {
-      const response = await fetch('http://sh.yashikota.com/api/create_room', {
+      const response = await fetch('https://sh.yashikota.com/api/create_room', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -80,6 +94,7 @@ function App() {
       if (response.ok) {
         const data = await response.json();
         console.log('Room created:', data);
+        setRoomNumber(data.room_id);
         setScreen('game');
       } else {
         console.error('Failed to create room');
@@ -117,10 +132,16 @@ function App() {
                 <>
                   <input
                     type="text"
+                    value={playerName}
+                    onChange={handleCreateInputChange}
+                    placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter player name'}
+                    autoFocus
+                  />
+                  <input
+                    type="text"
                     value={roomNumber}
                     onChange={handleJoinInputChange}
                     placeholder={language === 'jp' ? '部屋番号を入力' : 'Enter room number'}
-                    autoFocus
                   />
                   <button className="App-button" onClick={handleEnterRoom}>
                     {language === 'jp' ? '入力' : 'Enter'}
@@ -149,7 +170,7 @@ function App() {
           </footer>
         </>
       ) : (
-        <GameScreen language={language} />
+        <GameScreen language={language} playerName={playerName} roomNumber={roomNumber} playerId={playerId} />
       )}
     </div>
   );
