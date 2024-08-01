@@ -1,5 +1,4 @@
-// src/App.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { ReactComponent as Background } from './background.svg';
 import GameScreen from './GameScreen';
@@ -11,6 +10,24 @@ function App() {
   const [playerName, setPlayerName] = useState('');
   const [roomNumber, setRoomNumber] = useState('');
   const [screen, setScreen] = useState('main');
+  const [playerId, setPlayerId] = useState('');
+
+  useEffect(() => {
+    const fetchPlayerId = async () => {
+      try {
+        const response = await fetch('https://sh.yashikota.com/api/generate_user_id');
+        if (response.ok) {
+          const data = await response.json();
+          setPlayerId(data.user_id);
+        } else {
+          console.error('Failed to generate user ID');
+        }
+      } catch (error) {
+        console.error('Error generating user ID:', error);
+      }
+    };
+    fetchPlayerId();
+  }, []);
 
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
@@ -34,15 +51,57 @@ function App() {
     setRoomNumber(event.target.value);
   };
 
-  const handleEnterRoom = () => {
-    setShowJoinInput(false);
-    setShowCreateInput(true);
+  const handleEnterRoom = async () => {
+    try {
+      const response = await fetch(`https://sh.yashikota.com/api/join_room?room_id=${roomNumber}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: playerId,
+          name: playerName,
+          lang: language,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Room joined:', data);
+        setScreen('game');
+      } else {
+        console.error('Failed to join room');
+      }
+    } catch (error) {
+      console.error('Error joining room:', error);
+    }
   };
 
-  const handleEnterPlayerName = () => {
-    // Handle player name submission and transition to game screen
-    console.log(`Player name entered: ${playerName}`);
-    setScreen('game');
+  const handleEnterPlayerName = async () => {
+    try {
+      const response = await fetch('https://sh.yashikota.com/api/create_room', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: playerId,
+          name: playerName,
+          lang: language,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Room created:', data);
+        setRoomNumber(data.room_id);
+        setScreen('game');
+      } else {
+        console.error('Failed to create room');
+      }
+    } catch (error) {
+      console.error('Error creating room:', error);
+    }
   };
 
   return (
@@ -73,10 +132,16 @@ function App() {
                 <>
                   <input
                     type="text"
+                    value={playerName}
+                    onChange={handleCreateInputChange}
+                    placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter player name'}
+                    autoFocus
+                  />
+                  <input
+                    type="text"
                     value={roomNumber}
                     onChange={handleJoinInputChange}
                     placeholder={language === 'jp' ? '部屋番号を入力' : 'Enter room number'}
-                    autoFocus
                   />
                   <button className="App-button" onClick={handleEnterRoom}>
                     {language === 'jp' ? '入力' : 'Enter'}
@@ -105,7 +170,7 @@ function App() {
           </footer>
         </>
       ) : (
-        <GameScreen language={language} />
+        <GameScreen language={language} playerName={playerName} roomNumber={roomNumber} playerId={playerId} />
       )}
     </div>
   );
