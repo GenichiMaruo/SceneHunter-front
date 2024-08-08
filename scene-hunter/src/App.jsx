@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { ReactComponent as Background } from './background.svg';
+// import { ReactComponent as Background } from './background.svg';
 import GameScreen from './GameScreen';
 
 function App() {
@@ -108,9 +108,9 @@ function App() {
     <div className="App">
       {screen === 'main' ? (
         <>
-          <div className="App-background">
+          {/* <div className="App-background">
             <Background />
-          </div>
+          </div> */}
           <header className="App-header">
             <h1 className="App-title">Scene Hunter</h1>
             <p className="App-subtitle">Spot the Image from the Clues!</p>

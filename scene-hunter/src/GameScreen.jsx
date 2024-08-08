@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './GameScreen.css';
-import { ReactComponent as GameScreenLogo } from './background.svg';
+// import { ReactComponent as GameScreenLogo } from './background.svg';
 import QRCode from 'qrcode.react';
 import PhotoInput from './PhotoInput';
 import GameResult from './GameResult';
@@ -80,7 +80,7 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
 
   return (
     <div className="GameScreen">
-      <GameScreenLogo className="GameScreen-logo" />
+      {/* <GameScreenLogo className="GameScreen-logo" /> */}
       <header className="GameScreen-header">
         <div className="GameScreen-title">
           <h2 className="GameScreen-room">{language === 'jp' ? '部屋番号:' : 'Room Number:'}</h2>
