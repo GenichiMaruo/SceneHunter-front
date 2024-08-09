@@ -84,10 +84,6 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
             {participants.map((player) => (
               <li key={player.id}>{player.name}</li>
             ))}
-            <li>参加者1</li>
-            <li>参加者1</li>
-            <li>参加者1</li>
-            <li>参加者1</li>
           </ul>
         </div>
         <button className="GameScreen-startButton" onClick={handleStartGame}>
