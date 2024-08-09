@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { ReactComponent as Background } from './background.svg';
+// import { ReactComponent as Background } from './background.svg';
 import GameScreen from './GameScreen';
 
 function App() {
