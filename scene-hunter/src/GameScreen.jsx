@@ -87,9 +87,9 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
         <p className="GameScreen-roomCode">{roomNumber}</p>
       </div>
       <div className="GameScreen-qr" onClick={() => setIsModalOpen(true)}>
-        <QRCodeSVG id='qrcode' value={`https://sh.yashikota.com/join?room_id=${roomNumber}`} />
+        <QRCodeSVG id='qrcode' value={`https://scene-hunter.pages.dev?room_id=${roomNumber}`} />
       </div>
-      <input type="text" value={`https://sh.yashikota.com/join?room_id=${roomNumber}`} readOnly className="GameScreen-url" />
+      <input type="text" value={`https://scene-hunter.pages.dev?room_id=${roomNumber}`} readOnly className="GameScreen-url" />
       <main className="GameScreen-main">
         <div className="GameScreen-participants">
           <h3 className='GameScreen-player'>{language === 'jp' ? '参加者' : 'Participants'}</h3>
