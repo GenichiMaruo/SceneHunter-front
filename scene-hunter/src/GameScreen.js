@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './GameScreen.css';
 import { ReactComponent as GameScreenLogo } from './background.svg';
-import {QRCodeSVG} from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
+import Modal from './Modal'; // モーダルコンポーネントをインポート
 
 function GameScreen({ language, playerName, roomNumber, playerId }) {
   const [roomStatus, setRoomStatus] = useState('');
@@ -9,6 +10,7 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
   const [participants, setParticipants] = useState([]);
   const [gameMaster, setGameMaster] = useState('');
   const [totalPlayers, setTotalPlayers] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchRoomData = async () => {
@@ -63,28 +65,6 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
     }
   };
 
-  // QRコードの要素
-  const qrCode = document.getElementById('qrcode');
-  const qrModal = document.getElementById('qr-modal');
-  const closeModal = document.getElementById('close-modal');
-
-  // QRコードがクリックされたときの動作
-  qrCode.addEventListener('click', () => {
-      qrModal.style.display = 'block';
-  });
-
-  // モーダルの閉じるボタンがクリックされたときの動作
-  closeModal.addEventListener('click', () => {
-      qrModal.style.display = 'none';
-  });
-
-  // モーダル外がクリックされたときに閉じる
-  window.addEventListener('click', (event) => {
-      if (event.target == qrModal) {
-          qrModal.style.display = 'none';
-      }
-  });
-
   return (
     <div className="GameScreen">
       <GameScreenLogo className="GameScreen-logo" />
@@ -92,17 +72,9 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
         <h2 className="GameScreen-room">{language === 'jp' ? '部屋番号' : 'Room Number:'}</h2>
         <p className="GameScreen-roomCode">{roomNumber}</p>
       </div>
-      <div className="GameScreen-qr">
-        <QRCodeSVG id='qrcode' value={`https://sh.yashikota.com/join?room_id=${roomNumber}`}/>
+      <div className="GameScreen-qr" onClick={() => setIsModalOpen(true)}>
+        <QRCodeSVG id='qrcode' value={`https://sh.yashikota.com/join?room_id=${roomNumber}`} />
       </div>
-      {/* popup */}
-      <div id="qr-modal" class="qr-modal">
-        <div class="qr-modal-content">
-            <span id="close-modal" class="close">&times;</span>
-            <QRCodeSVG id="qrcode-large" value="https://sh.yashikota.com/join?room_id=${roomNumber}" />
-        </div>
-      </div>
-      {/* popup */}
       <input type="text" value={`https://sh.yashikota.com/join?room_id=${roomNumber}`} readOnly className="GameScreen-url" />
       <main className="GameScreen-main">
         <div className="GameScreen-participants">
@@ -127,6 +99,9 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
         <p>{roomStatus}</p>
         <p>{language === 'jp' ? `ラウンド: ${currentRound}` : `Round: ${currentRound}`}</p>
       </footer>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <QRCodeSVG value={`https://sh.yashikota.com/join?room_id=${roomNumber}`} size={256} />
+      </Modal>
     </div>
   );
 }
