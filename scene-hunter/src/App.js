@@ -108,9 +108,7 @@ function App() {
     <div className="App">
       {screen === 'main' ? (
         <>
-          <div className="App-background">
-            <Background />
-          </div>
+          <div className="App-background"></div>
           <header className="App-header">
             <h1 className="App-title">Scene Hunter</h1>
             <p className="App-subtitle">Spot the Image from the Clues!</p>
@@ -118,6 +116,7 @@ function App() {
               {showCreateInput ? (
                 <>
                   <input
+                    className='App-input'
                     type="text"
                     value={playerName}
                     onChange={handleCreateInputChange}
@@ -131,6 +130,7 @@ function App() {
               ) : showJoinInput ? (
                 <>
                   <input
+                    className='App-input'
                     type="text"
                     value={playerName}
                     onChange={handleCreateInputChange}
@@ -138,6 +138,7 @@ function App() {
                     autoFocus
                   />
                   <input
+                    className='App-input'
                     type="text"
                     value={roomNumber}
                     onChange={handleJoinInputChange}

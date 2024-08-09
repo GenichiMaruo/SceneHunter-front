@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './GameScreen.css';
 import { ReactComponent as GameScreenLogo } from './background.svg';
-import QRCode from 'qrcode.react';
+import {QRCodeSVG} from 'qrcode.react';
 
 function GameScreen({ language, playerName, roomNumber, playerId }) {
   const [roomStatus, setRoomStatus] = useState('');
@@ -63,38 +63,70 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
     }
   };
 
+  // QRコードの要素
+  const qrCode = document.getElementById('qrcode');
+  const qrModal = document.getElementById('qr-modal');
+  const closeModal = document.getElementById('close-modal');
+
+  // QRコードがクリックされたときの動作
+  qrCode.addEventListener('click', () => {
+      qrModal.style.display = 'block';
+  });
+
+  // モーダルの閉じるボタンがクリックされたときの動作
+  closeModal.addEventListener('click', () => {
+      qrModal.style.display = 'none';
+  });
+
+  // モーダル外がクリックされたときに閉じる
+  window.addEventListener('click', (event) => {
+      if (event.target == qrModal) {
+          qrModal.style.display = 'none';
+      }
+  });
+
   return (
     <div className="GameScreen">
       <GameScreenLogo className="GameScreen-logo" />
-      <header className="GameScreen-header">
-        <div className="GameScreen-title">
-          <h2 className="GameScreen-room">{language === 'jp' ? '部屋番号:' : 'Room Number:'}</h2>
-          <p className="GameScreen-roomCode">{roomNumber}</p>
+      <div className="GameScreen-title">
+        <h2 className="GameScreen-room">{language === 'jp' ? '部屋番号' : 'Room Number:'}</h2>
+        <p className="GameScreen-roomCode">{roomNumber}</p>
+      </div>
+      <div className="GameScreen-qr">
+        <QRCodeSVG id='qrcode' value={`https://sh.yashikota.com/join?room_id=${roomNumber}`}/>
+      </div>
+      {/* popup */}
+      <div id="qr-modal" class="qr-modal">
+        <div class="qr-modal-content">
+            <span id="close-modal" class="close">&times;</span>
+            <QRCodeSVG id="qrcode-large" value="https://sh.yashikota.com/join?room_id=${roomNumber}" />
         </div>
-        <div className="GameScreen-qr">
-          <QRCode value={`https://sh.yashikota.com/join?room_id=${roomNumber}`} />
-        </div>
-      </header>
+      </div>
+      {/* popup */}
+      <input type="text" value={`https://sh.yashikota.com/join?room_id=${roomNumber}`} readOnly className="GameScreen-url" />
       <main className="GameScreen-main">
-        <input type="text" value={`https://sh.yashikota.com/join?room_id=${roomNumber}`} readOnly className="GameScreen-url" />
         <div className="GameScreen-participants">
-          <h3>{language === 'jp' ? '参加者' : 'Participants'}</h3>
+          <h3 className='GameScreen-player'>{language === 'jp' ? '参加者' : 'Participants'}</h3>
           <ul>
             <li>{gameMaster} <span role="img" aria-label="crown">👑</span></li>
             {participants.map((player) => (
               <li key={player.id}>{player.name}</li>
             ))}
+            <li>参加者1</li>
+            <li>参加者1</li>
+            <li>参加者1</li>
+            <li>参加者1</li>
           </ul>
         </div>
         <button className="GameScreen-startButton" onClick={handleStartGame}>
           {language === 'jp' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
         </button>
-        <div className="GameScreen-status">
-          <h3>{language === 'jp' ? 'ステータス' : 'Status'}</h3>
-          <p>{roomStatus}</p>
-          <p>{language === 'jp' ? `ラウンド: ${currentRound}` : `Round: ${currentRound}`}</p>
-        </div>
       </main>
+      <footer className="GameScreen-status">
+        <h3>{language === 'jp' ? 'ステータス' : 'Status'}</h3>
+        <p>{roomStatus}</p>
+        <p>{language === 'jp' ? `ラウンド: ${currentRound}` : `Round: ${currentRound}`}</p>
+      </footer>
     </div>
   );
 }
