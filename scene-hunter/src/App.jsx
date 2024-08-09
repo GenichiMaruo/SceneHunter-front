@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-// import { ReactComponent as Background } from './background.svg';
 import GameScreen from './GameScreen';
 
 function App() {
@@ -104,6 +103,12 @@ function App() {
     }
   };
 
+  // 新しい関数：戻るボタンがクリックされたときの処理
+  const handleGoBack = () => {
+    setShowCreateInput(false);
+    setShowJoinInput(false);
+  };
+
   return (
     <div className="App">
       {screen === 'main' ? (
@@ -126,6 +131,9 @@ function App() {
                   <button className="App-button" onClick={handleEnterPlayerName}>
                     {language === 'jp' ? '入力' : 'Enter'}
                   </button>
+                  <button className="App-button" onClick={handleGoBack}>
+                    {language === 'jp' ? '戻る' : 'Back'}
+                  </button>
                 </>
               ) : showJoinInput ? (
                 <>
@@ -146,6 +154,9 @@ function App() {
                   />
                   <button className="App-button" onClick={handleEnterRoom}>
                     {language === 'jp' ? '入力' : 'Enter'}
+                  </button>
+                  <button className="App-button" onClick={handleGoBack}>
+                    {language === 'jp' ? '戻る' : 'Back'}
                   </button>
                 </>
               ) : (
