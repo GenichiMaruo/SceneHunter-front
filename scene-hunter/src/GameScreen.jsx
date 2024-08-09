@@ -62,9 +62,8 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
         setCurrentRound(data.current_round);
         setShowPhotoInput(true);
       } else {
-        // const errorData = await response.json();
-        // console.error(errorData.message);
-        setShowPhotoInput(true);
+        const errorData = await response.json();
+        console.error(errorData.message);
       }
     } catch (error) {
       console.error('Error starting game:', error);
