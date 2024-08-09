@@ -28,6 +28,18 @@ function App() {
     fetchPlayerId();
   }, []);
 
+  useEffect(() => {
+    // URLのクエリパラメータを取得
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get('room_id');
+
+    if (room) {
+      setRoomNumber(room);
+      setShowJoinInput(true);
+      setShowCreateInput(false);
+    }
+  }, []);
+
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
   };
