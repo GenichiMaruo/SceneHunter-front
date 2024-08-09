@@ -105,7 +105,7 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
         </button>
       </main>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <QRCodeSVG value={`https://sh.yashikota.com/join?room_id=${roomNumber}`} size={256} />
+        <QRCodeSVG value={`https://scene-hunter.pages.dev/${roomNumber}`} size={256} />
       </Modal>
     </div>
   );
