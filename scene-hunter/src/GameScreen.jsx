@@ -35,14 +35,39 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
         console.error('Error fetching room data:', error);
       }
     };
-
     fetchRoomData();
 
-    const interval = setInterval(() => {
-      fetchRoomData();
-    }, 5000);
+    const eventSourceUrl = `https://sh.yashikota.com/api/notification?room_id=${roomNumber}`;
+    const eventSource = new EventSource(eventSourceUrl);
 
-    return () => clearInterval(interval);
+    eventSource.onmessage = (event) => {
+      if (event.data.startsWith('{')) {
+        const data = JSON.parse(event.data);
+        console.log('Received event:', data);
+
+        switch (data.message) {
+          case 'change game master':
+          case 'update user name':
+          case 'update number of users':
+          case 'update game rounds':
+          case 'update game status':
+          case 'update photo uploaded users':
+            fetchRoomData();
+            break;
+          default:
+            console.warn('Unhandled event type:', data.message);
+        }
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error('EventSource failed:', error);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
   }, [roomNumber]);
 
   const handleStartGame = async () => {
