@@ -49,6 +49,29 @@ function App() {
     setLanguage(event.target.value);
   };
 
+  const handleUpdatePlayerName = async () => {
+    try {
+      const response = await fetch(`https://sh.yashikota.com/api/update_username?room_id=${roomNumber}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: playerId,
+          name: playerName,
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Player name updated');
+      } else {
+        console.error('Failed to update player name');
+      }
+    } catch (error) {
+      console.error('Error updating player name:', error);
+    }
+  };
+
   const handleCreateClick = () => {
     setShowCreateInput(true);
     setShowJoinInput(false);
@@ -87,6 +110,8 @@ function App() {
         setScreen('game');
       } else if (response.status === 409) {
         // すでに入室済みの場合
+        // プレイヤー名を更新
+        handleUpdatePlayerName();
         console.log('Room joined:', response.statusText);
         setScreen('game');
       } else {
