@@ -85,6 +85,10 @@ function App() {
         const data = await response.json();
         console.log('Room joined:', data);
         setScreen('game');
+      } else if (response.status === 409) {
+        // すでに入室済みの場合
+        console.log('Room joined:', response.statusText);
+        setScreen('game');
       } else {
         console.error('Failed to join room');
       }
