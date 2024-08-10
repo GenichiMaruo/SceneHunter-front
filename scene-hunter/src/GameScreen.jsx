@@ -111,6 +111,29 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
     });
   };
 
+  const handleExitRoom = async () => {
+    try {
+      const response = await fetch(`https://sh.yashikota.com/api/exit_room?room_id=${roomNumber}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: playerId }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.message);
+        window.location.href = '/';
+      } else {
+        const errorData = await response.json();
+        console.error(errorData.message);
+      }
+    } catch (error) {
+      console.error('Error exiting room:', error);
+    }
+  };
+
   if (showGameResult) {
     return <GameResult language={language} roomId={roomNumber} />;
   }
@@ -157,6 +180,9 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
             {language === 'jp' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
           </p>
         )}
+        <button className="GameScreen-exitButton" onClick={handleExitRoom}>
+          {language === 'jp' ? '部屋を出る' : 'Exit the room'}
+        </button>
       </main>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <QRCodeSVG value={`https://scene-hunter.pages.dev/${roomNumber}`} size={256} />

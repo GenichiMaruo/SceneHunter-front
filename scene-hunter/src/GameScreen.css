@@ -23,11 +23,9 @@
     align-items: center;
     justify-content: center;
     width: 15vh;
-
     position: absolute;
     left: 60%;
     top: 17%;
-
     margin: 1vh;
 }
 
@@ -54,11 +52,9 @@
     justify-content: center;
     background: #ffffff;
     border: none;
-    border-radius: 0.5em;
-
+    border-radius: 1.5vh;
     right: 3%;
     top: 30%;
-
     margin: 1vh;
 }
 
@@ -89,7 +85,7 @@
     transform: translate(-50%, -50%);
     background-color: #fff;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 1.5vh;
     width: 80%;
     max-width: 400px;
     text-align: center;
@@ -119,14 +115,11 @@
 
 .GameScreen-url-container {
     margin: 2.5vh;
-
     width: 60%;
     height: 5%;
-
     position: absolute;
     right: 29.5%;
     top: 33%;
-
 }
 
 .GameScreen-url {
@@ -135,10 +128,8 @@
     color: #636363;
     border: 0.1vh solid #000000;
     border-radius: 1.5vh;
-
     width: 90%;
     height: 100%;
-
     padding-left: 5%;
     padding-right: 15%;
 }
@@ -198,8 +189,7 @@
     overflow-x: hidden;
     text-align: left;
     border: #000 0.1vh solid;
-    border-radius: 5%;
-
+    border-radius: 1.5vh;
     padding: 0 5%;
     margin: 2vh 0;
     scrollbar-gutter: stable;
@@ -212,7 +202,7 @@
 .GameScreen-participants::-webkit-scrollbar-thumb {
     background-color: #bbbbbb;
     /* スクロールバーの色 */
-    border-radius: 1vh;
+    border-radius: 1.5vh;
     /* スクロールバーの角を丸くする */
 }
 
@@ -239,7 +229,6 @@
 
 .GameScreen-participants ul {
     list-style: none;
-
     padding: 0;
     margin: 0 3vh;
 }
@@ -258,14 +247,26 @@
     color: #fff;
     width: 60%;
     height: 10%;
-
     font-size: 1.5vh;
-
     border: none;
-    border-radius: 10%;
+    border-radius: 1.5vh;
 }
 
 .GameScreen-startButton:hover {
+    background-color: #333;
+}
+
+.GameScreen-exitButton {
+    background-color: #000;
+    color: #fff;
+    width: 60%;
+    height: 10%;
+    font-size: 1.5vh;
+    border: none;
+    border-radius: 1.5vh;
+}
+
+.GameScreen-exitButton:hover {
     background-color: #333;
 }
 
