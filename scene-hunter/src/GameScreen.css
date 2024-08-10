@@ -1,7 +1,7 @@
 /* src/GameScreen.css */
 .GameScreen {
     text-align: center;
-    padding: 2vh;
+    padding: 0;
     width: 100%;
     height: 100%;
     /* width: 85%;
@@ -13,7 +13,7 @@
     width: 29vh;
     height: auto;
     position: relative;
-    right: 30%;
+    right: 25%;
     top: 3%
 }
 
@@ -56,7 +56,7 @@
     border: none;
     border-radius: 0.5em;
 
-    right: 0;
+    right: 3%;
     top: 30%;
 
     margin: 1vh;
@@ -115,19 +115,47 @@
     cursor: pointer;
 }
 
+.GameScreen-url-container {
+    margin: 2.5vh;
+
+    width: 60%;
+    height: 5%;
+
+    position: absolute;
+    right: 29.5%;
+    top: 33%;
+
+}
+
 .GameScreen-url {
     text-align: left;
     font-size: 2vh;
-    width: 70%;
-    height: 5vh;
     color: #636363;
-    border: 2px solid #636363;
+    border: 0.1vh solid #000000;
     border-radius: 1.5vh;
-    margin: 2.5vh;
 
+    width: 90%;
+    height: 100%;
+
+    padding-left: 5%;
+    padding-right: 15%;
+}
+
+.share-button {
+    width: 3vh;
+    height: 3vh;
+    background-color: #999999;
+    border: none;
+    clip-path: polygon(0 0, 0 100%, 100% 50%);
     position: absolute;
-    right: 22%;
-    top: 32%;
+    float: right;
+    right: -5vw;
+    top: 25%;
+    z-index: 1;
+  }
+
+.share-button:hover {
+    background-color: #5e5e5e;
 }
 
 .GameScreen-main {
@@ -136,10 +164,24 @@
     align-items: center;
     justify-content: center;
     position: relative;
+    margin-left: auto;
+    margin-right: auto;
     top: 15%;
-    width: 100%;
+    width: 90%;
     height: 45%;
     margin-top: 20px;
+}
+
+.gamemaster {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    /* font-weight: bold; */
+}
+
+.crown {
+    margin-right: 0.5vh;
 }
 
 .GameScreen-participants {
@@ -147,17 +189,43 @@
     width: 90%;
     height: 80%;
     overflow-y: scroll;
+    overflow-x: hidden;
     text-align: left;
     border: #000 0.1vh solid;
     border-radius: 5%;
 
+    padding: 0 5%;
     margin: 2vh 0;
+    scrollbar-gutter: stable;
+}
+
+.GameScreen-participants::-webkit-scrollbar {
+    width: 3vw;
+}
+
+.GameScreen-participants::-webkit-scrollbar-thumb {
+    background-color: #bbbbbb; /* スクロールバーの色 */
+    border-radius: 1vh; /* スクロールバーの角を丸くする */
+}
+
+.GameScreen-participants::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* スクロールバーをホバーしたときの色 */
+}
+
+.GameScreen-gamemaster {
+    font-weight: bold;
+    color: #000000;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .GameScreen-player {
     display: flex;
-    justify-content: space-between;
-    padding: 0vh 3vh;
+    padding: 0vh 0vh;
+    margin: 2vh 0;
+    font-size: 6vw;
 }
 
 .GameScreen-participants ul {
@@ -168,18 +236,18 @@
 }
 
 .GameScreen-participants li {
+    display: flex;
+    align-items: center;
     border-bottom: #969696 0.1vh solid;
     width: 100%;
-
     font-size: 2vh;
-
     padding: 10px 0;
 }
 
 .GameScreen-startButton {
     background-color: #000;
     color: #fff;
-    width: 50%;
+    width: 60%;
     height: 10%;
 
     font-size: 1.5vh;
