@@ -23,11 +23,9 @@
     align-items: center;
     justify-content: center;
     width: 15vh;
-
     position: absolute;
     left: 60%;
     top: 17%;
-
     margin: 1vh;
 }
 
@@ -54,11 +52,9 @@
     justify-content: center;
     background: #ffffff;
     border: none;
-    border-radius: 0.5em;
-
+    border-radius: 1.5vh;
     right: 3%;
     top: 30%;
-
     margin: 1vh;
 }
 
@@ -69,7 +65,8 @@
 
 /* モーダルのスタイル */
 .qr-modal {
-    display: none; /* 初期状態では非表示 */
+    display: none;
+    /* 初期状態では非表示 */
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -77,7 +74,8 @@
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.8); /* 背景の暗いオーバーレイ */
+    background-color: rgba(0, 0, 0, 0.8);
+    /* 背景の暗いオーバーレイ */
 }
 
 .qr-modal-content {
@@ -87,7 +85,7 @@
     transform: translate(-50%, -50%);
     background-color: #fff;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 1.5vh;
     width: 80%;
     max-width: 400px;
     text-align: center;
@@ -117,14 +115,11 @@
 
 .GameScreen-url-container {
     margin: 2.5vh;
-
     width: 60%;
     height: 5%;
-
     position: absolute;
     right: 29.5%;
     top: 33%;
-
 }
 
 .GameScreen-url {
@@ -133,10 +128,8 @@
     color: #636363;
     border: 0.1vh solid #000000;
     border-radius: 1.5vh;
-
     width: 90%;
     height: 100%;
-
     padding-left: 5%;
     padding-right: 15%;
 }
@@ -152,7 +145,7 @@
     right: -5vw;
     top: 25%;
     z-index: 1;
-  }
+}
 
 .share-button:hover {
     background-color: #5e5e5e;
@@ -184,6 +177,10 @@
     margin-right: 0.5vh;
 }
 
+.GameScreen-underline {
+    text-decoration: underline;
+}
+
 .GameScreen-participants {
     position: relative;
     width: 90%;
@@ -192,8 +189,7 @@
     overflow-x: hidden;
     text-align: left;
     border: #000 0.1vh solid;
-    border-radius: 5%;
-
+    border-radius: 1.5vh;
     padding: 0 5%;
     margin: 2vh 0;
     scrollbar-gutter: stable;
@@ -204,12 +200,15 @@
 }
 
 .GameScreen-participants::-webkit-scrollbar-thumb {
-    background-color: #bbbbbb; /* スクロールバーの色 */
-    border-radius: 1vh; /* スクロールバーの角を丸くする */
+    background-color: #bbbbbb;
+    /* スクロールバーの色 */
+    border-radius: 1.5vh;
+    /* スクロールバーの角を丸くする */
 }
 
 .GameScreen-participants::-webkit-scrollbar-thumb:hover {
-    background-color: #555; /* スクロールバーをホバーしたときの色 */
+    background-color: #555;
+    /* スクロールバーをホバーしたときの色 */
 }
 
 .GameScreen-gamemaster {
@@ -230,7 +229,6 @@
 
 .GameScreen-participants ul {
     list-style: none;
-
     padding: 0;
     margin: 0 3vh;
 }
@@ -249,14 +247,26 @@
     color: #fff;
     width: 60%;
     height: 10%;
-
     font-size: 1.5vh;
-
     border: none;
-    border-radius: 10%;
+    border-radius: 1.5vh;
 }
 
 .GameScreen-startButton:hover {
+    background-color: #333;
+}
+
+.GameScreen-exitButton {
+    background-color: #000;
+    color: #fff;
+    width: 60%;
+    height: 10%;
+    font-size: 1.5vh;
+    border: none;
+    border-radius: 1.5vh;
+}
+
+.GameScreen-exitButton:hover {
     background-color: #333;
 }
 

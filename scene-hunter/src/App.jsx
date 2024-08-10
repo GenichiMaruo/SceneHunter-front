@@ -17,11 +17,16 @@ function App() {
 
   useEffect(() => {
     const fetchPlayerId = async () => {
+      if (localStorage.getItem('player_id')) {
+        setPlayerId(localStorage.getItem('player_id'));
+        return;
+      }
       try {
         const response = await fetch('https://sh.yashikota.com/api/generate_user_id');
         if (response.ok) {
           const data = await response.json();
           setPlayerId(data.user_id);
+          localStorage.setItem('player_id', data.user_id);
         } else {
           console.error('Failed to generate user ID');
         }
@@ -79,6 +84,10 @@ function App() {
       if (response.ok) {
         const data = await response.json();
         console.log('Room joined:', data);
+        setScreen('game');
+      } else if (response.status === 409) {
+        // すでに入室済みの場合
+        console.log('Room joined:', response.statusText);
         setScreen('game');
       } else {
         console.error('Failed to join room');
