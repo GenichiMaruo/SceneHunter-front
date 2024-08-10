@@ -71,7 +71,7 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
   };
 
   const handleCopyToClipboard = () => {
-    const url = `https://sh.yashikota.com/join?room_id=${roomNumber}`;
+    const url = `https://scene-hunter.pages.dev/${roomNumber}`;
     navigator.clipboard.writeText(url).then(() => {
       alert(language === 'jp' ? 'URLがクリップボードにコピーされました。' : 'URL copied to clipboard.');
     }).catch(err => {
@@ -113,13 +113,6 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
             {participants.map((player) => (
               <li key={player.id}>{player.name}</li>
             ))}
-            <li>hoge</li>
-            <li>hoge</li>
-            <li>hoge</li>
-            <li>hoge</li>
-            <li>hoge</li>
-            <li>hoge</li>
-            <li>hoge</li>
           </ul>
         </div>
         <button className="GameScreen-startButton" onClick={handleStartGame}>
