@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-// import { ReactComponent as Background } from './background.svg';
 import GameScreen from './GameScreen';
+import { BrowserRouter as Router, Route, Routes, useParams, useNavigate } from 'react-router-dom';
 
 function App() {
   const [language, setLanguage] = useState('jp');
@@ -11,6 +11,9 @@ function App() {
   const [roomNumber, setRoomNumber] = useState('');
   const [screen, setScreen] = useState('main');
   const [playerId, setPlayerId] = useState('');
+
+  const navigate = useNavigate();
+  const { room_id } = useParams();
 
   useEffect(() => {
     const fetchPlayerId = async () => {
@@ -28,6 +31,14 @@ function App() {
     };
     fetchPlayerId();
   }, []);
+
+  useEffect(() => {
+    if (room_id) {
+      setRoomNumber(room_id);
+      setShowJoinInput(true);
+      setShowCreateInput(false);
+    }
+  }, [room_id]);
 
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
@@ -96,12 +107,18 @@ function App() {
         console.log('Room created:', data);
         setRoomNumber(data.room_id);
         setScreen('game');
+        navigate(`/${data.room_id}`); // 部屋が作成された後にURLを変更
       } else {
         console.error('Failed to create room');
       }
     } catch (error) {
       console.error('Error creating room:', error);
     }
+  };
+
+  const handleGoBack = () => {
+    setShowCreateInput(false);
+    setShowJoinInput(false);
   };
 
   return (
@@ -126,6 +143,9 @@ function App() {
                   <button className="App-button" onClick={handleEnterPlayerName}>
                     {language === 'jp' ? '入力' : 'Enter'}
                   </button>
+                  <button className="App-button" onClick={handleGoBack}>
+                    {language === 'jp' ? '戻る' : 'Back'}
+                  </button>
                 </>
               ) : showJoinInput ? (
                 <>
@@ -146,6 +166,9 @@ function App() {
                   />
                   <button className="App-button" onClick={handleEnterRoom}>
                     {language === 'jp' ? '入力' : 'Enter'}
+                  </button>
+                  <button className="App-button" onClick={handleGoBack}>
+                    {language === 'jp' ? '戻る' : 'Back'}
                   </button>
                 </>
               ) : (
@@ -177,4 +200,13 @@ function App() {
   );
 }
 
-export default App;
+export default function RouterApp() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/:room_id" element={<App />} />
+      </Routes>
+    </Router>
+  );
+}

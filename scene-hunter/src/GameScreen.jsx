@@ -62,9 +62,8 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
         setCurrentRound(data.current_round);
         setShowPhotoInput(true);
       } else {
-        // const errorData = await response.json();
-        // console.error(errorData.message);
-        setShowPhotoInput(true);
+        const errorData = await response.json();
+        console.error(errorData.message);
       }
     } catch (error) {
       console.error('Error starting game:', error);
@@ -97,10 +96,10 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
         <p className="GameScreen-roomCode">{roomNumber}</p>
       </div>
       <div className="GameScreen-qr" onClick={() => setIsModalOpen(true)}>
-        <QRCodeSVG id='qrcode' value={`https://sh.yashikota.com/join?room_id=${roomNumber}`} />
+        <QRCodeSVG id='qrcode' value={`https://scene-hunter.pages.dev/${roomNumber}`} />
       </div>
       <div className='GameScreen-url-container'>
-        <input type="text" value={`https://sh.yashikota.com/join?room_id=${roomNumber}`} readOnly className="GameScreen-url" />
+        <input type="text" value={`https://scene-hunter.pages.dev/${roomNumber}`} readOnly className="GameScreen-url" />
         <button className="share-button" onClick={handleCopyToClipboard}></button>
       </div>
       <main className="GameScreen-main">
@@ -128,7 +127,7 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
         </button>
       </main>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <QRCodeSVG value={`https://sh.yashikota.com/join?room_id=${roomNumber}`} size={256} />
+        <QRCodeSVG value={`https://scene-hunter.pages.dev/${roomNumber}`} size={256} />
       </Modal>
     </div>
   );
