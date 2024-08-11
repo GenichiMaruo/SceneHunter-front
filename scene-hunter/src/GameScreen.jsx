@@ -6,7 +6,7 @@ import GameResult from './GameResult';
 import Modal from './Modal';
 import './GameScreen.css';
 
-function GameScreen({ language, playerName, roomNumber, playerId }) {
+function GameScreen({ language, playerName, roomNumber, playerId, handleUpdatePlayerName, handleEndGame }) {
   const [roomStatus, setRoomStatus] = useState('');
   const [currentRound, setCurrentRound] = useState(1);
   const [participants, setParticipants] = useState([]);
@@ -16,6 +16,9 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showPhotoInput, setShowPhotoInput] = useState(false);
   const [showGameResult, setShowGameResult] = useState(false);
+  const [isNameModalOpen, setIsNameModalOpen] = useState(false);
+  const [newName, setNewName] = useState(playerName);
+  const [eventSource, setEventSource] = useState(null);
 
   useEffect(() => {
     const fetchRoomData = async () => {
@@ -39,43 +42,88 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
     };
     fetchRoomData();
 
-    const eventSourceUrl = `https://sh.yashikota.com/api/notification?room_id=${roomNumber}`;
-    const eventSource = new EventSource(eventSourceUrl);
-
-    eventSource.onmessage = (event) => {
-      if (event.data.startsWith('{')) {
-        const data = JSON.parse(event.data);
-        console.log('Received event:', data);
-
-        switch (data.message) {
-          case 'update game rounds':
-          case 'update game status':
-          case 'update photo uploaded users':
-            // ゲーム開始された場合
-            setRoomStatus(data.status);
-            setCurrentRound(data.current_round);
-            setShowPhotoInput(true);
-            break;
-          case 'change game master':
-          case 'update user name':
-          case 'update number of users':
-            fetchRoomData();
-            break;
-          default:
-            console.warn('Unhandled event type:', data.message);
+    // dataには01J4ZWT1Q9EFNCMX1C33XGMESR,xxxxxのような文字列が入力される
+    // この文字列を使って、部屋の情報を変更する
+    const updateUserName = (data) => {
+      const [userId, newName] = data.split(',');
+      setParticipants(participants.map((player) => {
+        if (player.id === userId) {
+          return { ...player, name: newName };
         }
+        return player;
+      }));
+      if (gameMasterId === userId) {
+        setGameMaster(newName
+        );
       }
     };
 
-    eventSource.onerror = (error) => {
-      console.error('EventSource failed:', error);
-      eventSource.close();
+    const initiateEventSource = () => {
+      const eventSourceUrl = `https://sh.yashikota.com/api/notification?room_id=${roomNumber}`;
+      const es = new EventSource(eventSourceUrl);
+
+      es.onmessage = (event) => {
+        if (event.data.startsWith('{')) {
+          const data = JSON.parse(event.data);
+          console.log('Received event:', data);
+
+          switch (data.message) {
+            case 'update game rounds':
+            case 'update game status':
+            case 'update photo uploaded users':
+              setRoomStatus(data.status);
+              setCurrentRound(data.current_round);
+              setShowPhotoInput(true);
+              break;
+            case 'update user name':
+              updateUserName(data.result);
+              break;
+            case 'change game master':
+            case 'update number of users':
+              fetchRoomData();
+              break;
+            default:
+              console.warn('Unhandled event type:', data.message);
+          }
+        }
+      };
+
+      es.onerror = (error) => {
+        console.error('EventSource failed:', error);
+        es.close();
+        setTimeout(initiateEventSource, 5000); // Retry connection after 5 seconds
+      };
+
+      setEventSource(es);
     };
 
+    initiateEventSource();
+
     return () => {
-      eventSource.close();
+      if (eventSource) {
+        eventSource.close();
+      }
     };
   }, [roomNumber]);
+
+  const handleChangeName = () => {
+    if (newName === '') {
+      alert(language === 'jp' ? '名前を入力してください。' : 'Please enter a name.');
+      return;
+    } else if (newName === playerName) {
+      setIsNameModalOpen(false);
+      return;
+    } else if (newName.length > 20) {
+      alert(language === 'jp' ? '名前は20文字以内で入力してください。' : 'Please enter a name up to 20 characters.');
+      return;
+    } else if (newName.includes(' ')) {
+      alert(language === 'jp' ? '名前にスペースを含めることはできません。' : 'Name cannot contain spaces.');
+      return;
+    } else {
+      handleUpdatePlayerName(newName);
+      setIsNameModalOpen(false);
+    }
+  };
 
   const handleStartGame = async () => {
     try {
@@ -131,6 +179,9 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
       }
     } catch (error) {
       console.error('Error exiting room:', error);
+      // 今のところはエラーが発生した場合でも退出する
+      window.location.href = '/';
+      handleEndGame();
     }
   };
 
@@ -159,14 +210,23 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
       <main className="GameScreen-main">
         <div className="GameScreen-participants">
           <h3 className='GameScreen-player'>{language === 'jp' ? '参加者' : 'Participants'}</h3>
+          <button onClick={() => setIsNameModalOpen(true)} className="change-name-button">
+            {language === 'jp' ? '名前を変更' : 'Change Name'}
+          </button>
           <ul>
             <li className='GameScreen-gamemaster'>
               <span className="gamemaster">{gameMaster}</span>
-              <span role="img" aria-label="crown" className="crown" >👑</span>
+              {playerId === gameMasterId && (
+                <span>✨️</span>
+              )}
+              <span role="img" aria-label="crown" className="crown">👑</span>
             </li>
             {participants.map((player) => (
-              <li key={player.id} className={player.id === playerId ? 'GameScreen-underline' : ''}>
+              <li key={player.id}>
                 {player.name}
+                {player.id === playerId && (
+                  <span>✨️</span>
+                )}
               </li>
             ))}
           </ul>
@@ -186,6 +246,18 @@ function GameScreen({ language, playerName, roomNumber, playerId }) {
       </main>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <QRCodeSVG value={`https://scene-hunter.pages.dev/${roomNumber}`} size={256} />
+      </Modal>
+      <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
+        <h2>{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
+        <input
+          type="text"
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          className="name-input"
+        />
+        <button onClick={handleChangeName} className="save-button">
+          {language === 'jp' ? '保存' : 'Save'}
+        </button>
       </Modal>
     </div>
   );

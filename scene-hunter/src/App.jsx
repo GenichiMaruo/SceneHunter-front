@@ -17,8 +17,14 @@ function App() {
 
   useEffect(() => {
     const fetchPlayerId = async () => {
-      if (localStorage.getItem('player_id')) {
+      // 言語設定がローカルストレージに保存されている場合、再利用
+      if (localStorage.getItem('language')) {
+        setLanguage(localStorage.getItem('language'));
+      }
+      // プレイヤーIDがローカルストレージに保存されている場合、6時間以内のデータであれば再利用
+      if (localStorage.getItem('player_id') && (new Date() - new Date(localStorage.getItem('save_date_time'))) < 6 * 60 * 60 * 1000) {
         setPlayerId(localStorage.getItem('player_id'));
+        setPlayerName(localStorage.getItem('player_name'));
         return;
       }
       try {
@@ -27,6 +33,8 @@ function App() {
           const data = await response.json();
           setPlayerId(data.user_id);
           localStorage.setItem('player_id', data.user_id);
+          localStorage.setItem('player_name', playerName);
+          localStorage.setItem('save_date_time', new Date().toISOString());
         } else {
           console.error('Failed to generate user ID');
         }
@@ -47,9 +55,10 @@ function App() {
 
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
+    localStorage.setItem('language', event.target.value);
   };
 
-  const handleUpdatePlayerName = async () => {
+  const handleUpdatePlayerName = async (player_name) => {
     try {
       const response = await fetch(`https://sh.yashikota.com/api/update_username?room_id=${roomNumber}`, {
         method: 'PUT',
@@ -58,7 +67,7 @@ function App() {
         },
         body: JSON.stringify({
           id: playerId,
-          name: playerName,
+          name: player_name,
         }),
       });
 
@@ -111,7 +120,7 @@ function App() {
       } else if (response.status === 409) {
         // すでに入室済みの場合
         // プレイヤー名を更新
-        handleUpdatePlayerName();
+        handleUpdatePlayerName(playerName);
         console.log('Room joined:', response.statusText);
         setScreen('game');
       } else {
@@ -153,6 +162,15 @@ function App() {
   const handleGoBack = () => {
     setShowCreateInput(false);
     setShowJoinInput(false);
+  };
+
+  const handleGameEnd = () => {
+    setShowCreateInput(false);
+    setShowJoinInput(false);
+    setScreen('main');
+    setRoomNumber('');
+    setPlayerName('');
+    navigate('/');
   };
 
   return (
@@ -228,7 +246,7 @@ function App() {
           </footer>
         </>
       ) : (
-        <GameScreen language={language} playerName={playerName} roomNumber={roomNumber} playerId={playerId} />
+        <GameScreen language={language} playerName={playerName} roomNumber={roomNumber} playerId={playerId} handleUpdatePlayerName={handleUpdatePlayerName} handleGameEnd={handleGameEnd} />
       )}
     </div>
   );
