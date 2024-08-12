@@ -227,6 +227,19 @@
     font-size: 6vw;
 }
 
+.change-name-button {
+    background-color: #000;
+    color: #fff;
+    width: 30%;
+    height: 12%;
+    font-size: 1.7vh;
+    border: none;
+    border-radius: 1vh;
+    position: absolute;
+    right: 0;
+    top: 7%;
+}
+
 .GameScreen-participants ul {
     list-style: none;
     padding: 0;

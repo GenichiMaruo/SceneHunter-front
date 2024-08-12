@@ -9,21 +9,53 @@
     align-items: center;
     justify-content: center;
     z-index: 2;
-  }
+}
   
-  .modal-content {
+.modal-content {
     background: white;
     padding: 20px;
     border-radius: 8px;
     position: relative;
-  }
+}
   
-  .modal-close {
-    position: absolute;
-    top: 0%;
-    right: 0%;
-    background: none;
-    border: none;
-    font-size: 2vh;
-    cursor: pointer;
-  }
+.modal-close {
+  position: absolute;
+  top: 0%;
+  right: 0%;
+  background: none;
+  border: none;
+  font-size: 2vh;
+  cursor: pointer;
+}
+
+.Modal-change-name {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 3vh;
+}
+
+.Modal-name-input {
+  width: 100%;
+  padding: 1vh;
+  margin: 1vh 0;
+  border: 0.1vh solid #ccc;
+  border-radius: 1vh;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: 1.7vh;
+  font-weight: bold;
+}
+
+.Modal-save-button {
+  width: 100%;
+  padding: 1vh;
+  margin: 1vh 0;
+  border: none;
+  border-radius: 1vh;
+  background-color: #000000;
+  color: white;
+  font-size: 1.7vh;
+  cursor: pointer;
+}
