@@ -6,7 +6,8 @@ import GameResult from './GameResult';
 import Modal from './Modal';
 import './GameScreen.css';
 
-function GameScreen({ language, playerName, roomNumber, playerId, handleUpdatePlayerName, handleEndGame }) {
+function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handleUpdatePlayerName, handleEndGame }) {
+  const [deployUrl, setDeployUrl] = useState('https://scene-hunter.pages.dev');
   const [roomStatus, setRoomStatus] = useState('');
   const [currentRound, setCurrentRound] = useState(1);
   const [participants, setParticipants] = useState([]);
@@ -23,7 +24,7 @@ function GameScreen({ language, playerName, roomNumber, playerId, handleUpdatePl
   useEffect(() => {
     const fetchRoomData = async () => {
       try {
-        const response = await fetch(`https://sh.yashikota.com/api/get_room_users?room_id=${roomNumber}`);
+        const response = await fetch(`${apiUrl}/get_room_users?room_id=${roomNumber}`);
         if (response.ok) {
           const data = await response.json();
           const room = data.room;
@@ -42,24 +43,23 @@ function GameScreen({ language, playerName, roomNumber, playerId, handleUpdatePl
     };
     fetchRoomData();
 
-    // dataには01J4ZWT1Q9EFNCMX1C33XGMESR,xxxxxのような文字列が入力される
-    // この文字列を使って、部屋の情報を変更する
     const updateUserName = (data) => {
       const [userId, newName] = data.split(',');
-      setParticipants(participants.map((player) => {
-        if (player.id === userId) {
-          return { ...player, name: newName };
-        }
-        return player;
-      }));
       if (gameMasterId === userId) {
         setGameMaster(newName
         );
+      } else {
+        setParticipants(participants.map((player) => {
+          if (player.id === userId) {
+            return { ...player, name: newName };
+          }
+          return player;
+        }));
       }
     };
 
     const initiateEventSource = () => {
-      const eventSourceUrl = `https://sh.yashikota.com/api/notification?room_id=${roomNumber}`;
+      const eventSourceUrl = `${apiUrl}/notification?room_id=${roomNumber}`;
       const es = new EventSource(eventSourceUrl);
 
       es.onmessage = (event) => {
@@ -127,7 +127,7 @@ function GameScreen({ language, playerName, roomNumber, playerId, handleUpdatePl
 
   const handleStartGame = async () => {
     try {
-      const response = await fetch(`https://sh.yashikota.com/api/game_start?room_id=${roomNumber}`, {
+      const response = await fetch(`${apiUrl}/game_start?room_id=${roomNumber}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -151,7 +151,7 @@ function GameScreen({ language, playerName, roomNumber, playerId, handleUpdatePl
   };
 
   const handleCopyToClipboard = () => {
-    const url = `https://scene-hunter.pages.dev/${roomNumber}`;
+    const url = `${deployUrl}/${roomNumber}`;
     navigator.clipboard.writeText(url).then(() => {
       alert(language === 'jp' ? 'URLがクリップボードにコピーされました。' : 'URL copied to clipboard.');
     }).catch(err => {
@@ -161,7 +161,7 @@ function GameScreen({ language, playerName, roomNumber, playerId, handleUpdatePl
 
   const handleExitRoom = async () => {
     try {
-      const response = await fetch(`https://sh.yashikota.com/api/exit_room?room_id=${roomNumber}`, {
+      const response = await fetch(`${apiUrl}/exit_room?room_id=${roomNumber}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -201,10 +201,10 @@ function GameScreen({ language, playerName, roomNumber, playerId, handleUpdatePl
         <p className="GameScreen-roomCode">{roomNumber}</p>
       </div>
       <div className="GameScreen-qr" onClick={() => setIsModalOpen(true)}>
-        <QRCodeSVG id='qrcode' value={`https://scene-hunter.pages.dev/${roomNumber}`} />
+        <QRCodeSVG id='qrcode' value={`${deployUrl}/${roomNumber}`} />
       </div>
       <div className='GameScreen-url-container'>
-        <input type="text" value={`https://scene-hunter.pages.dev/${roomNumber}`} readOnly className="GameScreen-url" />
+        <input type="text" value={`${deployUrl}/${roomNumber}`} readOnly className="GameScreen-url" />
         <button className="share-button" onClick={handleCopyToClipboard}></button>
       </div>
       <main className="GameScreen-main">
@@ -245,7 +245,7 @@ function GameScreen({ language, playerName, roomNumber, playerId, handleUpdatePl
         </button>
       </main>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <QRCodeSVG value={`https://scene-hunter.pages.dev/${roomNumber}`} size={256} />
+        <QRCodeSVG value={`${deployUrl}/${roomNumber}`} size={256} />
       </Modal>
       <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
         <h2>{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>

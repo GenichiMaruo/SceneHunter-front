@@ -4,6 +4,7 @@ import GameScreen from './GameScreen';
 import { BrowserRouter as Router, Route, Routes, useParams, useNavigate } from 'react-router-dom';
 
 function App() {
+  const [apiUrl, setApiUrl] = useState('https://sh.yashikota.com/api');
   const [language, setLanguage] = useState('jp');
   const [showCreateInput, setShowCreateInput] = useState(false);
   const [showJoinInput, setShowJoinInput] = useState(false);
@@ -28,7 +29,7 @@ function App() {
         return;
       }
       try {
-        const response = await fetch('https://sh.yashikota.com/api/generate_user_id');
+        const response = await fetch(`${apiUrl}/generate_user_id`);
         if (response.ok) {
           const data = await response.json();
           setPlayerId(data.user_id);
@@ -60,7 +61,7 @@ function App() {
 
   const handleUpdatePlayerName = async (player_name) => {
     try {
-      const response = await fetch(`https://sh.yashikota.com/api/update_username?room_id=${roomNumber}`, {
+      const response = await fetch(`${apiUrl}/update_username?room_id=${roomNumber}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +102,7 @@ function App() {
 
   const handleEnterRoom = async () => {
     try {
-      const response = await fetch(`https://sh.yashikota.com/api/join_room?room_id=${roomNumber}`, {
+      const response = await fetch(`${apiUrl}/join_room?room_id=${roomNumber}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,7 +134,7 @@ function App() {
 
   const handleEnterPlayerName = async () => {
     try {
-      const response = await fetch('https://sh.yashikota.com/api/create_room', {
+      const response = await fetch('${apiUrl}/create_room', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -246,7 +247,7 @@ function App() {
           </footer>
         </>
       ) : (
-        <GameScreen language={language} playerName={playerName} roomNumber={roomNumber} playerId={playerId} handleUpdatePlayerName={handleUpdatePlayerName} handleGameEnd={handleGameEnd} />
+        <GameScreen apiUrl={apiUrl} language={language} playerName={playerName} roomNumber={roomNumber} playerId={playerId} handleUpdatePlayerName={handleUpdatePlayerName} handleGameEnd={handleGameEnd} />
       )}
     </div>
   );
