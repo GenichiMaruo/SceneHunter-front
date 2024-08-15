@@ -45,16 +45,14 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
 
     const updateUserName = (data) => {
       const [userId, newName] = data.split(',');
+      setParticipants(participants.map(player => {
+        if (player.id === userId) {
+          return { ...player, name: newName };
+        }
+        return player;
+      }));
       if (gameMasterId === userId) {
-        setGameMaster(newName
-        );
-      } else {
-        setParticipants(participants.map((player) => {
-          if (player.id === userId) {
-            return { ...player, name: newName };
-          }
-          return player;
-        }));
+        setGameMaster(newName);
       }
     };
 
@@ -248,7 +246,7 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
         <QRCodeSVG value={`${deployUrl}/${roomNumber}`} size={256} />
       </Modal>
       <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
-        <h2 className="Modal-change-name">{language === 'jp' ? '名前を変更' : 'Change Name' }</h2>
+        <h2 className="Modal-change-name">{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
         <input
           type="text"
           value={newName}

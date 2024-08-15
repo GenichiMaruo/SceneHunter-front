@@ -134,7 +134,7 @@ function App() {
 
   const handleEnterPlayerName = async () => {
     try {
-      const response = await fetch('${apiUrl}/create_room', {
+      const response = await fetch(`${apiUrl}/create_room`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
