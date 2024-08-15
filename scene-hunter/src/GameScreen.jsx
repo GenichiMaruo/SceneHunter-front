@@ -248,14 +248,14 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
         <QRCodeSVG value={`${deployUrl}/${roomNumber}`} size={256} />
       </Modal>
       <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
-        <h2>{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
+        <h2 className="Modal-change-name">{language === 'jp' ? '名前を変更' : 'Change Name' }</h2>
         <input
           type="text"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
-          className="name-input"
+          className="Modal-name-input"
         />
-        <button onClick={handleChangeName} className="save-button">
+        <button onClick={handleChangeName} className="Modal-save-button">
           {language === 'jp' ? '保存' : 'Save'}
         </button>
       </Modal>
