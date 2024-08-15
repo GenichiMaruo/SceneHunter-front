@@ -43,19 +43,6 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
     };
     fetchRoomData();
 
-    const updateUserName = (data) => {
-      const [userId, newName] = data.split(',');
-      setParticipants(participants.map(player => {
-        if (player.id === userId) {
-          return { ...player, name: newName };
-        }
-        return player;
-      }));
-      if (gameMasterId === userId) {
-        setGameMaster(newName);
-      }
-    };
-
     const initiateEventSource = () => {
       const eventSourceUrl = `${apiUrl}/notification?room_id=${roomNumber}`;
       const es = new EventSource(eventSourceUrl);
@@ -96,6 +83,23 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
     };
 
     initiateEventSource();
+
+    const updateUserName = (data) => {
+      const [userId, newName] = data.split(',');
+      if (gameMasterId === '') {
+        fetchRoomData();
+      } else {
+        setParticipants(participants.map(player => {
+          if (player.id === userId) {
+            return { ...player, name: newName };
+          }
+          return player;
+        }));
+        if (gameMasterId === userId) {
+          setGameMaster(newName);
+        }
+      }
+    };
 
     return () => {
       if (eventSource) {
