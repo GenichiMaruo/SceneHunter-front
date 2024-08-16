@@ -4,6 +4,7 @@ import './PhotoInput.css';
 function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlreadyTaken, onComplete }) {
   const [isCapturing, setIsCapturing] = useState(false);
   const [error, setError] = useState(null);
+  const [useFrontCamera, setUseFrontCamera] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -13,7 +14,7 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
         video: {
           width: 360, // Lower resolution for fallback
           height: 640, // Lower resolution for fallback
-          facingMode: "user" // Use front camera
+          facingMode: useFrontCamera ? "user" : "environment" // Switch between front and rear camera
         },
       });
       videoRef.current.srcObject = stream;
@@ -33,7 +34,11 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
         videoRef.current.srcObject.getTracks().forEach(track => track.stop());
       }
     };
-  }, []);
+  }, [useFrontCamera]); // Re-run the effect when switching cameras
+
+  const switchCamera = () => {
+    setUseFrontCamera(prevState => !prevState);
+  };
 
   const startCapture = () => {
     setIsCapturing(true);
@@ -72,6 +77,8 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
     if (!canvasRef.current || !videoRef.current) return;
 
     const context = canvasRef.current.getContext('2d');
+    canvasRef.current.width = 720; // Portrait width
+    canvasRef.current.height = 1280; // Portrait height
     context.translate(720, 0);
     context.rotate(90 * Math.PI / 180);
     context.drawImage(videoRef.current, 0, 0, 360, 640, 0, 0, 1280, 720); // Upscale to 720x1280
@@ -127,9 +134,14 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
       />
       <canvas ref={canvasRef} className="PhotoInput-canvas" style={{ display: 'none' }} />
       {!isCapturing && !error && (
-        <button onClick={startCapture}>
-          {language === 'jp' ? '写真を撮る' : 'Capture Photo'}
-        </button>
+        <>
+          <button onClick={startCapture}>
+            {language === 'jp' ? '写真を撮る' : 'Capture Photo'}
+          </button>
+          <button onClick={switchCamera}>
+            {language === 'jp' ? 'カメラを切り替える' : 'Switch Camera'}
+          </button>
+        </>
       )}
       {isCapturing && (
         <div className="PhotoInput-overlay">
