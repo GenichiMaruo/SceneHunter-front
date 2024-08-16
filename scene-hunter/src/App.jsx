@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import GameScreen from './GameScreen';
-import { BrowserRouter as Router, Route, Routes, useParams, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useParams, useNavigate, useLocation } from 'react-router-dom';
 
 function App() {
   const [apiUrl, setApiUrl] = useState('https://sh.yashikota.com/api');
@@ -15,8 +15,23 @@ function App() {
 
   const navigate = useNavigate();
   const { room_id } = useParams();
+  const location = useLocation(); // useLocation hook to get current URL parameters
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const debug = searchParams.get('debug');
+    const port = searchParams.get('port');
+
+    // If debug is true and port is 8080, set apiUrl to localhost:8080
+    if (debug === 'true') {
+      // If port is not set, default to 8080
+      if (port) {
+        setApiUrl(`http://localhost:${port}/api`);
+      } else {
+        setApiUrl('http://localhost:8080/api');
+      }
+    }
+
     const fetchPlayerId = async () => {
       // 言語設定がローカルストレージに保存されている場合、再利用
       if (localStorage.getItem('language')) {
@@ -44,7 +59,7 @@ function App() {
       }
     };
     fetchPlayerId();
-  }, []);
+  }, [apiUrl, location.search]); // location.search to trigger the effect when URL parameters change
 
   useEffect(() => {
     if (room_id) {
