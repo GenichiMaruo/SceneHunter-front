@@ -23,7 +23,7 @@ function App() {
         setLanguage(localStorage.getItem('language'));
       }
       // プレイヤーIDがローカルストレージに保存されている場合、6時間以内のデータであれば再利用
-      if (localStorage.getItem('player_id') && (new Date() - new Date(localStorage.getItem('save_date_time'))) < 6 * 60 * 60 * 1000) {
+      if (localStorage.getItem('player_id') && (new Date() - new Date(localStorage.getItem('save_date_time'))) < (3 * 60 * 60 * 1000) - 60) {
         setPlayerId(localStorage.getItem('player_id'));
         setPlayerName(localStorage.getItem('player_name'));
         return;

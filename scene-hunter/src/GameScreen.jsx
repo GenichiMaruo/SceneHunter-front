@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import background from './background.svg';
 import PhotoInput from './PhotoInput';
 import GameResult from './GameResult';
+import WaitingScreen from './WaitingScreen';
 import Modal from './Modal';
 import './GameScreen.css';
 
@@ -13,13 +14,17 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
   const [participants, setParticipants] = useState([]);
   const [gameMaster, setGameMaster] = useState('');
   const [gameMasterId, setGameMasterId] = useState('');
+  const gameMasterIdRef = useRef(gameMasterId);
   const [totalPlayers, setTotalPlayers] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAlreadyTaken, setIsAlreadyTaken] = useState(false);
   const [showPhotoInput, setShowPhotoInput] = useState(false);
   const [showGameResult, setShowGameResult] = useState(false);
+  const [showWaitingScreen, setShowWaitingScreen] = useState(false);
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const [newName, setNewName] = useState(playerName);
   const [eventSource, setEventSource] = useState(null);
+  const isEventSourceOpen = useRef(false);
 
   useEffect(() => {
     const fetchRoomData = async () => {
@@ -30,6 +35,8 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
           const room = data.room;
           setGameMaster(room.users[room.game_master_id].name);
           setGameMasterId(room.game_master_id);
+          gameMasterIdRef.current = room.game_master_id;
+          console.log('GMID:', gameMasterId, 'GMID_Ref:', gameMasterIdRef.current, 'room.game_master_id:', room.game_master_id);
           setParticipants(Object.values(room.users).filter(user => user.id !== room.game_master_id));
           setTotalPlayers(room.total_players);
           setRoomStatus(room.status);
@@ -46,6 +53,7 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
     const initiateEventSource = () => {
       const eventSourceUrl = `${apiUrl}/notification?room_id=${roomNumber}`;
       const es = new EventSource(eventSourceUrl);
+      console.log('EventSource connected:', eventSourceUrl);
 
       es.onmessage = (event) => {
         if (event.data.startsWith('{')) {
@@ -55,10 +63,12 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
           switch (data.message) {
             case 'update game rounds':
             case 'update game status':
+              handleGameStatusUpdate(data);
+              break;
             case 'update photo uploaded users':
               setRoomStatus(data.status);
               setCurrentRound(data.current_round);
-              setShowPhotoInput(true);
+              setShowWaitingScreen(true); // Move to waiting screen after photo capture
               break;
             case 'update user name':
               updateUserName(data.result);
@@ -72,21 +82,45 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
           }
         }
       };
-
       es.onerror = (error) => {
         console.error('EventSource failed:', error);
         es.close();
         setTimeout(initiateEventSource, 5000); // Retry connection after 5 seconds
       };
-
       setEventSource(es);
     };
+    if (!isEventSourceOpen.current) {
+      initiateEventSource();
+      isEventSourceOpen.current = true;
+    } else {
+      console.log('EventSource already open');
+    }
 
-    initiateEventSource();
+    const handleGameStatusUpdate = (data) => {
+      if (data.result === 'game-master-photo') {
+        console.log('PID:', playerId, 'GMID:', gameMasterIdRef.current);
+        if (playerId === gameMasterIdRef.current) {
+          setShowPhotoInput(true); // Move game master to photo capture mode
+        } else {
+          setShowWaitingScreen(true); // Move players to waiting screen
+        }
+      } else if (data.result === 'player-photo') {
+        if (playerId !== gameMasterIdRef.current) {
+          setShowPhotoInput(true); // Players start photo capture
+        } else {
+          setShowWaitingScreen(true); // Game master moves to waiting screen
+        }
+      } else if (data.result === 'result') {
+        setShowGameResult(true); // All users transition to the result display screen
+      } else {
+        setRoomStatus(data.status);
+        setCurrentRound(data.current_round);
+      }
+    };
 
     const updateUserName = (data) => {
       const [userId, newName] = data.split(',');
-      if (gameMasterId === '') {
+      if (gameMasterIdRef.current === '') {
         fetchRoomData();
       } else {
         setParticipants(participants.map(player => {
@@ -95,7 +129,7 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
           }
           return player;
         }));
-        if (gameMasterId === userId) {
+        if (gameMasterIdRef.current === userId) {
           setGameMaster(newName);
         }
       }
@@ -181,7 +215,7 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
       }
     } catch (error) {
       console.error('Error exiting room:', error);
-      // 今のところはエラーが発生した場合でも退出する
+      // エラーが発生しても退出する
       window.location.href = '/';
       handleEndGame();
     }
@@ -191,8 +225,12 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
     return <GameResult language={language} roomId={roomNumber} />;
   }
 
+  if (showWaitingScreen) {
+    return <WaitingScreen language={language} isGameMaster={(playerId === gameMasterId) ^ isAlreadyTaken} />;
+  }
+
   if (showPhotoInput) {
-    return <PhotoInput language={language} roomId={roomNumber} userId={playerId} onComplete={() => setShowGameResult(true)} />;
+    return <PhotoInput language={language} roomId={roomNumber} userId={playerId} isGameMaster={playerId === gameMasterId} setIsAlreadyTaken={setIsAlreadyTaken} onComplete={() => setShowWaitingScreen(true)} />;
   }
 
   return (
