@@ -97,20 +97,31 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
     }
 
     const handleGameStatusUpdate = (data) => {
-      if (data.result === 'game-master-photo') {
+      console.log('Game status update:', data);
+      if (data.result === 'game-master-photo' && isAlreadyTaken === false) {
         console.log('PID:', playerId, 'GMID:', gameMasterIdRef.current);
         if (playerId === gameMasterIdRef.current) {
+          setShowWaitingScreen(false);
           setShowPhotoInput(true); // Move game master to photo capture mode
         } else {
+          setShowPhotoInput(false);
           setShowWaitingScreen(true); // Move players to waiting screen
         }
-      } else if (data.result === 'player-photo') {
+      } else if (data.result === 'player-photo' && isAlreadyTaken === false) {
+        console.log('change to photo input');
         if (playerId !== gameMasterIdRef.current) {
+          setShowWaitingScreen(false);
           setShowPhotoInput(true); // Players start photo capture
         } else {
+          setShowPhotoInput(false);
           setShowWaitingScreen(true); // Game master moves to waiting screen
         }
+      } else if (isAlreadyTaken === true) {
+        setShowPhotoInput(false);
+        setShowWaitingScreen(true); // Move all users to waiting screen
       } else if (data.result === 'result') {
+        setShowPhotoInput(false);
+        setShowWaitingScreen(false);
         setShowGameResult(true); // All users transition to the result display screen
       } else {
         setRoomStatus(data.status);
@@ -176,7 +187,6 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
         console.log(data.message);
         setRoomStatus(data.status);
         setCurrentRound(data.current_round);
-        setShowPhotoInput(true);
       } else {
         const errorData = await response.json();
         console.error(errorData.message);
@@ -226,7 +236,12 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
   }
 
   if (showWaitingScreen) {
-    return <WaitingScreen language={language} isGameMaster={(playerId === gameMasterId) ^ isAlreadyTaken} />;
+    const isGameMaster = playerId === gameMasterId;
+    if (isGameMaster === true) {
+      return <WaitingScreen language={language} isGameMaster={true} />;
+    } else {
+      return <WaitingScreen language={language} isGameMaster={isAlreadyTaken} />;
+    }
   }
 
   if (showPhotoInput) {
