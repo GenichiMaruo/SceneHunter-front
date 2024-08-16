@@ -236,7 +236,12 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
   }
 
   if (showWaitingScreen) {
-    return <WaitingScreen language={language} isGameMaster={(playerId === gameMasterId) ^ isAlreadyTaken} />;
+    const isGameMaster = playerId === gameMasterId;
+    if (isGameMaster === true) {
+      return <WaitingScreen language={language} isGameMaster={true} />;
+    } else {
+      return <WaitingScreen language={language} isGameMaster={isAlreadyTaken} />;
+    }
   }
 
   if (showPhotoInput) {
