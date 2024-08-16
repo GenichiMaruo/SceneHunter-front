@@ -63,6 +63,12 @@ function App() {
 
   useEffect(() => {
     if (room_id) {
+      // room_idがURLパラメータにあるが、部屋番号が不正な場合は何もしない
+      if (!room_id.match(/^[0-9]{1,6}$/)) {
+        // URLを変更してリダイレクト
+        navigate('/');
+        return
+      }
       setRoomNumber(room_id);
       setShowJoinInput(true);
       setShowCreateInput(false);
@@ -75,6 +81,10 @@ function App() {
   };
 
   const handleUpdatePlayerName = async (player_name) => {
+    // player_nameが禁止文字を含む場合と文字数が1~12文字以外の場合は何もしない
+    if (player_name.match(/[<>\'\",;%()&+\\]/) || player_name.length < 1 || player_name.length > 12) {
+      return;
+    }
     try {
       const response = await fetch(`${apiUrl}/update_username?room_id=${roomNumber}`, {
         method: 'PUT',
@@ -108,10 +118,30 @@ function App() {
   };
 
   const handleCreateInputChange = (event) => {
+    // < > ' " , ; % ( ) & + \ これらの文字を禁止
+    if (event.target.value.match(/[<>\'\",;%()&+\\]/)) {
+      return;
+    }
+    // 空白文字を禁止
+    if (event.target.value.match(/^\s/)) {
+      return;
+    }
+    // 12文字まで
+    if (event.target.value.length > 12) {
+      return;
+    }
     setPlayerName(event.target.value);
   };
 
   const handleJoinInputChange = (event) => {
+    // 数字以外の文字を禁止
+    if (!event.target.value.match(/^[0-9]*$/)) {
+      return;
+    }
+    // 6桁まで
+    if (event.target.value.length > 6) {
+      return;
+    }
     setRoomNumber(event.target.value);
   };
 

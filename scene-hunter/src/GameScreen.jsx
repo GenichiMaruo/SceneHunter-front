@@ -153,18 +153,28 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
     };
   }, [roomNumber]);
 
+  const handleInputChangeName = (e) => {
+    // < > ' " , ; % ( ) & + \ これらの文字を禁止
+    if (e.target.value.match(/[<>\'\",;%()&+\\]/)) {
+      return;
+    }
+    // 空白文字を禁止
+    if (e.target.value.match(/\s/)) {
+      return;
+    }
+    // 12文字まで
+    if (e.target.value.length > 12) {
+      return;
+    }
+    setNewName(e.target.value);
+  };
+
   const handleChangeName = () => {
     if (newName === '') {
       alert(language === 'jp' ? '名前を入力してください。' : 'Please enter a name.');
       return;
     } else if (newName === playerName) {
       setIsNameModalOpen(false);
-      return;
-    } else if (newName.length > 20) {
-      alert(language === 'jp' ? '名前は20文字以内で入力してください。' : 'Please enter a name up to 20 characters.');
-      return;
-    } else if (newName.includes(' ')) {
-      alert(language === 'jp' ? '名前にスペースを含めることはできません。' : 'Name cannot contain spaces.');
       return;
     } else {
       handleUpdatePlayerName(newName);
@@ -307,7 +317,7 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
         <input
           type="text"
           value={newName}
-          onChange={(e) => setNewName(e.target.value)}
+          onChange={handleInputChangeName}
           className="Modal-name-input"
         />
         <button onClick={handleChangeName} className="Modal-save-button">
