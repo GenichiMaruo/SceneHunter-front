@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './PhotoInput.css';
 
-function PhotoInput({ language, roomId, userId, setIsAlreadyTaken, onComplete }) {
+function PhotoInput({ language, roomId, userId, isGameMaster, setIsAlreadyTaken, onComplete }) {
   const [isCapturing, setIsCapturing] = useState(false);
   const [error, setError] = useState(null);
   const videoRef = useRef(null);
@@ -57,9 +57,15 @@ function PhotoInput({ language, roomId, userId, setIsAlreadyTaken, onComplete })
     const dataUrl = canvasRef.current.toDataURL('image/jpeg');
     await uploadPhoto(dataUrl);
 
-    setTimeout(() => {
-      captureSecondPhoto();
-    }, 2000);
+    if (isGameMaster) {
+      // If Game Master, complete after one photo
+      finishCapture();
+    } else {
+      // Otherwise, capture a second photo
+      setTimeout(() => {
+        captureSecondPhoto();
+      }, 2000);
+    }
   };
 
   const captureSecondPhoto = async () => {
@@ -73,7 +79,13 @@ function PhotoInput({ language, roomId, userId, setIsAlreadyTaken, onComplete })
     const dataUrl = canvasRef.current.toDataURL('image/jpeg');
     await uploadPhoto(dataUrl);
 
-    videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+    finishCapture();
+  };
+
+  const finishCapture = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+    }
     setIsCapturing(false);
     setIsAlreadyTaken(true);
     onComplete();
