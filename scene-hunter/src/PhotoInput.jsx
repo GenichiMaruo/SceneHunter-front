@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './PhotoInput.css';
 
-function PhotoInput({ language, roomId, userId, onComplete }) {
+function PhotoInput({ language, roomId, userId, setIsAlreadyTaken, onComplete }) {
   const [isCapturing, setIsCapturing] = useState(false);
   const [error, setError] = useState(null);
   const videoRef = useRef(null);
@@ -75,6 +75,7 @@ function PhotoInput({ language, roomId, userId, onComplete }) {
 
     videoRef.current.srcObject.getTracks().forEach(track => track.stop());
     setIsCapturing(false);
+    setIsAlreadyTaken(true);
     onComplete();
   };
 
