@@ -3,28 +3,29 @@ import './PhotoInput.css';
 
 function PhotoInput({ language, roomId, userId, onComplete }) {
   const [isCapturing, setIsCapturing] = useState(false);
-  const [error, setError] = useState(null); // Add an error state
+  const [error, setError] = useState(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
-  useEffect(() => {
-    const startVideo = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            width: 360, // Lower resolution for fallback
-            height: 640, // Lower resolution for fallback
-            facingMode: "user" // Use front camera
-          },
-        });
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-      } catch (err) {
-        console.error('Error accessing camera:', err);
-        setError('カメラにアクセスできませんでした。権限を確認してください。'); // Set error message in Japanese
-      }
-    };
+  const startVideo = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: 360, // Lower resolution for fallback
+          height: 640, // Lower resolution for fallback
+          facingMode: "user" // Use front camera
+        },
+      });
+      videoRef.current.srcObject = stream;
+      videoRef.current.play();
+      setError(null); // Clear any existing errors
+    } catch (err) {
+      console.error('Error accessing camera:', err);
+      setError(language === 'jp' ? 'カメラにアクセスできませんでした。権限を確認してください。' : 'Could not access the camera. Please check permissions.');
+    }
+  };
 
+  useEffect(() => {
     startVideo();
 
     return () => {
@@ -101,6 +102,11 @@ function PhotoInput({ language, roomId, userId, onComplete }) {
   return (
     <div className="PhotoInput">
       {error && <div className="PhotoInput-error">{error}</div>} {/* Display error message */}
+      {error && (
+        <button onClick={startVideo}>
+          {language === 'jp' ? '権限取得を再試行する' : 'Retry Permission'}
+        </button>
+      )}
       <video
         ref={videoRef}
         className={`PhotoInput-video ${isCapturing ? 'capturing' : ''}`}
