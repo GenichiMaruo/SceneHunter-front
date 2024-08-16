@@ -1,18 +1,30 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 function PhotoInput({ language, roomId, userId, onComplete }) {
   const [isCapturing, setIsCapturing] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
-  const startCapture = async () => {
-    setIsCapturing(true);
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { width: 1280, height: 720 },
-    });
-    videoRef.current.srcObject = stream;
-    videoRef.current.play();
+  useEffect(() => {
+    const startVideo = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 1280, height: 720 },
+      });
+      videoRef.current.srcObject = stream;
+      videoRef.current.play();
+    };
 
+    startVideo();
+
+    return () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+
+  const startCapture = () => {
+    setIsCapturing(true);
     setTimeout(() => {
       capturePhoto();
     }, 2000);

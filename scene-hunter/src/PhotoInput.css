@@ -1,0 +1,23 @@
+.PhotoInput-video {
+  width: 100%;
+  height: auto;
+  border: 5px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.PhotoInput-video.capturing {
+  border-color: red;
+}
+
+.PhotoInput-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  text-align: center;
+}
