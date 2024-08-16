@@ -230,7 +230,7 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
   }
 
   if (showPhotoInput) {
-    return <PhotoInput language={language} roomId={roomNumber} userId={playerId} isGameMaster={playerId === gameMasterId} setIsAlreadyTaken={setIsAlreadyTaken} onComplete={() => setShowWaitingScreen(true)} />;
+    return <PhotoInput apiUrl={apiUrl} language={language} roomId={roomNumber} userId={playerId} isGameMaster={playerId === gameMasterId} setIsAlreadyTaken={setIsAlreadyTaken} onComplete={() => setShowWaitingScreen(true)} />;
   }
 
   return (

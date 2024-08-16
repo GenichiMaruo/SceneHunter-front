@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './PhotoInput.css';
 
-function PhotoInput({ language, roomId, userId, isGameMaster, setIsAlreadyTaken, onComplete }) {
+function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlreadyTaken, onComplete }) {
   const [isCapturing, setIsCapturing] = useState(false);
   const [error, setError] = useState(null);
   const videoRef = useRef(null);
@@ -98,7 +98,7 @@ function PhotoInput({ language, roomId, userId, isGameMaster, setIsAlreadyTaken,
       formData.append('user_id', userId);
       formData.append('image', blob);
 
-      const response = await fetch(`https://sh.yashikota.com/api/upload_photo?room_id=${roomId}`, {
+      const response = await fetch(`${apiUrl}/upload_photo?room_id=${roomId}`, {
         method: 'POST',
         body: formData,
       });
