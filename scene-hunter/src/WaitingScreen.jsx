@@ -8,8 +8,8 @@ function WaitingScreen({ language, isGameMaster }) {
         <div className="WaitingScreen-spinner"></div>
         <p className="WaitingScreen-text">
           {isGameMaster
-            ? (language === 'jp' ? 'ゲームマスターが撮影中です。お待ちください...' : 'The game master is taking a photo. Please wait...')
-            : (language === 'jp' ? '他のプレイヤーが撮影中です。お待ちください...' : 'Another player is taking a photo. Please wait...')}
+            ? (language === 'jp' ? '他のプレイヤーが撮影中です。お待ちください...' : 'The game master is taking a photo. Please wait...')
+            : (language === 'jp' ? 'ゲームマスターが撮影中です。お待ちください...' : 'Another player is taking a photo. Please wait...')}
         </p>
       </div>
     </div>
