@@ -127,6 +127,10 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
       <video
         ref={videoRef}
         className={`PhotoInput-video ${isCapturing ? 'capturing' : ''}`}
+        autoPlay
+        muted
+        loop
+        playsInline
         style={{ display: error ? 'none' : 'block' }}
       />
       <canvas ref={canvasRef} className="PhotoInput-canvas" />
