@@ -2,28 +2,30 @@
   position: relative;
   width: 100%;
   max-width: 360px;
-  /* Adjust the max-width to fit within your design */
+  /* Ensure the container has a max-width */
   margin: 0 auto;
   background-color: black;
-  /* Background color for the video area */
+  /* Background for the video area */
   overflow: hidden;
-  /* Hide any overflow from the video element */
+  /* Hide any overflow */
   border-radius: 8px;
-  /* Optional: Add rounded corners */
+  /* Optional rounded corners */
 }
 
 .PhotoInput-video {
   width: 100%;
-  /* Ensure the video scales with the container */
+  /* Ensure video scales within the container */
   height: auto;
   /* Maintain aspect ratio */
   object-fit: cover;
   /* Ensure the video covers the container */
+  transform: none;
+  /* Reset any transforms that might cause issues */
 }
 
 .PhotoInput-canvas {
   display: none;
-  /* The canvas is hidden during capture */
+  /* Hide the canvas until needed */
 }
 
 .PhotoInput-error {
