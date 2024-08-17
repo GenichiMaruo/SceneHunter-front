@@ -25,6 +25,8 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
   const [newName, setNewName] = useState(playerName);
   const [eventSource, setEventSource] = useState(null);
   const isEventSourceOpen = useRef(false);
+  const [errorMessage, setErrorMessage] = useState(''); // New state for error message
+  const [showErrorMessage, setShowErrorMessage] = useState(false); // New state to control error message visibility
 
   useEffect(() => {
     const fetchRoomData = async () => {
@@ -153,17 +155,28 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
     };
   }, [roomNumber]);
 
+  const showTemporaryMessage = (message) => {
+    setErrorMessage(message);
+    setShowErrorMessage(true);
+    setTimeout(() => {
+      setShowErrorMessage(false);
+    }, 3000); // Message will be displayed for 3 seconds
+  };
+
   const handleInputChangeName = (e) => {
     // < > ' " , ; % ( ) & + \ これらの文字を禁止
     if (e.target.value.match(/[<>\'\",;%()&+\\]/)) {
+      showTemporaryMessage(language === 'jp' ? '記号の一部は使用できません' : 'Invalid characters are included.');
       return;
     }
     // 空白文字を禁止
     if (e.target.value.match(/\s/)) {
+      showTemporaryMessage(language === 'jp' ? '空白文字は使用できません' : 'Spaces are not allowed.');
       return;
     }
     // 12文字まで
     if (e.target.value.length > 12) {
+      showTemporaryMessage(language === 'jp' ? '12文字以内で入力してください' : 'Please enter a name within 12 characters.');
       return;
     }
     setNewName(e.target.value);
@@ -171,7 +184,7 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
 
   const handleChangeName = () => {
     if (newName === '') {
-      alert(language === 'jp' ? '名前を入力してください。' : 'Please enter a name.');
+      alert(language === 'jp' ? '名前を入力してください' : 'Please enter a name.');
       return;
     } else if (newName === playerName) {
       setIsNameModalOpen(false);
@@ -314,6 +327,7 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
       </Modal>
       <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
         <h2 className="Modal-change-name">{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
+        {showErrorMessage && <p className="App-error">{errorMessage}</p>} {/* Error message display */}
         <input
           type="text"
           value={newName}

@@ -123,7 +123,7 @@ function App() {
     const value = event.target.value;
     // Check for forbidden characters, including emojis
     if (value.match(/[<>\'\",;%()&+\\]/) || /\p{Extended_Pictographic}/u.test(value)) {
-      showTemporaryMessage('使用できない文字が入力されました');
+      showTemporaryMessage('記号の一部は使用できません');
       return;
     }
     // 空白文字を禁止

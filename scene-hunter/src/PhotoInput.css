@@ -1,23 +1,51 @@
-.PhotoInput-video {
+.PhotoInput {
+  position: relative;
   width: 100%;
-  height: auto;
-  border: 5px solid transparent;
-  transition: border-color 0.3s ease;
+  max-width: 360px;
+  /* Adjust the max-width to fit within your design */
+  margin: 0 auto;
+  background-color: black;
+  /* Background color for the video area */
+  overflow: hidden;
+  /* Hide any overflow from the video element */
+  border-radius: 8px;
+  /* Optional: Add rounded corners */
 }
 
-.PhotoInput-video.capturing {
-  border-color: red;
+.PhotoInput-video {
+  width: 100%;
+  /* Ensure the video scales with the container */
+  height: auto;
+  /* Maintain aspect ratio */
+  object-fit: cover;
+  /* Ensure the video covers the container */
+}
+
+.PhotoInput-canvas {
+  display: none;
+  /* The canvas is hidden during capture */
+}
+
+.PhotoInput-error {
+  color: red;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .PhotoInput-overlay {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.7);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 1.2rem;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  /* 枠を赤で縁取り */
+  border: 2px solid red;
+  /* 角を丸く */
+  border-radius: 10px;
 }
