@@ -49,15 +49,10 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
 
   const capturePhoto = async () => {
     if (!canvasRef.current || !videoRef.current) return;
-
     const context = canvasRef.current.getContext('2d');
-    canvasRef.current.width = 720; // Portrait width
-    canvasRef.current.height = 1280; // Portrait height
-
-    context.translate(720, 0);
-    context.rotate(90 * Math.PI / 180);
-    context.drawImage(videoRef.current, 0, 0, 360, 640, 0, 0, 1280, 720);
-
+    canvasRef.current.width = 720;
+    canvasRef.current.height = 1280;
+    context.drawImage(videoRef.current, 0, 0, 720, 1280);
     const dataUrl = canvasRef.current.toDataURL('image/jpeg');
     await uploadPhoto(dataUrl);
 
@@ -72,14 +67,10 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
 
   const captureSecondPhoto = async () => {
     if (!canvasRef.current || !videoRef.current) return;
-
     const context = canvasRef.current.getContext('2d');
     canvasRef.current.width = 720;
     canvasRef.current.height = 1280;
-    context.translate(720, 0);
-    context.rotate(90 * Math.PI / 180);
-    context.drawImage(videoRef.current, 0, 0, 360, 640, 0, 0, 1280, 720);
-
+    context.drawImage(videoRef.current, 0, 0, 720, 1280);
     const dataUrl = canvasRef.current.toDataURL('image/jpeg');
     await uploadPhoto(dataUrl);
 
