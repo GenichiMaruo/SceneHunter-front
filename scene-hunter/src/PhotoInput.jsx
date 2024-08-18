@@ -50,9 +50,20 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
   const capturePhoto = async () => {
     if (!canvasRef.current || !videoRef.current) return;
     const context = canvasRef.current.getContext('2d');
-    canvasRef.current.width = 720;
-    canvasRef.current.height = 1280;
-    context.drawImage(videoRef.current, 0, 0, 720, 1280);
+
+    // 動的に縦横比を取得し、反転
+    const videoWidth = videoRef.current.videoWidth;
+    const videoHeight = videoRef.current.videoHeight;
+
+    canvasRef.current.width = videoHeight; // 縦横反転
+    canvasRef.current.height = videoWidth;
+
+    context.save();
+    context.translate(canvasRef.current.width / 2, canvasRef.current.height / 2);
+    context.rotate(90 * Math.PI / 180);
+    context.drawImage(videoRef.current, -videoWidth / 2, -videoHeight / 2, videoWidth, videoHeight);
+    context.restore();
+
     const dataUrl = canvasRef.current.toDataURL('image/jpeg');
     await uploadPhoto(dataUrl);
 
@@ -68,9 +79,18 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
   const captureSecondPhoto = async () => {
     if (!canvasRef.current || !videoRef.current) return;
     const context = canvasRef.current.getContext('2d');
-    canvasRef.current.width = 720;
-    canvasRef.current.height = 1280;
-    context.drawImage(videoRef.current, 0, 0, 720, 1280);
+    const videoWidth = videoRef.current.videoWidth;
+    const videoHeight = videoRef.current.videoHeight;
+
+    canvasRef.current.width = videoHeight;
+    canvasRef.current.height = videoWidth;
+
+    context.save();
+    context.translate(canvasRef.current.width / 2, canvasRef.current.height / 2);
+    context.rotate(90 * Math.PI / 180);
+    context.drawImage(videoRef.current, -videoWidth / 2, -videoHeight / 2, videoWidth, videoHeight);
+    context.restore();
+
     const dataUrl = canvasRef.current.toDataURL('image/jpeg');
     await uploadPhoto(dataUrl);
 
