@@ -12,14 +12,14 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width: 360, // Lower resolution for fallback
-          height: 640, // Lower resolution for fallback
-          facingMode: useFrontCamera ? "user" : "environment" // Switch between front and rear camera
+          width: 360,
+          height: 640,
+          facingMode: useFrontCamera ? 'user' : 'environment',
         },
       });
       videoRef.current.srcObject = stream;
       videoRef.current.play();
-      setError(null); // Clear any existing errors
+      setError(null);
     } catch (err) {
       console.error('Error accessing camera:', err);
       setError(language === 'jp' ? 'カメラにアクセスできませんでした。権限を確認してください。' : 'Could not access the camera. Please check permissions.');
@@ -34,7 +34,7 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
         videoRef.current.srcObject.getTracks().forEach(track => track.stop());
       }
     };
-  }, [useFrontCamera]); // Re-run the effect when switching cameras
+  }, [useFrontCamera]);
 
   const switchCamera = () => {
     setUseFrontCamera(prevState => !prevState);
@@ -50,23 +50,21 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
   const capturePhoto = async () => {
     if (!canvasRef.current || !videoRef.current) return;
 
+    const videoAspectRatio = videoRef.current.videoWidth / videoRef.current.videoHeight;
+    const canvasWidth = videoAspectRatio > 1 ? 1280 : 720;
+    const canvasHeight = videoAspectRatio > 1 ? 720 : 1280;
+
+    canvasRef.current.width = canvasWidth;
+    canvasRef.current.height = canvasHeight;
     const context = canvasRef.current.getContext('2d');
-    canvasRef.current.width = 720; // Portrait width
-    canvasRef.current.height = 1280; // Portrait height
 
-    // Upscale and rotate the context to capture in portrait mode
-    context.translate(720, 0);
-    context.rotate(90 * Math.PI / 180);
-    context.drawImage(videoRef.current, 0, 0, 360, 640, 0, 0, 1280, 720); // Upscale to 720x1280
-
+    context.drawImage(videoRef.current, 0, 0, canvasWidth, canvasHeight);
     const dataUrl = canvasRef.current.toDataURL('image/jpeg');
     await uploadPhoto(dataUrl);
 
     if (isGameMaster) {
-      // If Game Master, complete after one photo
       finishCapture();
     } else {
-      // Otherwise, capture a second photo
       setTimeout(() => {
         captureSecondPhoto();
       }, 2000);
@@ -76,13 +74,15 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
   const captureSecondPhoto = async () => {
     if (!canvasRef.current || !videoRef.current) return;
 
-    const context = canvasRef.current.getContext('2d');
-    canvasRef.current.width = 720; // Portrait width
-    canvasRef.current.height = 1280; // Portrait height
-    context.translate(720, 0);
-    context.rotate(90 * Math.PI / 180);
-    context.drawImage(videoRef.current, 0, 0, 360, 640, 0, 0, 1280, 720); // Upscale to 720x1280
+    const videoAspectRatio = videoRef.current.videoWidth / videoRef.current.videoHeight;
+    const canvasWidth = videoAspectRatio > 1 ? 1280 : 720;
+    const canvasHeight = videoAspectRatio > 1 ? 720 : 1280;
 
+    canvasRef.current.width = canvasWidth;
+    canvasRef.current.height = canvasHeight;
+    const context = canvasRef.current.getContext('2d');
+
+    context.drawImage(videoRef.current, 0, 0, canvasWidth, canvasHeight);
     const dataUrl = canvasRef.current.toDataURL('image/jpeg');
     await uploadPhoto(dataUrl);
 
@@ -121,7 +121,7 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
 
   return (
     <div className="PhotoInput">
-      {error && <div className="PhotoInput-error">{error}</div>} {/* Display error message */}
+      {error && <div className="PhotoInput-error">{error}</div>}
       {error && (
         <button onClick={startVideo}>
           {language === 'jp' ? '権限取得を再試行する' : 'Retry Permission'}
@@ -130,9 +130,13 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
       <video
         ref={videoRef}
         className={`PhotoInput-video ${isCapturing ? 'capturing' : ''}`}
-        style={{ display: error ? 'none' : 'block' }} // Hide video if error
+        autoPlay
+        muted
+        loop
+        playsInline
+        style={{ display: error ? 'none' : 'block' }}
       />
-      <canvas ref={canvasRef} className="PhotoInput-canvas" style={{ display: 'none' }} />
+      <canvas ref={canvasRef} className="PhotoInput-canvas" />
       {!isCapturing && !error && (
         <>
           <button onClick={startCapture}>

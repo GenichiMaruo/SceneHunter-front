@@ -1,23 +1,42 @@
+.PhotoInput {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  background-color: black;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
 .PhotoInput-video {
   width: 100%;
   height: auto;
-  border: 5px solid transparent;
-  transition: border-color 0.3s ease;
+  object-fit: cover;
+  transform: none;
 }
 
-.PhotoInput-video.capturing {
-  border-color: red;
+.PhotoInput-canvas {
+  display: none;
+}
+
+.PhotoInput-error {
+  color: red;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .PhotoInput-overlay {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.7);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 1.2rem;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  border: 2px solid red;
+  border-radius: 10px;
 }

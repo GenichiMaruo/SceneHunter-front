@@ -12,6 +12,8 @@ function App() {
   const [roomNumber, setRoomNumber] = useState('');
   const [screen, setScreen] = useState('main');
   const [playerId, setPlayerId] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // New state for error message
+  const [showErrorMessage, setShowErrorMessage] = useState(false); // New state to control error message visibility
 
   const navigate = useNavigate();
   const { room_id } = useParams();
@@ -67,7 +69,7 @@ function App() {
       if (!room_id.match(/^[0-9]{1,6}$/)) {
         // URLを変更してリダイレクト
         navigate('/');
-        return
+        return;
       }
       setRoomNumber(room_id);
       setShowJoinInput(true);
@@ -118,31 +120,46 @@ function App() {
   };
 
   const handleCreateInputChange = (event) => {
-    // < > ' " , ; % ( ) & + \ これらの文字を禁止
-    if (event.target.value.match(/[<>\'\",;%()&+\\]/)) {
+    const value = event.target.value;
+    // Check for forbidden characters, including emojis
+    if (value.match(/[<>\'\",;%()&+\\]/) || /\p{Extended_Pictographic}/u.test(value)) {
+      showTemporaryMessage('記号の一部は使用できません');
       return;
     }
     // 空白文字を禁止
-    if (event.target.value.match(/^\s/)) {
+    if (value.match(/^\s/)) {
+      showTemporaryMessage('空白文字は使用できません');
       return;
     }
     // 12文字まで
-    if (event.target.value.length > 12) {
+    if (value.length > 12) {
+      showTemporaryMessage('12文字以内で入力してください');
       return;
     }
-    setPlayerName(event.target.value);
+    setPlayerName(value);
   };
 
   const handleJoinInputChange = (event) => {
+    const value = event.target.value;
     // 数字以外の文字を禁止
-    if (!event.target.value.match(/^[0-9]*$/)) {
+    if (!value.match(/^[0-9]*$/)) {
+      showTemporaryMessage('数字のみを入力してください');
       return;
     }
     // 6桁まで
-    if (event.target.value.length > 6) {
+    if (value.length > 6) {
+      showTemporaryMessage('6桁以内で入力してください');
       return;
     }
-    setRoomNumber(event.target.value);
+    setRoomNumber(value);
+  };
+
+  const showTemporaryMessage = (message) => {
+    setErrorMessage(message);
+    setShowErrorMessage(true);
+    setTimeout(() => {
+      setShowErrorMessage(false);
+    }, 3000); // Message will be displayed for 3 seconds
   };
 
   const handleEnterRoom = async () => {
@@ -228,6 +245,7 @@ function App() {
             <h1 className="App-title">Scene Hunter</h1>
             <p className="App-subtitle">Spot the Image from the Clues!</p>
             <div className="App-buttons">
+              {showErrorMessage && <p className="App-error">{errorMessage}</p>} {/* Error message display */}
               {showCreateInput ? (
                 <>
                   <input
@@ -235,11 +253,10 @@ function App() {
                     type="text"
                     value={playerName}
                     onChange={handleCreateInputChange}
-                    placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter player name'}
-                    autoFocus
+                    placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter Player Name'}
                   />
                   <button className="App-button" onClick={handleEnterPlayerName}>
-                    {language === 'jp' ? '入力' : 'Enter'}
+                    {language === 'jp' ? '作成' : 'Create'}
                   </button>
                   <button className="App-button" onClick={handleGoBack}>
                     {language === 'jp' ? '戻る' : 'Back'}
@@ -253,17 +270,16 @@ function App() {
                     value={playerName}
                     onChange={handleCreateInputChange}
                     placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter player name'}
-                    autoFocus
                   />
                   <input
                     className='App-input'
                     type="text"
                     value={roomNumber}
                     onChange={handleJoinInputChange}
-                    placeholder={language === 'jp' ? '部屋番号を入力' : 'Enter room number'}
+                    placeholder={language === 'jp' ? '部屋番号を入力' : 'Enter Room Number'}
                   />
                   <button className="App-button" onClick={handleEnterRoom}>
-                    {language === 'jp' ? '入力' : 'Enter'}
+                    {language === 'jp' ? '参加' : 'Join'}
                   </button>
                   <button className="App-button" onClick={handleGoBack}>
                     {language === 'jp' ? '戻る' : 'Back'}
@@ -292,7 +308,14 @@ function App() {
           </footer>
         </>
       ) : (
-        <GameScreen apiUrl={apiUrl} language={language} playerName={playerName} roomNumber={roomNumber} playerId={playerId} handleUpdatePlayerName={handleUpdatePlayerName} handleGameEnd={handleGameEnd} />
+        <GameScreen
+          apiUrl={apiUrl}
+          language={language}
+          playerName={playerName}
+          roomNumber={roomNumber}
+          playerId={playerId}
+          handleUpdatePlayerName={handleUpdatePlayerName}
+          handleGameEnd={handleGameEnd} />
       )}
     </div>
   );
