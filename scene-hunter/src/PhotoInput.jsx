@@ -14,12 +14,12 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
         video: {
           width: 360,
           height: 640,
-          facingMode: useFrontCamera ? "user" : "environment"
+          facingMode: useFrontCamera ? 'user' : 'environment',
         },
       });
       videoRef.current.srcObject = stream;
       videoRef.current.play();
-      setError(null); // Clear any existing errors
+      setError(null);
     } catch (err) {
       console.error('Error accessing camera:', err);
       setError(language === 'jp' ? 'カメラにアクセスできませんでした。権限を確認してください。' : 'Could not access the camera. Please check permissions.');
@@ -49,21 +49,16 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
 
   const capturePhoto = async () => {
     if (!canvasRef.current || !videoRef.current) return;
+
+    const videoAspectRatio = videoRef.current.videoWidth / videoRef.current.videoHeight;
+    const canvasWidth = videoAspectRatio > 1 ? 1280 : 720;
+    const canvasHeight = videoAspectRatio > 1 ? 720 : 1280;
+
+    canvasRef.current.width = canvasWidth;
+    canvasRef.current.height = canvasHeight;
     const context = canvasRef.current.getContext('2d');
 
-    // 動的に縦横比を取得し、反転
-    const videoWidth = videoRef.current.videoWidth;
-    const videoHeight = videoRef.current.videoHeight;
-
-    canvasRef.current.width = videoHeight; // 縦横反転
-    canvasRef.current.height = videoWidth;
-
-    context.save();
-    context.translate(canvasRef.current.width / 2, canvasRef.current.height / 2);
-    context.rotate(90 * Math.PI / 180);
-    context.drawImage(videoRef.current, -videoWidth / 2, -videoHeight / 2, videoWidth, videoHeight);
-    context.restore();
-
+    context.drawImage(videoRef.current, 0, 0, canvasWidth, canvasHeight);
     const dataUrl = canvasRef.current.toDataURL('image/jpeg');
     await uploadPhoto(dataUrl);
 
@@ -78,19 +73,16 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
 
   const captureSecondPhoto = async () => {
     if (!canvasRef.current || !videoRef.current) return;
+
+    const videoAspectRatio = videoRef.current.videoWidth / videoRef.current.videoHeight;
+    const canvasWidth = videoAspectRatio > 1 ? 1280 : 720;
+    const canvasHeight = videoAspectRatio > 1 ? 720 : 1280;
+
+    canvasRef.current.width = canvasWidth;
+    canvasRef.current.height = canvasHeight;
     const context = canvasRef.current.getContext('2d');
-    const videoWidth = videoRef.current.videoWidth;
-    const videoHeight = videoRef.current.videoHeight;
 
-    canvasRef.current.width = videoHeight;
-    canvasRef.current.height = videoWidth;
-
-    context.save();
-    context.translate(canvasRef.current.width / 2, canvasRef.current.height / 2);
-    context.rotate(90 * Math.PI / 180);
-    context.drawImage(videoRef.current, -videoWidth / 2, -videoHeight / 2, videoWidth, videoHeight);
-    context.restore();
-
+    context.drawImage(videoRef.current, 0, 0, canvasWidth, canvasHeight);
     const dataUrl = canvasRef.current.toDataURL('image/jpeg');
     await uploadPhoto(dataUrl);
 
