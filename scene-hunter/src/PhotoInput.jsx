@@ -51,8 +51,8 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
     if (!canvasRef.current || !videoRef.current) return;
 
     const videoAspectRatio = videoRef.current.videoWidth / videoRef.current.videoHeight;
-    const canvasWidth = videoAspectRatio > 1 ? 720 : 1280;
-    const canvasHeight = videoAspectRatio > 1 ? 1280 : 720;
+    const canvasWidth = videoAspectRatio > 1 ? 1280 : 720;
+    const canvasHeight = videoAspectRatio > 1 ? 720 : 1280;
 
     canvasRef.current.width = canvasWidth;
     canvasRef.current.height = canvasHeight;
@@ -75,8 +75,8 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
     if (!canvasRef.current || !videoRef.current) return;
 
     const videoAspectRatio = videoRef.current.videoWidth / videoRef.current.videoHeight;
-    const canvasWidth = videoAspectRatio > 1 ? 720 : 1280;
-    const canvasHeight = videoAspectRatio > 1 ? 1280 : 720;
+    const canvasWidth = videoAspectRatio > 1 ? 1280 : 720;
+    const canvasHeight = videoAspectRatio > 1 ? 720 : 1280;
 
     canvasRef.current.width = canvasWidth;
     canvasRef.current.height = canvasHeight;
