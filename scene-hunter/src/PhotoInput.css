@@ -2,30 +2,21 @@
   position: relative;
   width: 100%;
   max-width: 360px;
-  /* Ensure the container has a max-width */
   margin: 0 auto;
   background-color: black;
-  /* Background for the video area */
   overflow: hidden;
-  /* Hide any overflow */
   border-radius: 8px;
-  /* Optional rounded corners */
 }
 
 .PhotoInput-video {
   width: 100%;
-  /* Ensure video scales within the container */
   height: auto;
-  /* Maintain aspect ratio */
   object-fit: cover;
-  /* Ensure the video covers the container */
   transform: none;
-  /* Reset any transforms that might cause issues */
 }
 
 .PhotoInput-canvas {
   display: none;
-  /* Hide the canvas until needed */
 }
 
 .PhotoInput-error {
@@ -46,8 +37,6 @@
   justify-content: center;
   align-items: center;
   font-size: 18px;
-  /* 枠を赤で縁取り */
   border: 2px solid red;
-  /* 角を丸く */
   border-radius: 10px;
 }
