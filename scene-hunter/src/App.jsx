@@ -28,9 +28,9 @@ function App() {
     if (debug === 'true') {
       // If port is not set, default to 8080
       if (port) {
-        setApiUrl(`http://localhost:${port}/api`);
+        setApiUrl(`http://localhost:${port}/api/v1`);
       } else {
-        setApiUrl('http://localhost:8080/api');
+        setApiUrl('http://localhost:8080/api/v1');
       }
     }
 
