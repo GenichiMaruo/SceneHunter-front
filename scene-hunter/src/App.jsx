@@ -4,7 +4,7 @@ import GameScreen from './GameScreen';
 import { BrowserRouter as Router, Route, Routes, useParams, useNavigate, useLocation } from 'react-router-dom';
 
 function App() {
-  const [apiUrl, setApiUrl] = useState('https://sh.yashikota.com/api');
+  const [apiUrl, setApiUrl] = useState('https://sh.yashikota.com/api/v1');
   const [language, setLanguage] = useState('jp');
   const [showCreateInput, setShowCreateInput] = useState(false);
   const [showJoinInput, setShowJoinInput] = useState(false);
