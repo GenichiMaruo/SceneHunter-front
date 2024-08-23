@@ -61,7 +61,7 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
     const context = canvasRef.current.getContext('2d');
 
     context.drawImage(videoRef.current, 0, 0, canvasWidth, canvasHeight);
-    const dataUrl = canvasRef.current.toDataURL('image/jpg');
+    const dataUrl = canvasRef.current.toDataURL('image/jpeg');
     await uploadPhoto(dataUrl);
 
     if (isGameMaster) {
@@ -85,7 +85,7 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
     const context = canvasRef.current.getContext('2d');
 
     context.drawImage(videoRef.current, 0, 0, canvasWidth, canvasHeight);
-    const dataUrl = canvasRef.current.toDataURL('image/jpg');
+    const dataUrl = canvasRef.current.toDataURL('image/jpeg');
     await uploadPhoto(dataUrl);
 
     finishCapture();
