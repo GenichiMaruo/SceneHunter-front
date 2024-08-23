@@ -46,8 +46,8 @@ function GameResult({ token, apiUrl, language, isGameMaster, onComplete }) {
           {score !== null && (
             <div className="GameResult-score">
               {language === 'ja'
-                ? `類似度は${parseFloat(score).toFixed(2)}%でした！`
-                : `The similarity score is ${parseFloat(score).toFixed(2)}%!`}
+                ? `類似度は${score}%でした！`
+                : `The similarity score is ${score}%!`}
             </div>
           )}
         </>
