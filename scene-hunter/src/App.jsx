@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
 import GameScreen from './GameScreen';
 import { BrowserRouter as Router, Route, Routes, useParams, useNavigate, useLocation } from 'react-router-dom';
+import Modal from './Modal';
+import './main.css';
 
 function App() {
   const [apiUrl, setApiUrl] = useState('https://sh.yashikota.com/api/v1');
@@ -14,6 +15,7 @@ function App() {
   const [playerId, setPlayerId] = useState('');
   const [errorMessage, setErrorMessage] = useState(''); // New state for error message
   const [showErrorMessage, setShowErrorMessage] = useState(false); // New state to control error message visibility
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // New state to control dropdown visibility
 
   const navigate = useNavigate();
   const { room_id } = useParams();
@@ -237,75 +239,100 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div className="flex flex-col items-center justify-center min-h-screen text-center">
       {screen === 'main' ? (
         <>
-          <div className="App-background"></div>
-          <header className="App-header">
-            <h1 className="App-title">Scene Hunter</h1>
-            <p className="App-subtitle">Spot the Image from the Clues!</p>
-            <div className="App-buttons">
-              {showErrorMessage && <p className="App-error">{errorMessage}</p>} {/* Error message display */}
-              {showCreateInput ? (
-                <>
-                  <input
-                    className='App-input'
-                    type="text"
-                    value={playerName}
-                    onChange={handleCreateInputChange}
-                    placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter Player Name'}
-                  />
-                  <button className="App-button" onClick={handleEnterPlayerName}>
-                    {language === 'jp' ? '作成' : 'Create'}
-                  </button>
-                  <button className="App-button" onClick={handleGoBack}>
-                    {language === 'jp' ? '戻る' : 'Back'}
-                  </button>
-                </>
-              ) : showJoinInput ? (
-                <>
-                  <input
-                    className='App-input'
-                    type="text"
-                    value={playerName}
-                    onChange={handleCreateInputChange}
-                    placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter player name'}
-                  />
-                  <input
-                    className='App-input'
-                    type="text"
-                    value={roomNumber}
-                    onChange={handleJoinInputChange}
-                    placeholder={language === 'jp' ? '部屋番号を入力' : 'Enter Room Number'}
-                  />
-                  <button className="App-button" onClick={handleEnterRoom}>
-                    {language === 'jp' ? '参加' : 'Join'}
-                  </button>
-                  <button className="App-button" onClick={handleGoBack}>
-                    {language === 'jp' ? '戻る' : 'Back'}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button className="App-button" onClick={handleCreateClick}>
-                    {language === 'jp' ? '作成' : 'Create'}
-                  </button>
-                  <button className="App-button" onClick={handleJoinClick}>
-                    {language === 'jp' ? '参加' : 'Join'}
-                  </button>
-                </>
+          {/* <div className="w-full text-center md:text-left lg:text-right">hoge</div> */}
+          <header className="w-full h-[13vh] bg-[#4ACEFF] bg-opacity-35"></header>
+          <div id="main" className="w-full flex flex-col flex-grow relative">
+            <div className="mt-[7vh] mb-[7vh]">
+              <h1 className="text-[14vw] text-shadow-FF9443 text-[#4ACEFF] font-bold">Scene Hunter</h1>
+              <p className="text-[5vw] text-[#4CAF50] font-bold">Spot the Image from the Clues!</p>
+            </div>
+
+            <div id="buttons" className="flex flex-col items-center justify-center mt-[2vh]">
+              <button className="block w-[50%] h-[9vh] lg:h-[9vh] text-[8vw] text-[#E7E7E7] font-bold bg-[#003B5C] rounded-[0.2em] mt-[3vh] mb-[3vh]" onClick={handleCreateClick}>
+                {language === 'jp' ? '作成' : 'Create'}
+              </button>
+              <button className="block w-[50%] h-[9vh] lg:h-[9vh] text-[8vw] text-[#E7E7E7] font-bold bg-[#003B5C] rounded-[0.2em] mt-[3vh] mb-[3vh]" onClick={handleJoinClick}>
+                {language === 'jp' ? '参加' : 'Join'}
+              </button>
+            </div>    
+
+            <div className="flex w-full justify-end items-end absolute bottom-0 right-0 mr-[5vh] mb-[5vh]"> 
+              <button
+                id="dropdown-button"
+                class="flex items-center justify-between h-[4vh] border-[0.5vw] border-[#333333] rounded-[2vw] bg-[#FFFFFF] text-gray-700"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <div className="text-[2vh] mx-[5vw] text-[#333333]">Language</div>
+                <span class={isDropdownOpen ? "icon-[fe--arrow-up] mr-[3vw]" 
+                                            : "icon-[fe--arrow-down] mr-[3vw]"}></span>
+              </button>
+
+              {isDropdownOpen && (
+                <div class="absolute right-0 top-[100%] mt-[0.5vh] w-48 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div class=" border-[0.5vw] border-[#333333] rounded-[2vw] ">
+                    <button class="block px-4 py-2 text-[2vh] text-gray-700" onClick={() => {setLanguage('jp'); setIsDropdownOpen(false);}}>
+                      日本語
+                    </button>
+                    <button class="block px-4 py-2 text-[2vh] text-gray-700" onClick={() => {setLanguage('en'); setIsDropdownOpen(false);}}>
+                      English
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
-          </header>
-          <div className="App-language">
-            <select value={language} onChange={handleLanguageChange}>
-              <option value="jp">日本語</option>
-              <option value="en">English</option>
-            </select>
           </div>
-          <footer className="App-footer">
-            <p>© 2024 Scene Hunter</p>
+          <footer className="flex justify-center items-center w-full h-[13vh] bg-[#4ACEFF] bg-opacity-35">
+            <p className="text-[4vw]">© 2024 Scene Hunter</p>
           </footer>
+          <Modal
+            isOpen={showCreateInput}
+            title={language === 'jp' ? '部屋を作成' : 'Create Room'}
+            onClose={() => setShowCreateInput(false)}
+          >
+            <input
+              className="text-center text-[5vw] border-[0.5vw] border-[#333333] rounded-[2vw] px-[3vw] py-[3vw] my-[5vw]"
+              type="text"
+              value={playerName}
+              onChange={handleCreateInputChange}
+              placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter Player Name'}
+            />
+          <button className="my-[5vw] px-[10vw] py-[2vw] bg-[#003B5C] text-[5vw] text-white rounded indent-[5vw] tracking-[5vw]" onClick={handleEnterPlayerName}>
+            {language === 'jp' ? '作成' : 'Create'}
+          </button>
+          <button className="my-[5vw] px-[10vw] py-[2vw] bg-[#003B5C] text-[5vw] text-white rounded indent-[5vw] tracking-[5vw]" onClick={handleGoBack}>
+            {language === 'jp' ? '戻る' : 'Back'}
+          </button>
+          </Modal>
+
+          <Modal
+            isOpen={showJoinInput}
+            title={language === 'jp' ? '部屋に参加' : 'Join Room'}
+            onClose={() => setShowJoinInput(false)}
+          >
+            <input
+              className="text-center text-[5vw] border-[0.5vw] border-[#333333] rounded-[2vw] px-[3vw] py-[3vw] my-[2vw]"
+              type="text"
+              value={playerName}
+              onChange={handleCreateInputChange}
+              placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter player name'}
+            />
+            <input
+              className="text-center text-[5vw] border-[0.5vw] border-[#333333] rounded-[2vw] px-[3vw] py-[3vw] my-[2vw]"
+              type="text"
+              value={roomNumber}
+              onChange={handleJoinInputChange}
+              placeholder={language === 'jp' ? '部屋番号を入力' : 'Enter Room Number'}
+            />
+            <button className="my-[5vw] px-[10vw] py-[2vw] bg-[#003B5C] text-[5vw] text-white rounded indent-[5vw] tracking-[5vw]" onClick={handleEnterRoom}>
+              {language === 'jp' ? '参加' : 'Join'}
+            </button>
+            <button className="my-[5vw] px-[10vw] py-[2vw] bg-[#003B5C] text-[5vw] text-white rounded indent-[5vw] tracking-[5vw]" onClick={handleGoBack}>
+              {language === 'jp' ? '戻る' : 'Back'}
+            </button>
+          </Modal>
         </>
       ) : (
         <GameScreen

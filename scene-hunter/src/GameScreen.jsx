@@ -5,7 +5,7 @@ import PhotoInput from './PhotoInput';
 import GameResult from './GameResult';
 import WaitingScreen from './WaitingScreen';
 import Modal from './Modal';
-import './GameScreen.css';
+import './main.css';
 
 function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handleUpdatePlayerName, handleEndGame }) {
   const [deployUrl, setDeployUrl] = useState('https://scene-hunter.pages.dev');
