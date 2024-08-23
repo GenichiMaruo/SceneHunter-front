@@ -76,6 +76,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
               break;
             case 'update user name':
               updateUserName(data.result);
+              fetchRoomData();
               break;
             case 'change game master':
             case 'update number of users':
