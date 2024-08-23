@@ -9,7 +9,7 @@ function GameResult({ token, apiUrl, language, isGameMaster, onComplete }) {
     if (!isGameMaster) {
       const fetchScore = async () => {
         try {
-          const response = await fetch(`${apiUrl}/v2/game/score`, {
+          const response = await fetch(`${apiUrl}/game/score`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
