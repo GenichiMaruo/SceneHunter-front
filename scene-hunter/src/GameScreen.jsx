@@ -7,7 +7,7 @@ import WaitingScreen from './WaitingScreen';
 import Modal from './Modal';
 import './main.css';
 
-function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handleUpdatePlayerName, handleEndGame }) {
+function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId, handleUpdatePlayerName, handleEndGame }) {
   const [deployUrl, setDeployUrl] = useState('https://scene-hunter.pages.dev');
   const [roomStatus, setRoomStatus] = useState('');
   const [currentRound, setCurrentRound] = useState(1);
@@ -31,14 +31,16 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
   useEffect(() => {
     const fetchRoomData = async () => {
       try {
-        const response = await fetch(`${apiUrl}/get_room_users?room_id=${roomNumber}`);
+        const response = await fetch(`${apiUrl}/room/users`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
         if (response.ok) {
-          const data = await response.json();
-          const room = data.room;
+          const room = await response.json();
+          gameMasterIdRef.current = room.game_master_id;
           setGameMaster(room.users[room.game_master_id].name);
           setGameMasterId(room.game_master_id);
-          gameMasterIdRef.current = room.game_master_id;
-          console.log('GMID:', gameMasterId, 'GMID_Ref:', gameMasterIdRef.current, 'room.game_master_id:', room.game_master_id);
           setParticipants(Object.values(room.users).filter(user => user.id !== room.game_master_id));
           setTotalPlayers(room.total_players);
           setRoomStatus(room.status);
@@ -74,6 +76,7 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
               break;
             case 'update user name':
               updateUserName(data.result);
+              fetchRoomData();
               break;
             case 'change game master':
             case 'update number of users':
@@ -94,8 +97,6 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
     if (!isEventSourceOpen.current) {
       initiateEventSource();
       isEventSourceOpen.current = true;
-    } else {
-      console.log('EventSource already open');
     }
 
     const handleGameStatusUpdate = (data) => {
@@ -166,17 +167,17 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
   const handleInputChangeName = (e) => {
     // < > ' " , ; % ( ) & + \ これらの文字を禁止
     if (e.target.value.match(/[<>\'\",;%()&+\\]/)) {
-      showTemporaryMessage(language === 'jp' ? '記号の一部は使用できません' : 'Invalid characters are included.');
+      showTemporaryMessage(language === 'ja' ? '記号の一部は使用できません' : 'Invalid characters are included.');
       return;
     }
     // 空白文字を禁止
     if (e.target.value.match(/\s/)) {
-      showTemporaryMessage(language === 'jp' ? '空白文字は使用できません' : 'Spaces are not allowed.');
+      showTemporaryMessage(language === 'ja' ? '空白文字は使用できません' : 'Spaces are not allowed.');
       return;
     }
     // 12文字まで
     if (e.target.value.length > 12) {
-      showTemporaryMessage(language === 'jp' ? '12文字以内で入力してください' : 'Please enter a name within 12 characters.');
+      showTemporaryMessage(language === 'ja' ? '12文字以内で入力してください' : 'Please enter a name within 12 characters.');
       return;
     }
     setNewName(e.target.value);
@@ -184,7 +185,7 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
 
   const handleChangeName = () => {
     if (newName === '') {
-      alert(language === 'jp' ? '名前を入力してください' : 'Please enter a name.');
+      alert(language === 'ja' ? '名前を入力してください' : 'Please enter a name.');
       return;
     } else if (newName === playerName) {
       setIsNameModalOpen(false);
@@ -197,12 +198,11 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
 
   const handleStartGame = async () => {
     try {
-      const response = await fetch(`${apiUrl}/game_start?room_id=${roomNumber}`, {
-        method: 'POST',
+      const response = await fetch(`${apiUrl}/game/start`, {
+        method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ id: playerId }),
       });
 
       if (response.ok) {
@@ -222,7 +222,7 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
   const handleCopyToClipboard = () => {
     const url = `${deployUrl}/${roomNumber}`;
     navigator.clipboard.writeText(url).then(() => {
-      alert(language === 'jp' ? 'URLがクリップボードにコピーされました。' : 'URL copied to clipboard.');
+      alert(language === 'ja' ? 'URLがクリップボードにコピーされました。' : 'URL copied to clipboard.');
     }).catch(err => {
       console.error('Failed to copy: ', err);
     });
@@ -230,52 +230,47 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
 
   const handleExitRoom = async () => {
     try {
-      const response = await fetch(`${apiUrl}/exit_room?room_id=${roomNumber}`, {
-        method: 'POST',
+      const response = await fetch(`${apiUrl}/room/exit`, {
+        method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ id: playerId }),
       });
 
       if (response.ok) {
         const data = await response.json();
         console.log(data.message);
         window.location.href = '/';
+        handleEndGame();
       } else {
         const errorData = await response.json();
         console.error(errorData.message);
+        window.location.href = '/';
+        handleEndGame();
       }
     } catch (error) {
       console.error('Error exiting room:', error);
-      // エラーが発生しても退出する
-      window.location.href = '/';
-      handleEndGame();
     }
   };
 
   if (showGameResult) {
-    return <GameResult language={language} roomId={roomNumber} />;
-  }
-
-  if (showWaitingScreen) {
+    return <GameResult token={token} apiUrl={apiUrl} language={language} isGameMaster={playerId === gameMasterId} onComplete={() => setShowGameResult(false)} />;
+  } if (showWaitingScreen) {
     const isGameMaster = playerId === gameMasterId;
     if (isGameMaster === true) {
       return <WaitingScreen language={language} isGameMaster={true} />;
     } else {
       return <WaitingScreen language={language} isGameMaster={isAlreadyTaken} />;
     }
-  }
-
-  if (showPhotoInput) {
-    return <PhotoInput apiUrl={apiUrl} language={language} roomId={roomNumber} userId={playerId} isGameMaster={playerId === gameMasterId} setIsAlreadyTaken={setIsAlreadyTaken} onComplete={() => setShowWaitingScreen(true)} />;
+  } if (showPhotoInput) {
+    return <PhotoInput token={token} apiUrl={apiUrl} language={language} roomId={roomNumber} userId={playerId} isGameMaster={playerId === gameMasterId} setIsAlreadyTaken={setIsAlreadyTaken} onComplete={() => setShowWaitingScreen(true)} />;
   }
 
   return (
     <div className="GameScreen">
       <img src={background} alt="Background" className="GameScreen-logo" />
       <div className="GameScreen-title">
-        <h2 className="GameScreen-room">{language === 'jp' ? '部屋番号' : 'Room Number:'}</h2>
+        <h2 className="GameScreen-room">{language === 'ja' ? '部屋番号' : 'Room Number:'}</h2>
         <p className="GameScreen-roomCode">{roomNumber}</p>
       </div>
       <div className="GameScreen-qr" onClick={() => setIsModalOpen(true)}>
@@ -287,9 +282,9 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
       </div>
       <main className="GameScreen-main">
         <div className="GameScreen-participants">
-          <h3 className='GameScreen-player'>{language === 'jp' ? '参加者' : 'Participants'}</h3>
+          <h3 className='GameScreen-player'>{language === 'ja' ? '参加者' : 'Participants'}</h3>
           <button onClick={() => setIsNameModalOpen(true)} className="change-name-button">
-            {language === 'jp' ? '名前を変更' : 'Change Name'}
+            {language === 'ja' ? '名前を変更' : 'Change Name'}
           </button>
           <ul>
             <li className='GameScreen-gamemaster'>
@@ -311,22 +306,22 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
         </div>
         {playerId === gameMasterId ? (
           <button className="GameScreen-startButton" onClick={handleStartGame}>
-            {language === 'jp' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
+            {language === 'ja' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
           </button>
         ) : (
           <p className="GameScreen-waitingMessage">
-            {language === 'jp' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
+            {language === 'ja' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
           </p>
         )}
         <button className="GameScreen-exitButton" onClick={handleExitRoom}>
-          {language === 'jp' ? '部屋を出る' : 'Exit the room'}
+          {language === 'ja' ? '部屋を出る' : 'Exit the room'}
         </button>
       </main>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <QRCodeSVG value={`${deployUrl}/${roomNumber}`} size={256} />
       </Modal>
       <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
-        <h2 className="Modal-change-name">{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
+        <h2 className="Modal-change-name">{language === 'ja' ? '名前を変更' : 'Change Name'}</h2>
         {showErrorMessage && <p className="App-error">{errorMessage}</p>} {/* Error message display */}
         <input
           type="text"
@@ -335,7 +330,7 @@ function GameScreen({ apiUrl, language, playerName, roomNumber, playerId, handle
           className="Modal-name-input"
         />
         <button onClick={handleChangeName} className="Modal-save-button">
-          {language === 'jp' ? '保存' : 'Save'}
+          {language === 'ja' ? '保存' : 'Save'}
         </button>
       </Modal>
     </div>

@@ -1,83 +1,132 @@
-import React, { useState, useEffect } from 'react';
-import GameScreen from './GameScreen';
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useParams, useNavigate, useLocation } from 'react-router-dom';
-import Modal from './Modal';
 import './main.css';
+import './App.css';
+import GameScreen from './GameScreen';
+import Modal from './Modal';
+import ErrorMessage from './ErrorMessage';
+import GameScreen from './GameScreen';
 
-function App() {
-  const [apiUrl, setApiUrl] = useState('https://sh.yashikota.com/api/v1');
-  const [language, setLanguage] = useState('jp');
+function App({ roomId }) {
+  const [api, setApi] = useState('https://sh.yashikota.com/api');
+  const [version, setVersion] = useState('v2');
+  const apiUrl = useRef('');
+  const [language, setLanguage] = useState('ja');
   const [showCreateInput, setShowCreateInput] = useState(false);
   const [showJoinInput, setShowJoinInput] = useState(false);
   const [playerName, setPlayerName] = useState('');
   const [roomNumber, setRoomNumber] = useState('');
   const [screen, setScreen] = useState('main');
   const [playerId, setPlayerId] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // New state for error message
-  const [showErrorMessage, setShowErrorMessage] = useState(false); // New state to control error message visibility
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // New state to control dropdown visibility
-
+  const [token, setToken] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
   const navigate = useNavigate();
-  const { room_id } = useParams();
-  const location = useLocation(); // useLocation hook to get current URL parameters
+  const location = useLocation();
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const debug = searchParams.get('debug');
     const port = searchParams.get('port');
+    const ver = searchParams.get('ver');
 
-    // If debug is true and port is 8080, set apiUrl to localhost:8080
+    if (ver) {
+      setVersion(`${ver}`);
+    }
     if (debug === 'true') {
-      // If port is not set, default to 8080
       if (port) {
-        setApiUrl(`http://localhost:${port}/api`);
+        apiUrl.current = `http://localhost:${port}/api/${version}`;
       } else {
-        setApiUrl('http://localhost:8080/api');
+        apiUrl.current = `http://localhost:8080/api/${version}`;
       }
+    } else {
+      apiUrl.current = `${api}/${version}`;
     }
 
-    const fetchPlayerId = async () => {
-      // 言語設定がローカルストレージに保存されている場合、再利用
-      if (localStorage.getItem('language')) {
-        setLanguage(localStorage.getItem('language'));
-      }
-      // プレイヤーIDがローカルストレージに保存されている場合、3時間以内のデータであれば再利用
-      if (localStorage.getItem('player_id') && (new Date() - new Date(localStorage.getItem('save_date_time'))) < (3 * 60 * 60 * 1000) - 60) {
-        setPlayerId(localStorage.getItem('player_id'));
-        setPlayerName(localStorage.getItem('player_name'));
-        return;
-      }
-      try {
-        const response = await fetch(`${apiUrl}/generate_user_id`);
-        if (response.ok) {
-          const data = await response.json();
-          setPlayerId(data.user_id);
-          localStorage.setItem('player_id', data.user_id);
-          localStorage.setItem('player_name', playerName);
-          localStorage.setItem('save_date_time', new Date().toISOString());
-        } else {
-          console.error('Failed to generate user ID');
+    const fetchTokenAndUserId = async () => {
+      let currentToken = localStorage.getItem('token');
+      if (!currentToken) {
+        currentToken = await getNewToken();
+        try {
+          const userId = await fetchUserIdWithToken(currentToken);
+          if (userId) {
+            setPlayerId(userId);
+            localStorage.setItem('player_id', userId);
+            localStorage.setItem('player_name', playerName);
+            localStorage.setItem('save_date_time', new Date().toISOString());
+          }
+        } catch (error) {
+          console.error('Error fetching user ID:', error);
         }
-      } catch (error) {
-        console.error('Error generating user ID:', error);
+      } else {
+        let currentUserId = localStorage.getItem('player_id');
+        setToken(currentToken);
+        setPlayerId(currentUserId);
       }
     };
-    fetchPlayerId();
-  }, [apiUrl, location.search]); // location.search to trigger the effect when URL parameters change
+
+    const getNewToken = async () => {
+      try {
+        console.log('api:token')
+        const response = await fetch(`${apiUrl.current}/token`);
+        if (response.ok) {
+          const tokenData = await response.json();
+          const newToken = tokenData.token;
+          setToken(newToken);
+          localStorage.setItem('token', newToken);
+          return newToken;
+        } else {
+          console.error('Failed to fetch token');
+        }
+      } catch (error) {
+        console.error('Error fetching new token:', error);
+      }
+      return null;
+    };
+
+    const fetchUserIdWithToken = async (token) => {
+      try {
+        const response = await fetch(`${apiUrl.current}/user`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          return userData.ID;
+        } else if (response.status === 401) {
+          const newToken = await getNewToken();
+          if (newToken) {
+            return await fetchUserIdWithToken(newToken);
+          }
+        } else {
+          console.error('Failed to fetch user ID:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching user ID with token:', error);
+      }
+      return null;
+    };
+
+    fetchTokenAndUserId();
+  }, [location.search, apiUrl]);
 
   useEffect(() => {
-    if (room_id) {
+    if (roomId) {
       // room_idがURLパラメータにあるが、部屋番号が不正な場合は何もしない
-      if (!room_id.match(/^[0-9]{1,6}$/)) {
+      if (!roomId.match(/^[0-9]{1,6}$/)) {
         // URLを変更してリダイレクト
         navigate('/');
         return;
       }
-      setRoomNumber(room_id);
+      setRoomNumber(roomId);
       setShowJoinInput(true);
       setShowCreateInput(false);
     }
-  }, [room_id]);
+  }, [roomId]);
 
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
@@ -90,19 +139,20 @@ function App() {
       return;
     }
     try {
-      const response = await fetch(`${apiUrl}/update_username?room_id=${roomNumber}`, {
+      const response = await fetch(`${apiUrl.current}/room/username`, {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: playerId,
           name: player_name,
         }),
       });
 
       if (response.ok) {
         console.log('Player name updated');
+        localStorage.setItem('player_name', player_name);
       } else {
         console.error('Failed to update player name');
       }
@@ -164,15 +214,20 @@ function App() {
     }, 3000); // Message will be displayed for 3 seconds
   };
 
+  const handleCloseErrorMessage = () => {
+    setShowErrorMessage(false);
+  };
+
   const handleEnterRoom = async () => {
     try {
-      const response = await fetch(`${apiUrl}/join_room?room_id=${roomNumber}`, {
+      const response = await fetch(`${apiUrl.current}/room/join`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: playerId,
+          room: roomNumber,
           name: playerName,
           lang: language,
         }),
@@ -182,9 +237,8 @@ function App() {
         const data = await response.json();
         console.log('Room joined:', data);
         setScreen('game');
-      } else if (response.status === 409) {
-        // すでに入室済みの場合
-        // プレイヤー名を更新
+      } else if (response.status === 400) {
+        // すでに入室済みの場合プレイヤー名を更新
         handleUpdatePlayerName(playerName);
         console.log('Room joined:', response.statusText);
         setScreen('game');
@@ -198,13 +252,13 @@ function App() {
 
   const handleEnterPlayerName = async () => {
     try {
-      const response = await fetch(`${apiUrl}/create_room`, {
+      const response = await fetch(`${apiUrl.current}/room/create`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: playerId,
           name: playerName,
           lang: language,
         }),
@@ -336,7 +390,8 @@ function App() {
         </>
       ) : (
         <GameScreen
-          apiUrl={apiUrl}
+          token={token}
+          apiUrl={apiUrl.current}
           language={language}
           playerName={playerName}
           roomNumber={roomNumber}
@@ -348,13 +403,4 @@ function App() {
   );
 }
 
-export default function RouterApp() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/:room_id" element={<App />} />
-      </Routes>
-    </Router>
-  );
-}
+export default App;

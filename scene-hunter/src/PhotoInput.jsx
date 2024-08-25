@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './PhotoInput.css';
 
-function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlreadyTaken, onComplete }) {
+function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, setIsAlreadyTaken, onComplete }) {
   const [isCapturing, setIsCapturing] = useState(false);
   const [error, setError] = useState(null);
   const [useFrontCamera, setUseFrontCamera] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [description, setDescription] = useState([]);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -22,7 +24,7 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
       setError(null);
     } catch (err) {
       console.error('Error accessing camera:', err);
-      setError(language === 'jp' ? 'カメラにアクセスできませんでした。権限を確認してください。' : 'Could not access the camera. Please check permissions.');
+      setError(language === 'ja' ? 'カメラにアクセスできませんでした。権限を確認してください。' : 'Could not access the camera. Please check permissions.');
     }
   };
 
@@ -105,8 +107,11 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
       formData.append('user_id', userId);
       formData.append('image', blob);
 
-      const response = await fetch(`${apiUrl}/upload_photo?room_id=${roomId}`, {
+      const response = await fetch(`${apiUrl}/game/upload`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: formData,
       });
 
@@ -119,12 +124,33 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
     }
   };
 
+  const fetchDescription = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/game/description`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDescription(language === 'ja' ? data.ja : data.en);
+        setIsModalOpen(true);
+      } else {
+        console.error('Error fetching description');
+      }
+    } catch (error) {
+      console.error('Error fetching description:', error);
+    }
+  };
+
   return (
     <div className="PhotoInput">
       {error && <div className="PhotoInput-error">{error}</div>}
       {error && (
         <button onClick={startVideo}>
-          {language === 'jp' ? '権限取得を再試行する' : 'Retry Permission'}
+          {language === 'ja' ? '権限取得を再試行する' : 'Retry Permission'}
         </button>
       )}
       <video
@@ -140,16 +166,36 @@ function PhotoInput({ apiUrl, language, roomId, userId, isGameMaster, setIsAlrea
       {!isCapturing && !error && (
         <>
           <button onClick={startCapture}>
-            {language === 'jp' ? '写真を撮る' : 'Capture Photo'}
+            {language === 'ja' ? '写真を撮る' : 'Capture Photo'}
           </button>
           <button onClick={switchCamera}>
-            {language === 'jp' ? 'カメラを切り替える' : 'Switch Camera'}
+            {language === 'ja' ? 'カメラを切り替える' : 'Switch Camera'}
           </button>
+          {!isGameMaster && (
+            <button onClick={fetchDescription}>
+              {language === 'ja' ? '写真の説明を見る' : 'View Photo Description'}
+            </button>
+          )}
         </>
       )}
       {isCapturing && (
         <div className="PhotoInput-overlay">
-          {language === 'jp' ? '撮影中は動かさないでください' : 'Please do not move during capture'}
+          {language === 'ja' ? '撮影中は動かさないでください' : 'Please do not move during capture'}
+        </div>
+      )}
+      {isModalOpen && (
+        <div className="PhotoInput-modal">
+          <div className="PhotoInput-modal-content">
+            <h2>{language === 'ja' ? '写真の説明' : 'Photo Description'}</h2>
+            <ul>
+              {description.map((line, index) => (
+                <li key={index}>{line}</li>
+              ))}
+            </ul>
+            <button onClick={() => setIsModalOpen(false)}>
+              {language === 'ja' ? '閉じる' : 'Close'}
+            </button>
+          </div>
         </div>
       )}
     </div>
