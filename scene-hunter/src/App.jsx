@@ -292,12 +292,12 @@ function App({ roomId }) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-center">
+    <div className="w-full flex flex-col items-center justify-center min-h-screen text-center">
       {screen === 'main' ? (
         <>
           {/* <div className="w-full text-center md:text-left lg:text-right">hoge</div> */}
           <header className="w-full h-[13vh] bg-[#4ACEFF] bg-opacity-35"></header>
-          <div id="main" className="w-full flex flex-col flex-grow relative">
+          <div id="main" className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]">
             <div className="mt-[7vh] mb-[7vh]">
               <h1 className="text-[14vw] text-shadow-FF9443 text-[#4ACEFF] font-bold">Scene Hunter</h1>
               <p className="text-[5vw] text-[#4CAF50] font-bold">Spot the Image from the Clues!</p>
@@ -352,12 +352,12 @@ function App({ roomId }) {
               onChange={handleCreateInputChange}
               placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter Player Name'}
             />
-          <button className="my-[5vw] px-[10vw] py-[2vw] bg-[#003B5C] text-[5vw] text-white rounded indent-[5vw] tracking-[5vw]" onClick={handleEnterPlayerName}>
-            {language === 'jp' ? '作成' : 'Create'}
-          </button>
-          <button className="my-[5vw] px-[10vw] py-[2vw] bg-[#003B5C] text-[5vw] text-white rounded indent-[5vw] tracking-[5vw]" onClick={handleGoBack}>
-            {language === 'jp' ? '戻る' : 'Back'}
-          </button>
+            <button className="my-[5vw] px-[10vw] py-[2vw] bg-[#003B5C] text-[5vw] text-white rounded indent-[5vw] tracking-[5vw]" onClick={handleEnterPlayerName}>
+              {language === 'jp' ? '作成' : 'Create'}
+            </button>
+            <button className="my-[5vw] px-[10vw] py-[2vw] bg-[#003B5C] text-[5vw] text-white rounded indent-[5vw] tracking-[5vw]" onClick={handleGoBack}>
+              {language === 'jp' ? '戻る' : 'Back'}
+            </button>
           </Modal>
 
           <Modal

@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import background from './background.svg';
 import PhotoInput from './PhotoInput';
 import GameResult from './GameResult';
 import WaitingScreen from './WaitingScreen';
@@ -267,59 +266,78 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
   }
 
   return (
-    <div className="GameScreen">
-      <img src={background} alt="Background" className="GameScreen-logo" />
-      <div className="GameScreen-title">
-        <h2 className="GameScreen-room">{language === 'ja' ? '部屋番号' : 'Room Number:'}</h2>
-        <p className="GameScreen-roomCode">{roomNumber}</p>
-      </div>
-      <div className="GameScreen-qr" onClick={() => setIsModalOpen(true)}>
-        <QRCodeSVG id='qrcode' value={`${deployUrl}/${roomNumber}`} />
-      </div>
-      <div className='GameScreen-url-container'>
-        <input type="text" value={`${deployUrl}/${roomNumber}`} readOnly className="GameScreen-url" />
-        <button className="share-button" onClick={handleCopyToClipboard}></button>
-      </div>
-      <main className="GameScreen-main">
-        <div className="GameScreen-participants">
-          <h3 className='GameScreen-player'>{language === 'ja' ? '参加者' : 'Participants'}</h3>
-          <button onClick={() => setIsNameModalOpen(true)} className="change-name-button">
-            {language === 'ja' ? '名前を変更' : 'Change Name'}
-          </button>
-          <ul>
-            <li className='GameScreen-gamemaster'>
-              <span className="gamemaster">{gameMaster}</span>
-              {playerId === gameMasterId && (
-                <span>✨️</span>
-              )}
-              <span role="img" aria-label="crown" className="crown">👑</span>
-            </li>
-            {participants.map((player) => (
-              <li key={player.id}>
-                {player.name}
-                {player.id === playerId && (
-                  <span>✨️</span>
-                )}
-              </li>
-            ))}
-          </ul>
+    <div className="w-full flex flex-col items-center justify-center min-h-screen text-center">
+      <header className="w-full h-[13vh] bg-[#4ACEFF] bg-opacity-35"></header>
+      <div className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]"> {/* main */}
+        <div className="flex justify-between items-start w-full p-[5vw]"> {/* room status */}
+          <div className="flex flex-col justify-between h-[40vw]"> {/* Left Section */}
+            <div className="flex items-center justify-between w-[40vw] h-[7vh] px-[5vw] border-[0.5vw] border-[#333333] rounded-[2vw] bg-[#E7E7E7] text-[#333333]"> {/* room number */}
+              <div className="font-bold text-[4vw]">PIN</div>
+              <div className="font-bold text-[6vw]">{roomNumber}</div>
+            </div>
+            <button className="flex items-center justify-between w-[40vw] h-[7vh] px-[5vw] rounded-[2vw] bg-[#4CAF50] text-[#FFFFFF]" onClick={handleCopyToClipboard}> {/* invite URL button */}
+              <div className="text-[8vw]">Invite</div>
+              <span class="icon-[ph--copy-bold] text-[8vw]"></span>
+            </button>            
+          </div>
+          <div> {/* Right Section */}
+            <div className="flex items-center justify-center border-[0.5vw] w-[40vw] h-[40vw] border-[#333333] rounded-[6vw] bg-[#E7E7E7]" onClick={() => setIsModalOpen(true)}> {/* QR code */}
+              <QRCodeSVG className="w-[30vw] h-[30vw] " id='qrcode' value={`${deployUrl}/${roomNumber}`} />
+            </div>  
+          </div>
         </div>
-        {playerId === gameMasterId ? (
-          <button className="GameScreen-startButton" onClick={handleStartGame}>
-            {language === 'ja' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
-          </button>
-        ) : (
-          <p className="GameScreen-waitingMessage">
-            {language === 'ja' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
-          </p>
-        )}
-        <button className="GameScreen-exitButton" onClick={handleExitRoom}>
-          {language === 'ja' ? '部屋を出る' : 'Exit the room'}
-        </button>
-      </main>
+        
+        <div>  {/* participants */}
+          <div className="h-[35vh] p-[5vw] mx-[5vw] border-[0.5vw] border-[#333333] rounded-[6vw] ">
+            <button className="w-full flex justify-end" onClick={() => setIsNameModalOpen(true)}>
+              <span class="icon-[mdi--rename-box-outline] text-[7vw]"></span>
+            </button>
+            <div className="h-[calc(100%-4vh)] overflow-x-hidden overflow-y-scroll">
+              <ul className="flex flex-col items-center text-[6vw] text-[#333333]">
+                <li className="w-full flex items-center justify-between">
+                  <span className="">{gameMaster}</span>
+                  {playerId === gameMasterId && (
+                    <span>✨️</span>
+                  )}
+                  <span role="img" aria-label="crown" className="">👑</span>
+                </li>
+                {participants.map((player) => (
+                  <li key={player.id}>
+                    {player.name}
+                    {player.id === playerId && (
+                      <span>✨️</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+            
+          <div className="mx-[5vw] flex flex-col items-center justify-center"> {/* buttons */}
+            {playerId === gameMasterId ? (
+              <button className="w-full h-[6vh] m-[2vw] rounded-[2vw] bg-[#003B5C] text-[5vw] text-[#FFFFFF]" onClick={handleStartGame}>
+                {language === 'ja' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
+              </button>
+            ) : (
+              <p className="w-full h-[6vh] m-[2vw] rounded-[2vw] bg-[#003B5C] text-[5vw] text-[#FFFFFF]">
+                {language === 'ja' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
+              </p>
+            )}
+            <button className="w-full h-[6vh] m-[2vw] rounded-[2vw] bg-[#003B5C] text-[5vw] text-[#FFFFFF]" onClick={handleExitRoom}>
+              {language === 'ja' ? '部屋を出る' : 'Exit the room'}
+            </button>  
+          </div>
+        </div>
+      </div>
+
+      <footer className="flex justify-center items-center w-full h-[13vh] bg-[#4ACEFF] bg-opacity-35">
+        <p className="text-[4vw]">© 2024 Scene Hunter</p>
+      </footer>
+
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <QRCodeSVG value={`${deployUrl}/${roomNumber}`} size={256} />
       </Modal>
+
       <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
         <h2 className="Modal-change-name">{language === 'ja' ? '名前を変更' : 'Change Name'}</h2>
         {showErrorMessage && <p className="App-error">{errorMessage}</p>} {/* Error message display */}
