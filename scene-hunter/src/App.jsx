@@ -319,17 +319,17 @@ function App({ roomId }) {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <div className="text-[2vh] mx-[5vw] text-[#333333]">Language</div>
-                <span class={isDropdownOpen ? "icon-[fe--arrow-up] mr-[3vw]" 
+                <span className={isDropdownOpen ? "icon-[fe--arrow-up] mr-[3vw]" 
                                             : "icon-[fe--arrow-down] mr-[3vw]"}></span>
               </button>
 
               {isDropdownOpen && (
-                <div class="absolute right-0 top-[100%] mt-[0.5vh] w-48 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div class=" border-[0.5vw] border-[#333333] rounded-[2vw] ">
-                    <button class="block px-4 py-2 text-[2vh] text-gray-700" onClick={() => {setLanguage('jp'); setIsDropdownOpen(false);}}>
+                <div className="absolute right-0 top-[100%] mt-[0.5vh] w-48 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className=" border-[0.5vw] border-[#333333] rounded-[2vw] ">
+                    <button className="block px-4 py-2 text-[2vh] text-gray-700" onClick={() => {setLanguage('jp'); setIsDropdownOpen(false);}}>
                       日本語
                     </button>
-                    <button class="block px-4 py-2 text-[2vh] text-gray-700" onClick={() => {setLanguage('en'); setIsDropdownOpen(false);}}>
+                    <button className="block px-4 py-2 text-[2vh] text-gray-700" onClick={() => {setLanguage('en'); setIsDropdownOpen(false);}}>
                       English
                     </button>
                   </div>
