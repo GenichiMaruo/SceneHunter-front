@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useParams, useNavigate, useLocation } from 'react-router-dom';
 import './main.css';
 import './App.css';
-import GameScreen from './GameScreen';
 import Modal from './Modal';
 import ErrorMessage from './ErrorMessage';
 import GameScreen from './GameScreen';
