@@ -178,7 +178,7 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
           <>
             <button className="flex item-center justify-between w-[60svw] px-[15svw] py-[1svh] my-[3svh] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]" onClick={startCapture}>
               <div className="text-[2svh] ">{language === 'ja' ? '写真を撮る' : 'Capture'}</div>
-              <span class="icon-[iconoir--camera] text-[3svh]"></span>
+              <span className="icon-[iconoir--camera] text-[3svh]"></span>
             </button>
             <button className="absolute" onClick={switchCamera}>
               {language === 'ja' ? 'カメラを切り替える' : 'Switch Camera'}

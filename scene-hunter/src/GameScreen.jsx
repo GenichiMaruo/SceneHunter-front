@@ -277,7 +277,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
             </div>
             <button className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] rounded-[2svw] bg-[#4CAF50] text-[#FFFFFF]" onClick={handleCopyToClipboard}> {/* invite URL button */}
               <div className="text-[8svw]">Invite</div>
-              <span class="icon-[ph--copy-bold] text-[8svw]"></span>
+              <span className="icon-[ph--copy-bold] text-[8svw]"></span>
             </button>            
           </div>
           <div className="h-full"> {/* Right Section */}
@@ -290,7 +290,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
         <div>  {/* participants */}
           <div className="h-[35svh] p-[5svw] mx-[5svw] border-[0.5svw] border-[#333333] rounded-[6svw] ">
             <button className="w-full flex justify-end" onClick={() => setIsNameModalOpen(true)}>
-              <span class="icon-[mdi--rename-box-outline] text-[7svw]"></span>
+              <span className="icon-[mdi--rename-box-outline] text-[7svw]"></span>
             </button>
             <div className="h-[calc(100%-4svh)] overflow-x-hidden overflow-y-scroll">
               <ul className="flex flex-col items-center text-[6svw] text-[#333333]">

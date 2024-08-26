@@ -315,7 +315,7 @@ function App({ roomId }) {
             <div className="flex w-full justify-end items-end absolute bottom-0 right-0 mr-[5svh] mb-[5svh]"> 
               <button
                 id="dropdown-button"
-                class="flex items-center justify-between h-[4svh] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#FFFFFF] text-gray-700"
+                className="flex items-center justify-between h-[4svh] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#FFFFFF] text-gray-700"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <div className="text-[2svh] mx-[5svw] text-[#333333]">Language</div>
