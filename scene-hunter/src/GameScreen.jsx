@@ -270,7 +270,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
       <header className="w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35"></header>
       <div className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]"> {/* main */}
         <div className="flex justify-between items-start w-full p-[5svw]"> {/* room status */}
-          <div className="flex flex-col justify-between h-[40svw]"> {/* Left Section */}
+          <div className="flex flex-col justify-between h-[35svw]"> {/* Left Section */}
             <div className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#E7E7E7] text-[#333333]"> {/* room number */}
               <div className="font-bold text-[4svw]">PIN</div>
               <div className="font-bold text-[6svw]">{roomNumber}</div>
@@ -281,8 +281,8 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
             </button>            
           </div>
           <div> {/* Right Section */}
-            <div className="flex items-center justify-center border-[0.5svw] w-[40svw] h-[40svw] border-[#333333] rounded-[6svw] bg-[#E7E7E7]" onClick={() => setIsModalOpen(true)}> {/* QR code */}
-              <QRCodeSVG className="w-[30svw] h-[30svw] " id='qrcode' value={`${deployUrl}/${roomNumber}`} />
+            <div className="flex items-center justify-center border-[0.5svw] w-[35svw] h-[35svw] border-[#333333] rounded-[6svw] bg-[#ffffff]" onClick={() => setIsModalOpen(true)}> {/* QR code */}
+              <QRCodeSVG className="w-[28svw] h-[28svw] " id='qrcode' value={`${deployUrl}/${roomNumber}`} />
             </div>  
           </div>
         </div>
