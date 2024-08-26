@@ -296,40 +296,40 @@ function App({ roomId }) {
       {screen === 'main' ? (
         <>
           {/* <div className="w-full text-center md:text-left lg:text-right">hoge</div> */}
-          <header className="w-full h-[13vh] bg-[#4ACEFF] bg-opacity-35"></header>
+          <header className="w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35"></header>
           <div id="main" className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]">
-            <div className="mt-[7vh] mb-[7vh]">
-              <h1 className="text-[14vw] text-shadow-FF9443 text-[#4ACEFF] font-bold">Scene Hunter</h1>
-              <p className="text-[5vw] text-[#4CAF50] font-bold">Spot the Image from the Clues!</p>
+            <div className="mt-[7svh] mb-[7svh]">
+              <h1 className="text-[14svw] text-shadow-FF9443 text-[#4ACEFF] font-bold">Scene Hunter</h1>
+              <p className="text-[5svw] text-[#4CAF50] font-bold">Spot the Image from the Clues!</p>
             </div>
 
-            <div id="buttons" className="flex flex-col items-center justify-center mt-[2vh]">
-              <button className="block w-[50%] h-[9vh] lg:h-[9vh] text-[8vw] text-[#E7E7E7] font-bold bg-[#003B5C] rounded-[0.2em] mt-[3vh] mb-[3vh]" onClick={handleCreateClick}>
+            <div id="buttons" className="flex flex-col items-center justify-center mt-[2svh]">
+              <button className="block w-[50%] h-[9svh] lg:h-[9svh] text-[8svw] text-[#E7E7E7] font-bold bg-[#003B5C] rounded-[0.2em] mt-[3svh] mb-[3svh]" onClick={handleCreateClick}>
                 {language === 'jp' ? '作成' : 'Create'}
               </button>
-              <button className="block w-[50%] h-[9vh] lg:h-[9vh] text-[8vw] text-[#E7E7E7] font-bold bg-[#003B5C] rounded-[0.2em] mt-[3vh] mb-[3vh]" onClick={handleJoinClick}>
+              <button className="block w-[50%] h-[9svh] lg:h-[9svh] text-[8svw] text-[#E7E7E7] font-bold bg-[#003B5C] rounded-[0.2em] mt-[3svh] mb-[3svh]" onClick={handleJoinClick}>
                 {language === 'jp' ? '参加' : 'Join'}
               </button>
             </div>    
 
-            <div className="flex w-full justify-end items-end pr-[5vh] py-[5vh]"> 
+            <div className="flex w-full justify-end items-end pr-[5svh] py-[5svh]"> 
               <button
                 id="dropdown-button"
-                class="flex items-center justify-between h-[4vh] border-[0.5vw] border-[#333333] rounded-[2vw] bg-[#FFFFFF] text-gray-700"
+                class="flex items-center justify-between h-[4svh] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#FFFFFF] text-gray-700"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                <div className="text-[2vh] mx-[5vw] text-[#333333]">Language</div>
-                <span className={isDropdownOpen ? "icon-[fe--arrow-up] mr-[3vw]" 
-                                            : "icon-[fe--arrow-down] mr-[3vw]"}></span>
+                <div className="text-[2svh] mx-[5svw] text-[#333333]">Language</div>
+                <span className={isDropdownOpen ? "icon-[fe--arrow-up] mr-[3svw]" 
+                                            : "icon-[fe--arrow-down] mr-[3svw]"}></span>
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute right-0 top-[100%] mt-[0.5vh] w-48 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div className=" border-[0.5vw] border-[#333333] rounded-[2vw] ">
-                    <button className="block px-4 py-2 text-[2vh] text-gray-700" onClick={() => {setLanguage('jp'); setIsDropdownOpen(false);}}>
+                <div className="absolute right-0 top-[100%] mt-[0.5svh] w-48 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className=" border-[0.5svw] border-[#333333] rounded-[2svw] ">
+                    <button className="block px-4 py-2 text-[2svh] text-gray-700" onClick={() => {setLanguage('jp'); setIsDropdownOpen(false);}}>
                       日本語
                     </button>
-                    <button className="block px-4 py-2 text-[2vh] text-gray-700" onClick={() => {setLanguage('en'); setIsDropdownOpen(false);}}>
+                    <button className="block px-4 py-2 text-[2svh] text-gray-700" onClick={() => {setLanguage('en'); setIsDropdownOpen(false);}}>
                       English
                     </button>
                   </div>
@@ -337,8 +337,8 @@ function App({ roomId }) {
               )}
             </div>
           </div>
-          <footer className="flex justify-center items-center w-full h-[13vh] bg-[#4ACEFF] bg-opacity-35">
-            <p className="text-[4vw]">© 2024 Scene Hunter</p>
+          <footer className="flex justify-center items-center w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35">
+            <p className="text-[4svw]">© 2024 Scene Hunter</p>
           </footer>
           <Modal
             isOpen={showCreateInput}
@@ -346,16 +346,16 @@ function App({ roomId }) {
             onClose={() => setShowCreateInput(false)}
           >
             <input
-              className="text-center text-[5vw] border-[0.5vw] border-[#333333] rounded-[2vw] px-[3vw] py-[3vw] my-[5vw]"
+              className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[5svw]"
               type="text"
               value={playerName}
               onChange={handleCreateInputChange}
               placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter Player Name'}
             />
-            <button className="my-[5vw] px-[10vw] py-[2vw] bg-[#003B5C] text-[5vw] text-white rounded indent-[5vw] tracking-[5vw]" onClick={handleEnterPlayerName}>
+            <button className="my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded indent-[5svw] tracking-[5svw]" onClick={handleEnterPlayerName}>
               {language === 'jp' ? '作成' : 'Create'}
             </button>
-            <button className="my-[5vw] px-[10vw] py-[2vw] bg-[#003B5C] text-[5vw] text-white rounded indent-[5vw] tracking-[5vw]" onClick={handleGoBack}>
+            <button className="my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded indent-[5svw] tracking-[5svw]" onClick={handleGoBack}>
               {language === 'jp' ? '戻る' : 'Back'}
             </button>
           </Modal>
@@ -366,23 +366,23 @@ function App({ roomId }) {
             onClose={() => setShowJoinInput(false)}
           >
             <input
-              className="text-center text-[5vw] border-[0.5vw] border-[#333333] rounded-[2vw] px-[3vw] py-[3vw] my-[2vw]"
+              className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[2svw]"
               type="text"
               value={playerName}
               onChange={handleCreateInputChange}
               placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter player name'}
             />
             <input
-              className="text-center text-[5vw] border-[0.5vw] border-[#333333] rounded-[2vw] px-[3vw] py-[3vw] my-[2vw]"
+              className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[2svw]"
               type="text"
               value={roomNumber}
               onChange={handleJoinInputChange}
               placeholder={language === 'jp' ? '部屋番号を入力' : 'Enter Room Number'}
             />
-            <button className="my-[5vw] px-[10vw] py-[2vw] bg-[#003B5C] text-[5vw] text-white rounded indent-[5vw] tracking-[5vw]" onClick={handleEnterRoom}>
+            <button className="my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded indent-[5svw] tracking-[5svw]" onClick={handleEnterRoom}>
               {language === 'jp' ? '参加' : 'Join'}
             </button>
-            <button className="my-[5vw] px-[10vw] py-[2vw] bg-[#003B5C] text-[5vw] text-white rounded indent-[5vw] tracking-[5vw]" onClick={handleGoBack}>
+            <button className="my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded indent-[5svw] tracking-[5svw]" onClick={handleGoBack}>
               {language === 'jp' ? '戻る' : 'Back'}
             </button>
           </Modal>
