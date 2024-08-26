@@ -269,8 +269,8 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
     <div className="w-full h-100svh min-h-[100svh] flex flex-col items-center justify-center text-center overflow-hidden">
       <header className="w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35"></header>
       <div className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]"> {/* main */}
-        <div className="flex justify-between items-start w-full p-[5svw]"> {/* room status */}
-          <div className="flex flex-col justify-between h-[35svw]"> {/* Left Section */}
+        <div className="flex justify-between items-start w-full h-[20svh] p-[5svw]"> {/* room status */}
+          <div className="flex flex-col justify-between h-full"> {/* Left Section */}
             <div className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#E7E7E7] text-[#333333]"> {/* room number */}
               <div className="font-bold text-[4svw]">PIN</div>
               <div className="font-bold text-[6svw]">{roomNumber}</div>
@@ -280,9 +280,9 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
               <span class="icon-[ph--copy-bold] text-[8svw]"></span>
             </button>            
           </div>
-          <div> {/* Right Section */}
-            <div className="flex items-center justify-center border-[0.5svw] w-[35svw] h-[35svw] border-[#333333] rounded-[6svw] bg-[#ffffff]" onClick={() => setIsModalOpen(true)}> {/* QR code */}
-              <QRCodeSVG className="w-[28svw] h-[28svw] " id='qrcode' value={`${deployUrl}/${roomNumber}`} />
+          <div className="h-full"> {/* Right Section */}
+            <div className="flex items-center justify-center border-[0.5svw] w-[h-full] h-full border-[#333333] rounded-[6svw] bg-[#ffffff]" onClick={() => setIsModalOpen(true)}> {/* QR code */}
+              <QRCodeSVG className="w-[h-[100%]] h-[calc(100%-4svh)] " id='qrcode' value={`${deployUrl}/${roomNumber}`} />
             </div>  
           </div>
         </div>
