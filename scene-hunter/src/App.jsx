@@ -292,7 +292,7 @@ function App({ roomId }) {
   };
 
   return (
-    <div className="w-full h-100svh min-h-[100svh] flex flex-col items-center justify-center text-center">
+    <div className="w-full h-100svh min-h-[100svh] flex flex-col items-center justify-center text-center overflow-hidden">
       {screen === 'main' ? (
         <>
           {/* <div className="w-full text-center md:text-left lg:text-right">hoge</div> */}
