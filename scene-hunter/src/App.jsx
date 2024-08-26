@@ -292,7 +292,7 @@ function App({ roomId }) {
   };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center min-h-screen text-center">
+    <div className="w-full h-100svh min-h-[100svh] flex flex-col items-center justify-center text-center">
       {screen === 'main' ? (
         <>
           {/* <div className="w-full text-center md:text-left lg:text-right">hoge</div> */}
@@ -312,7 +312,7 @@ function App({ roomId }) {
               </button>
             </div>    
 
-            <div className="flex w-full justify-end items-end absolute bottom-0 right-0 mr-[5vh] mb-[5vh]"> 
+            <div className="flex w-full justify-end items-end pr-[5vh] py-[5vh]"> 
               <button
                 id="dropdown-button"
                 class="flex items-center justify-between h-[4vh] border-[0.5vw] border-[#333333] rounded-[2vw] bg-[#FFFFFF] text-gray-700"
