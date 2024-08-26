@@ -312,7 +312,7 @@ function App({ roomId }) {
               </button>
             </div>    
 
-            <div className="flex w-full justify-end items-end pr-[5svh] py-[5svh]"> 
+            <div className="flex w-full justify-end items-end absolute bottom-0 right-0 mr-[5svh] mb-[5svh]"> 
               <button
                 id="dropdown-button"
                 class="flex items-center justify-between h-[4svh] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#FFFFFF] text-gray-700"
@@ -366,7 +366,7 @@ function App({ roomId }) {
             onClose={() => setShowJoinInput(false)}
           >
             <input
-              className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[2svw]"
+              className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[2svw] focus-"
               type="text"
               value={playerName}
               onChange={handleCreateInputChange}
