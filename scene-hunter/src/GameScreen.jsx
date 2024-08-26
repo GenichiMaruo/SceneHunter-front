@@ -319,7 +319,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
                 {language === 'ja' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
               </button>
             ) : (
-              <p className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]">
+              <p className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] bg-opacity-35 text-[5svw] text-[#FFFFFF]">
                 {language === 'ja' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
               </p>
             )}
