@@ -266,7 +266,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
   }
 
   return (
-    <div className="w-full flex flex-col items-center justify-center min-h-screen text-center">
+    <div className="w-full h-100svh min-h-[100svh] flex flex-col items-center justify-center text-center overflow-hidden">
       <header className="w-full h-[13vh] bg-[#4ACEFF] bg-opacity-35"></header>
       <div className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]"> {/* main */}
         <div className="flex justify-between items-start w-full p-[5vw]"> {/* room status */}
