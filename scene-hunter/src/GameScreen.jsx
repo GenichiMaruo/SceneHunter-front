@@ -315,7 +315,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
             
           <div className="mx-[5svw] flex flex-col items-center justify-center"> {/* buttons */}
             {playerId === gameMasterId ? (
-              <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5vw] text-[#FFFFFF]" onClick={handleStartGame}>
+              <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" onClick={handleStartGame}>
                 {language === 'ja' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
               </button>
             ) : (
