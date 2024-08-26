@@ -267,33 +267,33 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
 
   return (
     <div className="w-full h-100svh min-h-[100svh] flex flex-col items-center justify-center text-center overflow-hidden">
-      <header className="w-full h-[13vh] bg-[#4ACEFF] bg-opacity-35"></header>
+      <header className="w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35"></header>
       <div className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]"> {/* main */}
-        <div className="flex justify-between items-start w-full p-[5vw]"> {/* room status */}
-          <div className="flex flex-col justify-between h-[40vw]"> {/* Left Section */}
-            <div className="flex items-center justify-between w-[40vw] h-[7vh] px-[5vw] border-[0.5vw] border-[#333333] rounded-[2vw] bg-[#E7E7E7] text-[#333333]"> {/* room number */}
-              <div className="font-bold text-[4vw]">PIN</div>
-              <div className="font-bold text-[6vw]">{roomNumber}</div>
+        <div className="flex justify-between items-start w-full p-[5svw]"> {/* room status */}
+          <div className="flex flex-col justify-between h-[40svw]"> {/* Left Section */}
+            <div className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#E7E7E7] text-[#333333]"> {/* room number */}
+              <div className="font-bold text-[4svw]">PIN</div>
+              <div className="font-bold text-[6svw]">{roomNumber}</div>
             </div>
-            <button className="flex items-center justify-between w-[40vw] h-[7vh] px-[5vw] rounded-[2vw] bg-[#4CAF50] text-[#FFFFFF]" onClick={handleCopyToClipboard}> {/* invite URL button */}
-              <div className="text-[8vw]">Invite</div>
-              <span class="icon-[ph--copy-bold] text-[8vw]"></span>
+            <button className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] rounded-[2svw] bg-[#4CAF50] text-[#FFFFFF]" onClick={handleCopyToClipboard}> {/* invite URL button */}
+              <div className="text-[8svw]">Invite</div>
+              <span class="icon-[ph--copy-bold] text-[8svw]"></span>
             </button>            
           </div>
           <div> {/* Right Section */}
-            <div className="flex items-center justify-center border-[0.5vw] w-[40vw] h-[40vw] border-[#333333] rounded-[6vw] bg-[#E7E7E7]" onClick={() => setIsModalOpen(true)}> {/* QR code */}
-              <QRCodeSVG className="w-[30vw] h-[30vw] " id='qrcode' value={`${deployUrl}/${roomNumber}`} />
+            <div className="flex items-center justify-center border-[0.5svw] w-[40svw] h-[40svw] border-[#333333] rounded-[6svw] bg-[#E7E7E7]" onClick={() => setIsModalOpen(true)}> {/* QR code */}
+              <QRCodeSVG className="w-[30svw] h-[30svw] " id='qrcode' value={`${deployUrl}/${roomNumber}`} />
             </div>  
           </div>
         </div>
         
         <div>  {/* participants */}
-          <div className="h-[35vh] p-[5vw] mx-[5vw] border-[0.5vw] border-[#333333] rounded-[6vw] ">
+          <div className="h-[35svh] p-[5svw] mx-[5svw] border-[0.5svw] border-[#333333] rounded-[6svw] ">
             <button className="w-full flex justify-end" onClick={() => setIsNameModalOpen(true)}>
-              <span class="icon-[mdi--rename-box-outline] text-[7vw]"></span>
+              <span class="icon-[mdi--rename-box-outline] text-[7svw]"></span>
             </button>
-            <div className="h-[calc(100%-4vh)] overflow-x-hidden overflow-y-scroll">
-              <ul className="flex flex-col items-center text-[6vw] text-[#333333]">
+            <div className="h-[calc(100%-4svh)] overflow-x-hidden overflow-y-scroll">
+              <ul className="flex flex-col items-center text-[6svw] text-[#333333]">
                 <li className="w-full flex items-center justify-between">
                   <span className="">{gameMaster}</span>
                   {playerId === gameMasterId && (
@@ -313,25 +313,25 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
             </div>
           </div>
             
-          <div className="mx-[5vw] flex flex-col items-center justify-center"> {/* buttons */}
+          <div className="mx-[5svw] flex flex-col items-center justify-center"> {/* buttons */}
             {playerId === gameMasterId ? (
-              <button className="w-full h-[6vh] m-[2vw] rounded-[2vw] bg-[#003B5C] text-[5vw] text-[#FFFFFF]" onClick={handleStartGame}>
+              <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5vw] text-[#FFFFFF]" onClick={handleStartGame}>
                 {language === 'ja' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
               </button>
             ) : (
-              <p className="w-full h-[6vh] m-[2vw] rounded-[2vw] bg-[#003B5C] text-[5vw] text-[#FFFFFF]">
+              <p className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]">
                 {language === 'ja' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
               </p>
             )}
-            <button className="w-full h-[6vh] m-[2vw] rounded-[2vw] bg-[#003B5C] text-[5vw] text-[#FFFFFF]" onClick={handleExitRoom}>
+            <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" onClick={handleExitRoom}>
               {language === 'ja' ? '部屋を出る' : 'Exit the room'}
             </button>  
           </div>
         </div>
       </div>
 
-      <footer className="flex justify-center items-center w-full h-[13vh] bg-[#4ACEFF] bg-opacity-35">
-        <p className="text-[4vw]">© 2024 Scene Hunter</p>
+      <footer className="flex justify-center items-center w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35">
+        <p className="text-[4svw]">© 2024 Scene Hunter</p>
       </footer>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
