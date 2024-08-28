@@ -345,6 +345,7 @@ function App({ roomId }) {
             title={language === 'jp' ? '部屋を作成' : 'Create Room'}
             onClose={() => setShowCreateInput(false)}
           >
+            {showErrorMessage && <p className="text-red-500">{errorMessage}</p>}
             <input
               className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[5svw]"
               type="text"
@@ -365,6 +366,7 @@ function App({ roomId }) {
             title={language === 'jp' ? '部屋に参加' : 'Join Room'}
             onClose={() => setShowJoinInput(false)}
           >
+            {showErrorMessage && <p className="text-red-500">{errorMessage}</p>}
             <input
               className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[2svw] focus-"
               type="text"
@@ -379,7 +381,12 @@ function App({ roomId }) {
               onChange={handleJoinInputChange}
               placeholder={language === 'jp' ? '部屋番号を入力' : 'Enter Room Number'}
             />
-            <button className="my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded indent-[5svw] tracking-[5svw]" onClick={handleEnterRoom}>
+            <button
+              className={`my-[5svw] px-[10svw] py-[2svw] text-[5svw] text-white rounded indent-[5svw] tracking-[5svw] ${
+                roomNumber ? 'bg-[#003B5C]' : 'bg-[#003B5C] bg-opacity-35'
+              }`}
+              onClick={roomNumber ? handleEnterRoom : null}
+            >
               {language === 'jp' ? '参加' : 'Join'}
             </button>
             <button className="my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded indent-[5svw] tracking-[5svw]" onClick={handleGoBack}>
