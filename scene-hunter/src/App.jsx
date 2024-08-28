@@ -63,52 +63,52 @@ function App({ roomId }) {
       }
     };
 
-    const getNewToken = async () => {
-      try {
-        console.log('api:token')
-        const response = await fetch(`${apiUrl.current}/token`);
-        if (response.ok) {
-          const tokenData = await response.json();
-          const newToken = tokenData.token;
-          setToken(newToken);
-          localStorage.setItem('token', newToken);
-          return newToken;
-        } else {
-          console.error('Failed to fetch token');
-        }
-      } catch (error) {
-        console.error('Error fetching new token:', error);
-      }
-      return null;
-    };
-
-    const fetchUserIdWithToken = async (token) => {
-      try {
-        const response = await fetch(`${apiUrl.current}/user`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const userData = await response.json();
-          return userData.ID;
-        } else if (response.status === 401) {
-          const newToken = await getNewToken();
-          if (newToken) {
-            return await fetchUserIdWithToken(newToken);
-          }
-        } else {
-          console.error('Failed to fetch user ID:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching user ID with token:', error);
-      }
-      return null;
-    };
-
     fetchTokenAndUserId();
   }, [location.search, apiUrl]);
+
+  const getNewToken = async () => {
+    try {
+      console.log('api:token')
+      const response = await fetch(`${apiUrl.current}/token`);
+      if (response.ok) {
+        const tokenData = await response.json();
+        const newToken = tokenData.token;
+        setToken(newToken);
+        localStorage.setItem('token', newToken);
+        return newToken;
+      } else {
+        console.error('Failed to fetch token');
+      }
+    } catch (error) {
+      console.error('Error fetching new token:', error);
+    }
+    return null;
+  };
+
+  const fetchUserIdWithToken = async (token) => {
+    try {
+      const response = await fetch(`${apiUrl.current}/user`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        return userData.ID;
+      } else if (response.status === 401) {
+        const newToken = await getNewToken();
+        if (newToken) {
+          return await fetchUserIdWithToken(newToken);
+        }
+      } else {
+        console.error('Failed to fetch user ID:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching user ID with token:', error);
+    }
+    return null;
+  };
 
   useEffect(() => {
     if (roomId) {
@@ -238,6 +238,13 @@ function App({ roomId }) {
         handleUpdatePlayerName(playerName);
         console.log('Room joined:', response.statusText);
         setScreen('game');
+      } else if (response.status === 401) {
+        const newToken = await getNewToken();
+        if (newToken) {
+          handleEnterRoom();
+        }
+      } else if (response.status === 404) {
+        showTemporaryMessage('部屋が見つかりません');
       } else {
         console.error('Failed to join room');
       }
@@ -266,6 +273,11 @@ function App({ roomId }) {
         setRoomNumber(data.room_id);
         setScreen('game');
         navigate(`/${data.room_id}`); // 部屋が作成された後にURLを変更
+      } else if (response.status === 401) {
+        const newToken = await getNewToken();
+        if (newToken) {
+          handleEnterPlayerName();
+        }
       } else {
         console.error('Failed to create room');
       }
