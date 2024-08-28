@@ -10,7 +10,7 @@ function App({ roomId }) {
   const [api, setApi] = useState('https://sh.yashikota.com/api');
   const [version, setVersion] = useState('v2');
   const apiUrl = useRef('');
-  const [language, setLanguage] = useState('ja');
+  const [language, setLanguage] = useState(localStorage.getItem('language') || 'ja');
   const [showCreateInput, setShowCreateInput] = useState(false);
   const [showJoinInput, setShowJoinInput] = useState(false);
   const [playerName, setPlayerName] = useState('');
@@ -127,9 +127,15 @@ function App({ roomId }) {
     }
   }, [roomId]);
 
-  const handleLanguageChange = (event) => {
-    setLanguage(event.target.value);
-    localStorage.setItem('language', event.target.value);
+  useEffect(() => {
+    // 言語が変更されたときにUIが再レンダリングされる
+    console.log('Selected Language:', language);
+  }, [language]);
+
+  const handleLanguageChange = (newLanguage) => {
+    setLanguage(newLanguage);
+    localStorage.setItem('language', newLanguage);
+    setIsDropdownOpen(false); // ドロップダウンを閉じる
   };
 
   const handleUpdatePlayerName = async (player_name) => {
@@ -326,10 +332,16 @@ function App({ roomId }) {
               {isDropdownOpen && (
                 <div className="absolute right-0 top-[100%] mt-[0.5svh] w-48 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div className=" border-[0.5svw] border-[#333333] rounded-[2svw] ">
-                    <button className="block px-4 py-2 text-[2svh] text-gray-700" onClick={() => {setLanguage('jp'); setIsDropdownOpen(false);}}>
+                    <button 
+                      className="block px-4 py-2 text-[2svh] text-gray-700"
+                      onClick={() => handleLanguageChange('jp')}
+                    >
                       日本語
                     </button>
-                    <button className="block px-4 py-2 text-[2svh] text-gray-700" onClick={() => {setLanguage('en'); setIsDropdownOpen(false);}}>
+                    <button 
+                      className="block px-4 py-2 text-[2svh] text-gray-700"
+                      onClick={() => handleLanguageChange('en')}
+                    >
                       English
                     </button>
                   </div>
