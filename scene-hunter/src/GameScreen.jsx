@@ -166,17 +166,17 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
   const handleInputChangeName = (e) => {
     // < > ' " , ; % ( ) & + \ これらの文字を禁止
     if (e.target.value.match(/[<>\'\",;%()&+\\]/)) {
-      showTemporaryMessage(language === 'ja' ? '記号の一部は使用できません' : 'Invalid characters are included.');
+      showTemporaryMessage(language === 'jp' ? '記号の一部は使用できません' : 'Invalid characters are included.');
       return;
     }
     // 空白文字を禁止
     if (e.target.value.match(/\s/)) {
-      showTemporaryMessage(language === 'ja' ? '空白文字は使用できません' : 'Spaces are not allowed.');
+      showTemporaryMessage(language === 'jp' ? '空白文字は使用できません' : 'Spaces are not allowed.');
       return;
     }
     // 12文字まで
     if (e.target.value.length > 12) {
-      showTemporaryMessage(language === 'ja' ? '12文字以内で入力してください' : 'Please enter a name within 12 characters.');
+      showTemporaryMessage(language === 'jp' ? '12文字以内で入力してください' : 'Please enter a name within 12 characters.');
       return;
     }
     setNewName(e.target.value);
@@ -184,7 +184,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
 
   const handleChangeName = () => {
     if (newName === '') {
-      alert(language === 'ja' ? '名前を入力してください' : 'Please enter a name.');
+      alert(language === 'jp' ? '名前を入力してください' : 'Please enter a name.');
       return;
     } else if (newName === playerName) {
       setIsNameModalOpen(false);
@@ -221,7 +221,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
   const handleCopyToClipboard = () => {
     const url = `${deployUrl}/${roomNumber}`;
     navigator.clipboard.writeText(url).then(() => {
-      alert(language === 'ja' ? 'URLがクリップボードにコピーされました。' : 'URL copied to clipboard.');
+      alert(language === 'jp' ? 'URLがクリップボードにコピーされました。' : 'URL copied to clipboard.');
     }).catch(err => {
       console.error('Failed to copy: ', err);
     });
@@ -316,15 +316,15 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
           <div className="mx-[5svw] flex flex-col items-center justify-center"> {/* buttons */}
             {playerId === gameMasterId ? (
               <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" onClick={handleStartGame}>
-                {language === 'ja' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
+                {language === 'jp' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
               </button>
             ) : (
               <p className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] bg-opacity-35 text-[5svw] text-[#FFFFFF]">
-                {language === 'ja' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
+                {language === 'jp' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
               </p>
             )}
             <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" onClick={handleExitRoom}>
-              {language === 'ja' ? '部屋を出る' : 'Exit the room'}
+              {language === 'jp' ? '部屋を出る' : 'Exit the room'}
             </button>  
           </div>
         </div>
@@ -339,7 +339,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
       </Modal>
 
       <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
-        <h2 className="Modal-change-name">{language === 'ja' ? '名前を変更' : 'Change Name'}</h2>
+        <h2 className="Modal-change-name">{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
         {showErrorMessage && <p className="App-error">{errorMessage}</p>} {/* Error message display */}
         <input
           type="text"
@@ -348,7 +348,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
           className="Modal-name-input"
         />
         <button onClick={handleChangeName} className="Modal-save-button">
-          {language === 'ja' ? '保存' : 'Save'}
+          {language === 'jp' ? '保存' : 'Save'}
         </button>
       </Modal>
     </div>
