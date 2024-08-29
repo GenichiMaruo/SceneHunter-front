@@ -339,15 +339,19 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
       </Modal>
 
       <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
-        <h2 className="Modal-change-name">{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
+        <h2 className="absolute top-[0%] left-0 m-[4svw] text-[5svw] ">{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
         {showErrorMessage && <p className="App-error">{errorMessage}</p>} {/* Error message display */}
         <input
           type="text"
           value={newName}
           onChange={handleInputChangeName}
-          className="Modal-name-input"
+          className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[5svw]"
         />
-        <button onClick={handleChangeName} className="Modal-save-button">
+        <button 
+          className={`w-[50vw] my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
+            ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } `}
+          onClick={handleChangeName} 
+        >
           {language === 'jp' ? '保存' : 'Save'}
         </button>
       </Modal>

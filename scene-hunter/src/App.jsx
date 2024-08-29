@@ -321,18 +321,18 @@ function App({ roomId }) {
             <div className="flex w-full justify-end items-end absolute bottom-0 right-0 mr-[5svh] mb-[5svh]"> 
               <button
                 id="dropdown-button"
-                className="flex items-center justify-between w-[30svw] h-[4svh] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#FFFFFF] text-gray-700"
+                className="flex items-center justify-between w-[40svw] h-[4svh] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#FFFFFF] text-gray-700"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <div className="w-[20svw] text-[2svh] mx-[3svw] text-[#333333]">
                   {language === 'jp' ? '言語' : 'Language'}
                 </div>
-                <span className={isDropdownOpen ? "icon-[fe--arrow-up] mr-[3svw]" 
-                                            : "icon-[fe--arrow-down] mr-[3svw]"}></span>
+                <span className={isDropdownOpen ? "icon-[fe--arrow-up] text-[2svh] mr-[3svw]" 
+                                            : "icon-[fe--arrow-down] text-[2svh] mr-[3svw]"}></span>
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute right-0 top-[100%] mt-[0.5svh] w-[30svw] origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <div className="absolute right-0 top-[100%] mt-[0.5svh] w-[40svw] origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div className=" border-[0.5svw] border-[#333333] rounded-[2svw] ">
                     <button 
                       className="block px-4 py-2 text-[2svh] text-gray-700"
@@ -390,7 +390,7 @@ function App({ roomId }) {
           >
             {showErrorMessage && <p className="text-red-500">{errorMessage}</p>}
             <input
-              className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[2svw] focus-"
+              className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[2svw]"
               type="text"
               value={playerName}
               onChange={handleCreateInputChange}
