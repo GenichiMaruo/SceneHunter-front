@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@iconify/json": "^2.2.239",
+    "emoji-regex": "^10.4.0",
     "fast-glob": "^3.3.2",
     "micromatch": "^4.0.7",
     "qrcode.react": "^3.1.0",

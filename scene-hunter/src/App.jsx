@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useParams, useNavigate, useLocation } from 'react-router-dom';
+import emojiRegex from 'emoji-regex';
 import './main.css';
 import './App.css';
 import Modal from './Modal';
@@ -21,7 +22,7 @@ function App({ roomId }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -178,19 +179,25 @@ function App({ roomId }) {
 
   const handleCreateInputChange = (event) => {
     const value = event.target.value;
-    // Check for forbidden characters, including emojis
-    if (value.match(/[<>\'\",;%()&+\\]/) || /\p{Extended_Pictographic}/u.test(value)) {
-      showTemporaryMessage('記号の一部は使用できません');
+    const regexEmoji = emojiRegex();
+    // 絵文字を禁止
+    if (value.match(regexEmoji)) {
+      showTemporaryMessage(language === 'jp' ? '絵文字は使用できません' : 'Emojis are not allowed.');
+      return;
+    }
+    // < > ' " , ; % ( ) & + \ これらの文字を禁止
+    if (value.match(/[<>'\",;%()&+\\]/)) {
+      showTemporaryMessage(language === 'jp' ? '記号の一部は使用できません' : 'Invalid characters are included.');
       return;
     }
     // 空白文字を禁止
-    if (value.match(/^\s/)) {
-      showTemporaryMessage('空白文字は使用できません');
+    if (value.match(/\s/)) {
+      showTemporaryMessage(language === 'jp' ? '空白文字は使用できません' : 'Spaces are not allowed.');
       return;
     }
     // 12文字まで
     if (value.length > 12) {
-      showTemporaryMessage('12文字以内で入力してください');
+      showTemporaryMessage(language === 'jp' ? '12文字以内で入力してください' : 'Please enter a name within 12 characters.');
       return;
     }
     setPlayerName(value);
@@ -328,9 +335,9 @@ function App({ roomId }) {
               <button className="block w-[50%] h-[9svh] lg:h-[9svh] text-[8svw] text-[#E7E7E7] font-bold bg-[#003B5C] rounded-[0.2em] mt-[3svh] mb-[3svh]" onClick={handleJoinClick}>
                 {language === 'jp' ? '参加' : 'Join'}
               </button>
-            </div>    
+            </div>
 
-            <div className="flex w-full justify-end items-end absolute bottom-0 right-0 mr-[5svh] mb-[5svh]"> 
+            <div className="flex w-full justify-end items-end absolute bottom-0 right-0 mr-[5svh] mb-[5svh]">
               <button
                 id="dropdown-button"
                 className="flex items-center justify-between w-[40svw] h-[4svh] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#FFFFFF] text-gray-700"
@@ -339,20 +346,20 @@ function App({ roomId }) {
                 <div className="w-[20svw] text-[2svh] mx-[3svw] text-[#333333]">
                   {language === 'jp' ? '言語' : 'Language'}
                 </div>
-                <span className={isDropdownOpen ? "icon-[fe--arrow-up] text-[2svh] mr-[3svw]" 
-                                            : "icon-[fe--arrow-down] text-[2svh] mr-[3svw]"}></span>
+                <span className={isDropdownOpen ? "icon-[fe--arrow-up] text-[2svh] mr-[3svw]"
+                  : "icon-[fe--arrow-down] text-[2svh] mr-[3svw]"}></span>
               </button>
 
               {isDropdownOpen && (
                 <div className="absolute right-0 top-[100%] mt-[0.5svh] w-[40svw] origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div className=" border-[0.5svw] border-[#333333] rounded-[2svw] ">
-                    <button 
+                    <button
                       className="block px-4 py-2 text-[2svh] text-gray-700"
                       onClick={() => handleLanguageChange('jp')}
                     >
                       日本語
                     </button>
-                    <button 
+                    <button
                       className="block px-4 py-2 text-[2svh] text-gray-700"
                       onClick={() => handleLanguageChange('en')}
                     >
@@ -379,16 +386,16 @@ function App({ roomId }) {
               onChange={handleCreateInputChange}
               placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter Player Name'}
             />
-            <button 
+            <button
               className={`w-[50vw] my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
-                ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } `}
+                ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''} `}
               onClick={handleEnterPlayerName}
             >
               {language === 'jp' ? '作成' : 'Create'}
             </button>
-            <button 
+            <button
               className={`w-[50vw] my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
-                ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } `}
+                ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''} `}
               onClick={handleGoBack}
             >
               {language === 'jp' ? '戻る' : 'Back'}
@@ -417,15 +424,15 @@ function App({ roomId }) {
             />
             <button
               className={`w-[50vw] my-[2svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
-                ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } 
+                ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''} 
                 ${roomNumber ? 'bg-[#003B5C]' : 'bg-[#003B5C] bg-opacity-35'}`}
               onClick={roomNumber ? handleEnterRoom : null}
             >
               {language === 'jp' ? '参加' : 'Join'}
             </button>
-            <button 
+            <button
               className={`w-[50vw] my-[2svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
-                ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } `} 
+                ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''} `}
               onClick={handleGoBack}
             >
               {language === 'jp' ? '戻る' : 'Back'}
