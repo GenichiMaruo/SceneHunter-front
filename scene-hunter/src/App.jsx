@@ -365,10 +365,18 @@ function App({ roomId }) {
               onChange={handleCreateInputChange}
               placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter Player Name'}
             />
-            <button className="my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded indent-[5svw] tracking-[5svw]" onClick={handleEnterPlayerName}>
+            <button 
+              className={`w-[50vw] my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
+                ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } `}
+              onClick={handleEnterPlayerName}
+            >
               {language === 'jp' ? '作成' : 'Create'}
             </button>
-            <button className="my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded indent-[5svw] tracking-[5svw]" onClick={handleGoBack}>
+            <button 
+              className={`w-[50vw] my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
+                ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } `}
+              onClick={handleGoBack}
+            >
               {language === 'jp' ? '戻る' : 'Back'}
             </button>
           </Modal>
@@ -394,14 +402,18 @@ function App({ roomId }) {
               placeholder={language === 'jp' ? '部屋番号を入力' : 'Enter Room Number'}
             />
             <button
-              className={`my-[5svw] px-[10svw] py-[2svw] text-[5svw] text-white rounded indent-[5svw] tracking-[5svw] ${
-                roomNumber ? 'bg-[#003B5C]' : 'bg-[#003B5C] bg-opacity-35'
-              }`}
+              className={`w-[50vw] my-[2svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
+                ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } 
+                ${roomNumber ? 'bg-[#003B5C]' : 'bg-[#003B5C] bg-opacity-35'}`}
               onClick={roomNumber ? handleEnterRoom : null}
             >
               {language === 'jp' ? '参加' : 'Join'}
             </button>
-            <button className="my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded indent-[5svw] tracking-[5svw]" onClick={handleGoBack}>
+            <button 
+              className={`w-[50vw] my-[2svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
+                ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } `} 
+              onClick={handleGoBack}
+            >
               {language === 'jp' ? '戻る' : 'Back'}
             </button>
           </Modal>
