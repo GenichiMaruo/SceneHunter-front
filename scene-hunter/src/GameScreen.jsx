@@ -276,6 +276,32 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
     };
   }, [handleExitRoom]);
 
+  const fetchScore = async () => {
+    try { // 無駄な処理を追加
+      const response = await fetch(`${apiUrl}/game/score`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.message);
+      } else {
+        console.error('Error fetching score');
+      }
+    } catch (error) {
+      console.error('Error fetching score:', error);
+    }
+  };
+
+  const handleComplete = async () => {
+    setShowWaitingScreen(true);
+    if (playerId !== gameMasterId) {
+      await fetchScore(); // fetchScore を実行
+    }
+  };
+
   if (showGameResult) {
     return <GameResult token={token} apiUrl={apiUrl} language={language} isGameMaster={playerId === gameMasterId} onComplete={() => setShowGameResult(false)} />;
   } if (showWaitingScreen) {
@@ -286,7 +312,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
       return <WaitingScreen language={language} isGameMaster={isAlreadyTaken} />;
     }
   } if (showPhotoInput) {
-    return <PhotoInput token={token} apiUrl={apiUrl} language={language} roomId={roomNumber} userId={playerId} isGameMaster={playerId === gameMasterId} setIsAlreadyTaken={setIsAlreadyTaken} onComplete={() => setShowWaitingScreen(true)} />;
+    return <PhotoInput token={token} apiUrl={apiUrl} language={language} roomId={roomNumber} userId={playerId} isGameMaster={playerId === gameMasterId} setIsAlreadyTaken={setIsAlreadyTaken} onComplete={() => handleComplete()} />;
   }
 
   return (
