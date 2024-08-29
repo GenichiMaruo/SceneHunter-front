@@ -163,20 +163,23 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
             {language === 'jp' ? '権限取得を再試行する' : 'Retry Permission'}
           </button>
         )}
-        <video
-          ref={videoRef}
-          className="w-full lg:w-[60svw] flex items-center justify-center"
-          autoPlay
-          muted
-          loop
-          playsInline
-          style={{ display: error ? 'none' : 'block' }}
-        />
+        <div className="">
+          <video
+            ref={videoRef}
+            className="w-[80svw] lg:w-[60svw] flex items-center justify-center"
+            autoPlay
+            muted
+            loop
+            playsInline
+            style={{ display: error ? 'none' : 'block' }}
+          />
+        </div>
+
 
         <canvas ref={canvasRef} className="hidden" />
         
         {!isCapturing && !error && (
-          <div className="h-[16svh] w-full flex flex-col items-center justify-center">
+          <div className="h-[16svh] w-full flex flex-col flex-grow items-center justify-center">
             <div className="w-full flex items-center justify-center">
               <button className="flex item-center justify-between w-[60svw] px-[15svw] py-[1svh] my-[1svw] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]" onClick={startCapture}>
                 <div className="text-[2svh] ">{language === 'jp' ? '写真を撮る' : 'Capture'}</div>
