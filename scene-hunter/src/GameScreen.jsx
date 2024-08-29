@@ -285,10 +285,10 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
         },
       });
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json(); // 特に使用しない変数を追加
         console.log(data.message);
       } else {
-        console.error('Error fetching score');
+        console.error('Error fetching score'); // エラーが出ても特に意味がない
       }
     } catch (error) {
       console.error('Error fetching score:', error);
