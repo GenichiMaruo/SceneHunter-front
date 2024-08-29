@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Modal from './Modal';
 import './main.css';
 
 function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, setIsAlreadyTaken, onComplete }) {
@@ -14,8 +15,8 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width: 360,
-          height: 640,
+          width: 720,
+          height: 720,
           facingMode: useFrontCamera ? 'user' : 'environment',
         },
       });
@@ -24,7 +25,7 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
       setError(null);
     } catch (err) {
       console.error('Error accessing camera:', err);
-      setError(language === 'ja' ? 'カメラにアクセスできませんでした。権限を確認してください。' : 'Could not access the camera. Please check permissions.');
+      setError(language === 'jp' ? 'カメラにアクセスできませんでした。権限を確認してください。' : 'Could not access the camera. Please check permissions.');
     }
   };
 
@@ -135,7 +136,7 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
 
       if (response.ok) {
         const data = await response.json();
-        setDescription(language === 'ja' ? data.ja : data.en);
+        setDescription(language === 'jp' ? data.ja : data.en);
         setIsModalOpen(true);
       } else {
         console.error('Error fetching description');
@@ -159,59 +160,64 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
         {error && <div className="">{error}</div>}
         {error && (
           <button onClick={startVideo}>
-            {language === 'ja' ? '権限取得を再試行する' : 'Retry Permission'}
+            {language === 'jp' ? '権限取得を再試行する' : 'Retry Permission'}
           </button>
         )}
-        <video
-          ref={videoRef}
-          className="h-[50svh] flex items-center justify-center"
-          autoPlay
-          muted
-          loop
-          playsInline
-          style={{ display: error ? 'none' : 'block' }}
-        />
+        <div className="">
+          <video
+            ref={videoRef}
+            className="w-[80svw] lg:w-[60svw] flex items-center justify-center"
+            autoPlay
+            muted
+            loop
+            playsInline
+            style={{ display: error ? 'none' : 'block' }}
+          />
+        </div>
+
 
         <canvas ref={canvasRef} className="hidden" />
         
         {!isCapturing && !error && (
-          <>
-            <button className="flex item-center justify-between w-[60svw] px-[15svw] py-[1svh] my-[3svh] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]" onClick={startCapture}>
-              <div className="text-[2svh] ">{language === 'ja' ? '写真を撮る' : 'Capture'}</div>
-              <span className="icon-[iconoir--camera] text-[3svh]"></span>
-            </button>
-            <button className="absolute" onClick={switchCamera}>
-              {language === 'ja' ? 'カメラを切り替える' : 'Switch Camera'}
-            </button>
+          <div className="h-[16svh] w-full flex flex-col flex-grow items-center justify-center">
+            <div className="w-full flex items-center justify-center">
+              <button className="flex item-center justify-between w-[60svw] px-[15svw] py-[1svh] my-[1svw] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]" onClick={startCapture}>
+                <div className="text-[2svh] ">{language === 'jp' ? '写真を撮る' : 'Capture'}</div>
+                <span className="icon-[iconoir--camera] text-[3svh]"></span>
+              </button>
+              <button className="absolute right-0 flex items-center justify-center" onClick={switchCamera}>
+                <span className="icon-[ic--outline-cameraswitch] text-[8svw] mx-[5svw]"></span>
+              </button>
+            </div>
+
             {!isGameMaster && (
-              <button onClick={fetchDescription}>
-                {language === 'ja' ? '写真の説明を見る' : 'View Photo Description'}
+              <button 
+                className="flex item-center justify-center text-[2svh] w-[60svw] px-[15svw] py-[1svh] my-[1svw] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]"
+                onClick={fetchDescription}
+              >
+                {language === 'jp' ? '写真の説明' : 'Photo Description'}
               </button>
             )}
-          </>
+          </div>
         )}
 
         {isCapturing && (
           <div className="PhotoInput-overlay">
-            {language === 'ja' ? '撮影中は動かさないでください' : 'Please do not move during capture'}
+            {language === 'jp' ? '撮影中は動かさないでください' : 'Please do not move during capture'}
           </div>
         )}
 
-        {isModalOpen && (
-          <div className="PhotoInput-modal">
-            <div className="PhotoInput-modal-content">
-              <h2>{language === 'ja' ? '写真の説明' : 'Photo Description'}</h2>
-              <ul>
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <div className="flex items-start justify-start">
+            {description && description.length > 0 && (
+              <ul className="text-[4svw] ">
                 {description.map((line, index) => (
-                  <li key={index}>{line}</li>
+                  <li className="" key={index}>{index+1}. {line}</li>
                 ))}
               </ul>
-              <button onClick={() => setIsModalOpen(false)}>
-                {language === 'ja' ? '閉じる' : 'Close'}
-              </button>
-            </div>
+            )}
           </div>
-        )}
+        </Modal>
       </div>
       <footer className="flex justify-center items-center w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35">
         <p className="text-[4svw]">© 2024 Scene Hunter</p>
