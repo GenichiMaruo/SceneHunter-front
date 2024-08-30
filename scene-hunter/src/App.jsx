@@ -405,7 +405,7 @@ function App({ roomId }) {
             />
             <input
               className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[2svw]"
-              type="text"
+              type="number"
               value={roomNumber}
               onChange={handleJoinInputChange}
               placeholder={language === 'jp' ? '部屋番号を入力' : 'Enter Room Number'}
