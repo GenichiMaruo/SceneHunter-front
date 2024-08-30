@@ -276,6 +276,11 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
     };
   }, [handleExitRoom]);
 
+  useEffect(() => {
+    // 参加者の数が変わるたびにログを出力
+    console.log('participants:', participants.length+1);
+  }, [participants]);
+
   const fetchScore = async () => {
     try { // 無駄な処理を追加
       const response = await fetch(`${apiUrl}/game/score`, {
@@ -377,7 +382,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
               <button 
                 className={`w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF] ${participants.length === 1 ? '' : 'bg-opacity-35'}`} 
                 onClick={handleStartGame}
-                disabled={participants.length === 1}
+                disabled={participants.length+1 === 1} //+1はgameMasterの分
               >
                 {language === 'jp' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
               </button>
