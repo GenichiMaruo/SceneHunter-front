@@ -200,12 +200,16 @@ function App({ roomId }) {
     const value = event.target.value;
     // 数字以外の文字を禁止
     if (!value.match(/^[0-9]*$/)) {
-      showTemporaryMessage('数字のみを入力してください');
+      showTemporaryMessage(
+        language === 'jp' ? '数字のみを入力してください' : 'Please enter only numbers'
+      );
       return;
     }
     // 6桁まで
     if (value.length > 6) {
-      showTemporaryMessage('6桁以内で入力してください');
+      showTemporaryMessage(
+        language === 'jp' ? '6桁以内で入力してください' : 'Please enter up to 6 digits'
+      );
       return;
     }
     setRoomNumber(value);
@@ -249,6 +253,9 @@ function App({ roomId }) {
         setScreen('game');
       } else {
         console.error('Failed to join room');
+        showTemporaryMessage(
+          language === 'jp' ? '部屋番号が存在しません' : 'Room number does not exist'
+        );
       }
     } catch (error) {
       console.error('Error joining room:', error);
