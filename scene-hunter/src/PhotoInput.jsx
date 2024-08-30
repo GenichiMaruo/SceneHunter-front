@@ -212,7 +212,10 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
             {description && description.length > 0 && (
               <ul className="text-[4svw] ">
                 {description.map((line, index) => (
-                  <li className="" key={index}>{index+1}. {line}</li>
+                  <div className="flex border-b-[0.5svh] border-[#333333]">
+                    <div className="mr-[1svw]">{index+1}.</div>
+                    <li className="text-left" key={index}>{line}</li>
+                  </div>
                 ))}
               </ul>
             )}
