@@ -46,71 +46,7 @@ function GameResult({ token, apiUrl, language, isGameMaster, currentUserId, onCo
       <header className="w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35"></header>
       
       <div className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]">
-        <div className="w-full my-[2svh] text-[5svh] font-bold"> {/* title */}
-          {language === 'jp' ? '結果発表' : 'Results'}
-        </div>
-
-        <div className="h-[45svh] p-[5svw] mx-[5svw] border-[0.5svw] border-[#333333] rounded-[6svw] "> {/* ranking */}
-          <div className="w-full flex left-0 mb-[1svh]">
-            <div className="text-[3svh] font-medium">
-              {language === 'jp' ? '参加者' : 'Players'}
-            </div>
-          </div>
-          <div className="flex flex-row items-center justify-between text-[2svh] text-[#888888]">
-            <div className="w-[15svw]">
-              {language === 'jp' ? '順位' : 'Rank'}
-            </div>
-            <div className="w-[25svw]">
-              {language === 'jp' ? '名前' : 'Name'}  
-            </div>
-            <div className="w-[15svw]">
-              {language === 'jp' ? '一致率' : 'Score'}
-            </div>
-          </div>
-          <div className=" h-[calc(100%-8svh)] overflow-x-hidden overflow-y-scroll">
-            <ul className="flex flex-col items-center text-[2svh] text-[#333333]">
-              <li className="w-full m-[0.5svh] flex flex-row items-center justify-between">
-                <div className="w-[15svw]">
-                  1{language === 'jp' ? '位' : 'st'}
-                </div>
-                <div className="w-[40svw]">
-                  プレイヤー_B
-                </div>
-                <div className="w-[15svw]">
-                  72.48%
-                </div>
-              </li>
-              <li className="w-full m-[0.5svh] flex flex-row items-center justify-between">
-                <div className="w-[15svw]">
-                  2{language === 'jp' ? '位' : 'nd'}
-                </div>
-                <div className="w-[25svw]">
-                  Player_A
-                </div>
-                <div className="w-[15svw]">
-                  53.12%
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="flex flex-col flex-grow items-center justify-center"> {/* buttons */}
-          <button className="flex items-center justify-center text-[2svh] w-[70svw] px-[10svw] py-[1svh] my-[2svw] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]">
-            {language === 'jp' ? '待機画面に戻る' : 'Return to Waiting Screen'}
-          </button>
-          <button className="flex items-center justify-center text-[2svh] w-[70svw] px-[10svw] py-[1svh] my-[2svw] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]">
-            {language === 'jp' ? 'ゲームを終了する' : 'End the Game'}
-          </button>
-        </div>
-      </div>
-
-      <footer className="flex justify-center items-center w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35">
-        <p className="text-[4svw]">© 2024 Scene Hunter</p>
-      </footer>
-
-
-      {/* <div className="GameResult">
+        <div className="GameResult">
           <h1>{language === 'jp' ? '結果発表' : 'Results'}</h1>
           {isGameMaster ? (
             <div className="GameResult-message">
@@ -149,9 +85,13 @@ function GameResult({ token, apiUrl, language, isGameMaster, currentUserId, onCo
           <button onClick={onComplete}>
             {language === 'jp' ? '待機画面に戻る' : 'Return to Waiting Screen'}
           </button>
-        </div> */}
+        </div>
+      </div>
 
-
+      <footer className="flex justify-center items-center w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35">
+        <p className="text-[4svw]">© 2024 Scene Hunter</p>
+      </footer>
+      
     </div>
 
   );

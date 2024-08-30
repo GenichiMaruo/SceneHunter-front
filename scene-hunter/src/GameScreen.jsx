@@ -312,7 +312,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
     }
   };
 
-  if (true) {
+  if (showGameResult) {
     return <GameResult token={token} apiUrl={apiUrl} language={language} isGameMaster={playerId === gameMasterId} onComplete={() => setShowGameResult(false)} />;
   } if (showWaitingScreen) {
     const isGameMaster = playerId === gameMasterId;
