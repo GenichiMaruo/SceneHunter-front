@@ -325,7 +325,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
               <div className="font-bold text-[4svw]">PIN</div>
               <div className="font-bold text-[6svw]">{roomNumber}</div>
             </div>
-            <button className="flex items-center justify-center w-[40svw] h-[7svh] px-[5svw] rounded-[2svw] bg-[#4CAF50] text-[#FFFFFF]" onClick={handleCopyToClipboard}> {/* invite URL button */}
+            <button className="flex items-center justify-center w-[40svw] h-[7svh] px-[5svw] rounded-[2svw] bg-[#4CAF50] text-[#FFFFFF] font-medium" onClick={handleCopyToClipboard}> {/* invite URL button */}
               <div className="text-[6svw]">{copyMessage}</div>
               <span className="icon-[ph--copy-bold] text-[8svw]"></span>
             </button>
@@ -339,9 +339,15 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
 
         <div>  {/* participants */}
           <div className="h-[35svh] p-[5svw] mx-[5svw] border-[0.5svw] border-[#333333] rounded-[6svw] ">
-            <button className="w-full flex justify-end" onClick={() => setIsNameModalOpen(true)}>
-              <span className="icon-[mdi--rename-box-outline] text-[7svw]"></span>
-            </button>
+            <div className="w-full flex justify-end">
+              <div className="text-[4svw] font-medium">
+                Rename
+              </div>
+              <button onClick={() => setIsNameModalOpen(true)}>
+                <span className="icon-[mdi--rename-box-outline] text-[7svw]"></span>
+              </button>
+            </div>
+
             <div className=" h-[calc(100%-4svh)] overflow-x-hidden overflow-y-scroll">
               <ul className="flex flex-col items-center text-[6svw] text-[#333333]">
                 <li className="w-full flex items-center justify-between  my-[1svh]">
@@ -409,7 +415,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
         onClose={() => setIsNameModalOpen(false)}
         backgroundColor={'#E7E7E7'}
       >
-        <h2 className="absolute top-[0%] left-0 m-[4svw] text-[5svw] ">{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
+        <h2 className="absolute top-[0%] left-0 m-[4svw] text-[5svw] ">{language === 'jp' ? '名前を変更' : 'Rename'}</h2>
         {showErrorMessage && <p className="text-red-500">{errorMessage}</p>}
         <input
           type="text"
