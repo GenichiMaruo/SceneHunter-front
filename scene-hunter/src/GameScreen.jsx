@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import emojiRegex from 'emoji-regex';
 import PhotoInput from './PhotoInput';
 import GameResult from './GameResult';
 import WaitingScreen from './WaitingScreen';
@@ -24,8 +25,9 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
   const [newName, setNewName] = useState(playerName);
   const [eventSource, setEventSource] = useState(null);
   const isEventSourceOpen = useRef(false);
-  const [errorMessage, setErrorMessage] = useState(''); // New state for error message
-  const [showErrorMessage, setShowErrorMessage] = useState(false); // New state to control error message visibility
+  const [errorMessage, setErrorMessage] = useState('');
+  const [copyMessage, setCopyMessage] = useState('Invite');
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   useEffect(() => {
     const fetchRoomData = async () => {
@@ -164,22 +166,29 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
   };
 
   const handleInputChangeName = (e) => {
+    const inputValue = e.target.value;
+    const regexEmoji = emojiRegex();
+    // 絵文字を禁止
+    if (inputValue.match(regexEmoji)) {
+      showTemporaryMessage(language === 'jp' ? '絵文字は使用できません' : 'Emojis are not allowed.');
+      return;
+    }
     // < > ' " , ; % ( ) & + \ これらの文字を禁止
-    if (e.target.value.match(/[<>\'\",;%()&+\\]/)) {
+    if (inputValue.match(/[<>'\",;%()&+\\]/)) {
       showTemporaryMessage(language === 'jp' ? '記号の一部は使用できません' : 'Invalid characters are included.');
       return;
     }
     // 空白文字を禁止
-    if (e.target.value.match(/\s/)) {
+    if (inputValue.match(/\s/)) {
       showTemporaryMessage(language === 'jp' ? '空白文字は使用できません' : 'Spaces are not allowed.');
       return;
     }
     // 12文字まで
-    if (e.target.value.length > 12) {
+    if (inputValue.length > 12) {
       showTemporaryMessage(language === 'jp' ? '12文字以内で入力してください' : 'Please enter a name within 12 characters.');
       return;
     }
-    setNewName(e.target.value);
+    setNewName(inputValue);
   };
 
   const handleChangeName = () => {
@@ -219,9 +228,13 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
   };
 
   const handleCopyToClipboard = () => {
-    const url = `${deployUrl}/${roomNumber}`;
+    const url = window.location.href;
     navigator.clipboard.writeText(url).then(() => {
-      alert(language === 'jp' ? 'URLがクリップボードにコピーされました。' : 'URL copied to clipboard.');
+      const message = 'Copied!';
+      setCopyMessage(message);
+      setTimeout(() => {
+        setCopyMessage('Invite');
+      }, 3000);
     }).catch(err => {
       console.error('Failed to copy: ', err);
     });
@@ -252,6 +265,43 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
     }
   };
 
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      handleExitRoom(); // タブが閉じられる前にhandleExitRoomを呼び出す
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    // コンポーネントがアンマウントされるときにイベントリスナーを削除
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [handleExitRoom]);
+
+  const fetchScore = async () => {
+    try { // 無駄な処理を追加
+      const response = await fetch(`${apiUrl}/game/score`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json(); // 特に使用しない変数を追加
+        console.log(data.message);
+      } else {
+        console.error('Error fetching score'); // エラーが出ても特に意味がない
+      }
+    } catch (error) {
+      console.error('Error fetching score:', error);
+    }
+  };
+
+  const handleComplete = async () => {
+    setShowWaitingScreen(true);
+    if (playerId !== gameMasterId) {
+      await fetchScore(); // fetchScore を実行
+    }
+  };
+
   if (showGameResult) {
     return <GameResult token={token} apiUrl={apiUrl} language={language} isGameMaster={playerId === gameMasterId} onComplete={() => setShowGameResult(false)} />;
   } if (showWaitingScreen) {
@@ -262,7 +312,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
       return <WaitingScreen language={language} isGameMaster={isAlreadyTaken} />;
     }
   } if (showPhotoInput) {
-    return <PhotoInput token={token} apiUrl={apiUrl} language={language} roomId={roomNumber} userId={playerId} isGameMaster={playerId === gameMasterId} setIsAlreadyTaken={setIsAlreadyTaken} onComplete={() => setShowWaitingScreen(true)} />;
+    return <PhotoInput token={token} apiUrl={apiUrl} language={language} roomId={roomNumber} userId={playerId} isGameMaster={playerId === gameMasterId} setIsAlreadyTaken={setIsAlreadyTaken} onComplete={() => handleComplete()} />;
   }
 
   return (
@@ -276,17 +326,17 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
               <div className="font-bold text-[6svw]">{roomNumber}</div>
             </div>
             <button className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] rounded-[2svw] bg-[#4CAF50] text-[#FFFFFF]" onClick={handleCopyToClipboard}> {/* invite URL button */}
-              <div className="text-[8svw]">Invite</div>
+              <div className="text-[8svw]">{copyMessage}</div>
               <span className="icon-[ph--copy-bold] text-[8svw]"></span>
-            </button>            
+            </button>
           </div>
           <div className="h-full"> {/* Right Section */}
             <div className="flex items-center justify-center border-[0.5svw] w-[h-full] h-full border-[#333333] rounded-[6svw] bg-[#ffffff]" onClick={() => setIsModalOpen(true)}> {/* QR code */}
               <QRCodeSVG className="w-[h-[100%]] h-[calc(100%-4svh)] " id='qrcode' value={`${deployUrl}/${roomNumber}`} />
-            </div>  
+            </div>
           </div>
         </div>
-        
+
         <div>  {/* participants */}
           <div className="h-[35svh] p-[5svw] mx-[5svw] border-[0.5svw] border-[#333333] rounded-[6svw] ">
             <button className="w-full flex justify-end" onClick={() => setIsNameModalOpen(true)}>
@@ -315,7 +365,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
               </ul>
             </div>
           </div>
-            
+
           <div className="mx-[5svw] flex flex-col items-center justify-center"> {/* buttons */}
             {playerId === gameMasterId ? (
               <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" onClick={handleStartGame}>
@@ -328,7 +378,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
             )}
             <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" onClick={handleExitRoom}>
               {language === 'jp' ? '部屋を出る' : 'Exit the room'}
-            </button>  
+            </button>
           </div>
         </div>
       </div>
@@ -350,10 +400,10 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
           onChange={handleInputChangeName}
           className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[5svw]"
         />
-        <button 
+        <button
           className={`w-[50vw] my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
-            ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } `}
-          onClick={handleChangeName} 
+            ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''} `}
+          onClick={handleChangeName}
         >
           {language === 'jp' ? '保存' : 'Save'}
         </button>

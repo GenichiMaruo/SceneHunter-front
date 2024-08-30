@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useParams, useNavigate, useLocation } from 'react-router-dom';
+import emojiRegex from 'emoji-regex';
 import './main.css';
 import './App.css';
 import Modal from './Modal';
@@ -21,7 +22,7 @@ function App({ roomId }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,74 +45,76 @@ function App({ roomId }) {
       apiUrl.current = `${api}/${version}`;
     }
 
-    const fetchTokenAndUserId = async () => {
-      let currentToken = localStorage.getItem('token');
-      if (!currentToken) {
-        currentToken = await getNewToken();
-        try {
-          const userId = await fetchUserIdWithToken(currentToken);
-          if (userId) {
-            setPlayerId(userId);
-            localStorage.setItem('player_id', userId);
-            localStorage.setItem('player_name', playerName);
-            localStorage.setItem('save_date_time', new Date().toISOString());
-          }
-        } catch (error) {
-          console.error('Error fetching user ID:', error);
-        }
-      } else {
-        let currentUserId = localStorage.getItem('player_id');
-        setToken(currentToken);
-        setPlayerId(currentUserId);
-      }
-    };
-
-    const getNewToken = async () => {
-      try {
-        console.log('api:token')
-        const response = await fetch(`${apiUrl.current}/token`);
-        if (response.ok) {
-          const tokenData = await response.json();
-          const newToken = tokenData.token;
-          setToken(newToken);
-          localStorage.setItem('token', newToken);
-          return newToken;
-        } else {
-          console.error('Failed to fetch token');
-        }
-      } catch (error) {
-        console.error('Error fetching new token:', error);
-      }
-      return null;
-    };
-
-    const fetchUserIdWithToken = async (token) => {
-      try {
-        const response = await fetch(`${apiUrl.current}/user`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const userData = await response.json();
-          return userData.ID;
-        } else if (response.status === 401) {
-          const newToken = await getNewToken();
-          if (newToken) {
-            return await fetchUserIdWithToken(newToken);
-          }
-        } else {
-          console.error('Failed to fetch user ID:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching user ID with token:', error);
-      }
-      return null;
-    };
-
     fetchTokenAndUserId();
   }, [location.search, apiUrl]);
+
+  const fetchTokenAndUserId = async () => {
+    let currentToken = localStorage.getItem('token');
+    // token発行が3️時間以上前の場合は新しいtokenを取得
+    if (!currentToken || new Date() - new Date(localStorage.getItem('save_date_time')) > 10800000) {
+      currentToken = await getNewToken();
+      try {
+        const userId = await fetchUserIdWithToken(currentToken);
+        if (userId) {
+          setPlayerId(userId);
+          localStorage.setItem('player_id', userId);
+          localStorage.setItem('player_name', playerName);
+          localStorage.setItem('save_date_time', new Date().toISOString());
+        }
+      } catch (error) {
+        console.error('Error fetching user ID:', error);
+      }
+    } else {
+      let currentUserId = localStorage.getItem('player_id');
+      setToken(currentToken);
+      setPlayerId(currentUserId);
+    }
+  };
+
+  const getNewToken = async () => {
+    try {
+      console.log('api:token')
+      const response = await fetch(`${apiUrl.current}/token`);
+      if (response.ok) {
+        const tokenData = await response.json();
+        const newToken = tokenData.token;
+        setToken(newToken);
+        localStorage.setItem('token', newToken);
+        localStorage.setItem('save_date_time', new Date().toISOString());
+        return newToken;
+      } else {
+        console.error('Failed to fetch token');
+      }
+    } catch (error) {
+      console.error('Error fetching new token:', error);
+    }
+    return null;
+  };
+
+  const fetchUserIdWithToken = async (token) => {
+    try {
+      const response = await fetch(`${apiUrl.current}/user`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        return userData.ID;
+      } else if (response.status === 401) {
+        const newToken = await getNewToken();
+        if (newToken) {
+          return await fetchUserIdWithToken(newToken);
+        }
+      } else {
+        console.error('Failed to fetch user ID:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching user ID with token:', error);
+    }
+    return null;
+  };
 
   useEffect(() => {
     if (roomId) {
@@ -178,18 +181,20 @@ function App({ roomId }) {
 
   const handleCreateInputChange = (event) => {
     const value = event.target.value;
-    // Check for forbidden characters, including emojis
-    if (value.match(/[<>\'\",;%()&+\\]/) || /\p{Extended_Pictographic}/u.test(value)) {
-      showTemporaryMessage(
-        language === 'jp' ? '使用できない文字が含まれています' : 'Invalid characters are included'
-      );
+    const regexEmoji = emojiRegex();
+    // 絵文字を禁止
+    if (value.match(regexEmoji)) {
+      showTemporaryMessage(language === 'jp' ? '絵文字は使用できません' : 'Emojis are not allowed.');
+      return;
+    }
+    // < > ' " , ; % ( ) & + \ これらの文字を禁止
+    if (value.match(/[<>'\",;%()&+\\]/)) {
+      showTemporaryMessage(language === 'jp' ? '記号の一部は使用できません' : 'Invalid characters are included.');
       return;
     }
     // 空白文字を禁止
-    if (value.match(/^\s/)) {
-      showTemporaryMessage(
-        language === 'jp' ? '空白文字は使用できません' : 'Spaces are not allowed'
-      );
+    if (value.match(/\s/)) {
+      showTemporaryMessage(language === 'jp' ? '空白文字は使用できません' : 'Spaces are not allowed.');
       return;
     }
     // 12文字まで
@@ -257,6 +262,11 @@ function App({ roomId }) {
         handleUpdatePlayerName(playerName);
         console.log('Room joined:', response.statusText);
         setScreen('game');
+      } else if (response.status === 401) {
+        fetchTokenAndUserId();
+        handleEnterRoom();
+      } else if (response.status === 404) {
+        showTemporaryMessage('部屋が見つかりません');
       } else {
         console.error('Failed to join room');
         showTemporaryMessage(
@@ -288,6 +298,9 @@ function App({ roomId }) {
         setRoomNumber(data.room_id);
         setScreen('game');
         navigate(`/${data.room_id}`); // 部屋が作成された後にURLを変更
+      } else if (response.status === 401) {
+        fetchTokenAndUserId();
+        handleEnterPlayerName();
       } else {
         console.error('Failed to create room');
       }
@@ -329,31 +342,31 @@ function App({ roomId }) {
               <button className="block w-[50%] h-[9svh] lg:h-[9svh] text-[8svw] text-[#E7E7E7] font-bold bg-[#003B5C] rounded-[0.2em] mt-[3svh] mb-[3svh]" onClick={handleJoinClick}>
                 {language === 'jp' ? '参加' : 'Join'}
               </button>
-            </div>    
+            </div>
 
-            <div className="flex w-full justify-end items-end absolute bottom-0 right-0 mr-[5svh] mb-[5svh]"> 
+            <div className="flex w-full justify-end items-end absolute bottom-0 right-0 mr-[5svh] mb-[5svh]">
               <button
                 id="dropdown-button"
                 className="flex items-center justify-between w-[40svw] h-[4svh] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#FFFFFF] text-gray-700"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <div className="w-[20svw] text-[2svh] mx-[3svw] text-[#333333]">
-                  {language === 'jp' ? '言語' : 'Language'}
+                  {language === 'jp' ? '日本語' : 'English'}
                 </div>
-                <span className={isDropdownOpen ? "icon-[fe--arrow-up] text-[2svh] mr-[3svw]" 
-                                            : "icon-[fe--arrow-down] text-[2svh] mr-[3svw]"}></span>
+                <span className={isDropdownOpen ? "icon-[fe--arrow-up] text-[2svh] mr-[3svw]"
+                  : "icon-[fe--arrow-down] text-[2svh] mr-[3svw]"}></span>
               </button>
 
               {isDropdownOpen && (
                 <div className="absolute right-0 top-[100%] mt-[0.5svh] w-[40svw] origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div className=" border-[0.5svw] border-[#333333] rounded-[2svw] ">
-                    <button 
+                    <button
                       className="block px-4 py-2 text-[2svh] text-gray-700"
                       onClick={() => handleLanguageChange('jp')}
                     >
                       日本語
                     </button>
-                    <button 
+                    <button
                       className="block px-4 py-2 text-[2svh] text-gray-700"
                       onClick={() => handleLanguageChange('en')}
                     >
@@ -380,16 +393,16 @@ function App({ roomId }) {
               onChange={handleCreateInputChange}
               placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter Player Name'}
             />
-            <button 
+            <button
               className={`w-[50vw] my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
-                ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } `}
+                ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''} `}
               onClick={handleEnterPlayerName}
             >
               {language === 'jp' ? '作成' : 'Create'}
             </button>
-            <button 
+            <button
               className={`w-[50vw] my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
-                ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } `}
+                ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''} `}
               onClick={handleGoBack}
             >
               {language === 'jp' ? '戻る' : 'Back'}
@@ -407,7 +420,7 @@ function App({ roomId }) {
               type="text"
               value={playerName}
               onChange={handleCreateInputChange}
-              placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter player name'}
+              placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter Player Name'}
             />
             <input
               className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[2svw]"
@@ -418,15 +431,15 @@ function App({ roomId }) {
             />
             <button
               className={`w-[50vw] my-[2svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
-                ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } 
+                ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''}
                 ${roomNumber ? 'bg-[#003B5C]' : 'bg-[#003B5C] bg-opacity-35'}`}
               onClick={roomNumber ? handleEnterRoom : null}
             >
               {language === 'jp' ? '参加' : 'Join'}
             </button>
-            <button 
+            <button
               className={`w-[50vw] my-[2svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
-                ${ language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : '' } `} 
+                ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''} `}
               onClick={handleGoBack}
             >
               {language === 'jp' ? '戻る' : 'Back'}
