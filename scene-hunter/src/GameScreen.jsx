@@ -343,7 +343,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
 
       <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
         <h2 className="absolute top-[0%] left-0 m-[4svw] text-[5svw] ">{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
-        {showErrorMessage && <p className="App-error">{errorMessage}</p>} {/* Error message display */}
+        {showErrorMessage && <p className="text-red-500">{errorMessage}</p>}
         <input
           type="text"
           value={newName}
