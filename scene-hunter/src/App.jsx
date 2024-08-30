@@ -45,30 +45,31 @@ function App({ roomId }) {
       apiUrl.current = `${api}/${version}`;
     }
 
-    const fetchTokenAndUserId = async () => {
-      let currentToken = localStorage.getItem('token');
-      if (!currentToken) {
-        currentToken = await getNewToken();
-        try {
-          const userId = await fetchUserIdWithToken(currentToken);
-          if (userId) {
-            setPlayerId(userId);
-            localStorage.setItem('player_id', userId);
-            localStorage.setItem('player_name', playerName);
-            localStorage.setItem('save_date_time', new Date().toISOString());
-          }
-        } catch (error) {
-          console.error('Error fetching user ID:', error);
-        }
-      } else {
-        let currentUserId = localStorage.getItem('player_id');
-        setToken(currentToken);
-        setPlayerId(currentUserId);
-      }
-    };
-
     fetchTokenAndUserId();
   }, [location.search, apiUrl]);
+
+  const fetchTokenAndUserId = async () => {
+    let currentToken = localStorage.getItem('token');
+    // token発行が3️時間以上前の場合は新しいtokenを取得
+    if (!currentToken || new Date() - new Date(localStorage.getItem('save_date_time')) > 10800000) {
+      currentToken = await getNewToken();
+      try {
+        const userId = await fetchUserIdWithToken(currentToken);
+        if (userId) {
+          setPlayerId(userId);
+          localStorage.setItem('player_id', userId);
+          localStorage.setItem('player_name', playerName);
+          localStorage.setItem('save_date_time', new Date().toISOString());
+        }
+      } catch (error) {
+        console.error('Error fetching user ID:', error);
+      }
+    } else {
+      let currentUserId = localStorage.getItem('player_id');
+      setToken(currentToken);
+      setPlayerId(currentUserId);
+    }
+  };
 
   const getNewToken = async () => {
     try {
@@ -79,6 +80,7 @@ function App({ roomId }) {
         const newToken = tokenData.token;
         setToken(newToken);
         localStorage.setItem('token', newToken);
+        localStorage.setItem('save_date_time', new Date().toISOString());
         return newToken;
       } else {
         console.error('Failed to fetch token');
@@ -255,10 +257,8 @@ function App({ roomId }) {
         console.log('Room joined:', response.statusText);
         setScreen('game');
       } else if (response.status === 401) {
-        const newToken = await getNewToken();
-        if (newToken) {
-          handleEnterRoom();
-        }
+        fetchTokenAndUserId();
+        handleEnterRoom();
       } else if (response.status === 404) {
         showTemporaryMessage('部屋が見つかりません');
       } else {
@@ -290,10 +290,8 @@ function App({ roomId }) {
         setScreen('game');
         navigate(`/${data.room_id}`); // 部屋が作成された後にURLを変更
       } else if (response.status === 401) {
-        const newToken = await getNewToken();
-        if (newToken) {
-          handleEnterPlayerName();
-        }
+        fetchTokenAndUserId();
+        handleEnterPlayerName();
       } else {
         console.error('Failed to create room');
       }
