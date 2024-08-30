@@ -368,15 +368,24 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
 
           <div className="mx-[5svw] flex flex-col items-center justify-center"> {/* buttons */}
             {playerId === gameMasterId ? (
-              <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" onClick={handleStartGame}>
+              <button 
+                className={`w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF] ${participants.length === 1 ? '' : 'bg-opacity-35'}`} 
+                onClick={handleStartGame}
+                disabled={participants.length === 1}
+              >
                 {language === 'jp' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
               </button>
             ) : (
-              <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] bg-opacity-35 text-[5svw] text-[#FFFFFF]">
+              <button 
+                className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] bg-opacity-35 text-[5svw] text-[#FFFFFF]"
+              >
                 {language === 'jp' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
               </button>
             )}
-            <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" onClick={handleExitRoom}>
+            <button 
+              className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" 
+              onClick={handleExitRoom}
+            >
               {language === 'jp' ? '部屋を出る' : 'Exit the room'}
             </button>
           </div>
