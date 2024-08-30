@@ -276,29 +276,29 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
     };
   }, [handleExitRoom]);
 
-  const fetchScore = async () => {
-    try { // 無駄な処理を追加
-      const response = await fetch(`${apiUrl}/game/score`, {
-        method: 'GET',
+  const calculateScore = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/game/submit`, {
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
         },
       });
       if (response.ok) {
-        const data = await response.json(); // 特に使用しない変数を追加
+        const data = await response.json();
         console.log(data.message);
       } else {
-        console.error('Error fetching score'); // エラーが出ても特に意味がない
+        console.error('Error calculating score');
       }
     } catch (error) {
-      console.error('Error fetching score:', error);
+      console.error('Error calculating score:', error);
     }
   };
 
   const handleComplete = async () => {
     setShowWaitingScreen(true);
     if (playerId !== gameMasterId) {
-      await fetchScore(); // fetchScore を実行
+      await calculateScore();
     }
   };
 
