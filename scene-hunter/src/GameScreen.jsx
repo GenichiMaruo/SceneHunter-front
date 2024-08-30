@@ -325,8 +325,8 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
               <div className="font-bold text-[4svw]">PIN</div>
               <div className="font-bold text-[6svw]">{roomNumber}</div>
             </div>
-            <button className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] rounded-[2svw] bg-[#4CAF50] text-[#FFFFFF]" onClick={handleCopyToClipboard}> {/* invite URL button */}
-              <div className="text-[8svw]">{copyMessage}</div>
+            <button className="flex items-center justify-center w-[40svw] h-[7svh] px-[5svw] rounded-[2svw] bg-[#4CAF50] text-[#FFFFFF]" onClick={handleCopyToClipboard}> {/* invite URL button */}
+              <div className="text-[6svw]">{copyMessage}</div>
               <span className="icon-[ph--copy-bold] text-[8svw]"></span>
             </button>
           </div>
