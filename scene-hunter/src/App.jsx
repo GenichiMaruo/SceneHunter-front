@@ -180,17 +180,23 @@ function App({ roomId }) {
     const value = event.target.value;
     // Check for forbidden characters, including emojis
     if (value.match(/[<>\'\",;%()&+\\]/) || /\p{Extended_Pictographic}/u.test(value)) {
-      showTemporaryMessage('記号の一部は使用できません');
+      showTemporaryMessage(
+        language === 'jp' ? '使用できない文字が含まれています' : 'Invalid characters are included'
+      );
       return;
     }
     // 空白文字を禁止
     if (value.match(/^\s/)) {
-      showTemporaryMessage('空白文字は使用できません');
+      showTemporaryMessage(
+        language === 'jp' ? '空白文字は使用できません' : 'Spaces are not allowed'
+      );
       return;
     }
     // 12文字まで
     if (value.length > 12) {
-      showTemporaryMessage('12文字以内で入力してください');
+      showTemporaryMessage(
+        language === 'jp' ? '12文字以内で入力してください' : 'Please enter up to 12 characters'
+      );
       return;
     }
     setPlayerName(value);
