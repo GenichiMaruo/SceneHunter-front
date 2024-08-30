@@ -48,6 +48,24 @@ function App({ roomId }) {
     fetchTokenAndUserId();
   }, [location.search, apiUrl]);
 
+  // api呼び出し回数を記録し、短時間に複数回呼び出される場合は停止させる
+  let apiCallCount = 0;
+  let apiCallLimit = 10;
+  // api呼び出し回数をカウントし、10秒以内にapiCallLimit回以上呼び出された場合はエラーを返す
+  const checkApiCallLimit = () => {
+    apiCallCount++;
+    if (apiCallCount > apiCallLimit) {
+      console.error('API call limit exceeded');
+      // api呼び出し回数が多いことを通知
+      showTemporaryMessage(language === 'jp' ? '通信エラーが発生しました' : 'A communication error has occurred');
+      return true;
+    }
+    setTimeout(() => {
+      apiCallCount = 0;
+    }, 10000);
+    return false;
+  };
+
   const fetchTokenAndUserId = async () => {
     let currentToken = localStorage.getItem('token');
     // token発行が3️時間以上前の場合は新しいtokenを取得
@@ -74,6 +92,9 @@ function App({ roomId }) {
   const getNewToken = async () => {
     try {
       console.log('api:token')
+      if (checkApiCallLimit()) {
+        return null;
+      }
       const response = await fetch(`${apiUrl.current}/token`);
       if (response.ok) {
         const tokenData = await response.json();
@@ -93,6 +114,10 @@ function App({ roomId }) {
 
   const fetchUserIdWithToken = async (token) => {
     try {
+      console.log('api:user')
+      if (checkApiCallLimit()) {
+        return null;
+      }
       const response = await fetch(`${apiUrl.current}/user`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -147,6 +172,10 @@ function App({ roomId }) {
       return;
     }
     try {
+      console.log('api:room/username')
+      if (checkApiCallLimit()) {
+        return null;
+      }
       const response = await fetch(`${apiUrl.current}/room/username`, {
         method: 'PUT',
         headers: {
@@ -240,6 +269,10 @@ function App({ roomId }) {
 
   const handleEnterRoom = async () => {
     try {
+      console.log('api:room/join')
+      if (checkApiCallLimit()) {
+        return null;
+      }
       const response = await fetch(`${apiUrl.current}/room/join`, {
         method: 'POST',
         headers: {
@@ -263,6 +296,7 @@ function App({ roomId }) {
         console.log('Room joined:', response.statusText);
         setScreen('game');
       } else if (response.status === 401) {
+        localStorage.removeItem('token');
         fetchTokenAndUserId();
         handleEnterRoom();
       } else if (response.status === 404) {
@@ -280,6 +314,10 @@ function App({ roomId }) {
 
   const handleEnterPlayerName = async () => {
     try {
+      console.log('api:room/create')
+      if (checkApiCallLimit()) {
+        return null;
+      }
       const response = await fetch(`${apiUrl.current}/room/create`, {
         method: 'POST',
         headers: {
@@ -299,6 +337,7 @@ function App({ roomId }) {
         setScreen('game');
         navigate(`/${data.room_id}`); // 部屋が作成された後にURLを変更
       } else if (response.status === 401) {
+        localStorage.removeItem('token');
         fetchTokenAndUserId();
         handleEnterPlayerName();
       } else {
