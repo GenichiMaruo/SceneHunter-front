@@ -294,20 +294,18 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
             </button>
             <div className=" h-[calc(100%-4svh)] overflow-x-hidden overflow-y-scroll">
               <ul className="flex flex-col items-center text-[6svw] text-[#333333]">
-                <li className="w-full flex items-center justify-between">
+                <li className="w-full flex items-center justify-between  my-[1svh]">
+                  <div className="">{gameMaster}</div>
                   {playerId === gameMasterId && (
-                    <div className="w-full flex items-center justify-between">
                       <div className="flex items-center justify-center">
                         <div className="">{gameMaster}</div>
                         <span>✨️</span>
                       </div>
-                      <span role="img" aria-label="crown" className="">👑</span>
-                    </div>
-
                   )}
+                  <span role="img" aria-label="crown" className="">👑</span>
                 </li>
                 {participants.map((player) => (
-                  <li className="w-full flex items-center justify-between" key={player.id}>
+                  <li className="w-full flex items-center  my-[1svh]" key={player.id}>
                     {player.name}
                     {player.id === playerId && (
                       <span>✨️</span>
@@ -324,9 +322,9 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
                 {language === 'jp' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
               </button>
             ) : (
-              <p className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] bg-opacity-35 text-[5svw] text-[#FFFFFF]">
+              <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] bg-opacity-35 text-[5svw] text-[#FFFFFF]">
                 {language === 'jp' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
-              </p>
+              </button>
             )}
             <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" onClick={handleExitRoom}>
               {language === 'jp' ? '部屋を出る' : 'Exit the room'}
