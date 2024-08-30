@@ -227,6 +227,11 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
     }
   };
 
+  const handleCopyToClipboardPIN = () => {
+    const pin = roomNumber;
+    navigator.clipboard.writeText(pin)
+  }
+
   const handleCopyToClipboard = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url).then(() => {
@@ -276,6 +281,11 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
     };
   }, [handleExitRoom]);
 
+  // 参加者の数が変わるたびにログを出力
+  useEffect(() => {
+    console.log('participants:', participants.length+1);
+  }, [participants]);
+
   const calculateScore = async () => {
     try {
       const response = await fetch(`${apiUrl}/game/submit`, {
@@ -321,12 +331,15 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
       <div className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]"> {/* main */}
         <div className="flex justify-between items-start w-full h-[20svh] p-[5svw]"> {/* room status */}
           <div className="flex flex-col justify-between h-full"> {/* Left Section */}
-            <div className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#E7E7E7] text-[#333333]"> {/* room number */}
+            <button 
+              className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#E7E7E7] text-[#333333]"
+              onClick={handleCopyToClipboardPIN}
+            > {/* PIN button */}
               <div className="font-bold text-[4svw]">PIN</div>
               <div className="font-bold text-[6svw]">{roomNumber}</div>
-            </div>
-            <button className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] rounded-[2svw] bg-[#4CAF50] text-[#FFFFFF]" onClick={handleCopyToClipboard}> {/* invite URL button */}
-              <div className="text-[8svw]">{copyMessage}</div>
+            </button>
+            <button className="flex items-center justify-center w-[40svw] h-[7svh] px-[5svw] rounded-[2svw] bg-[#4CAF50] text-[#FFFFFF] font-medium" onClick={handleCopyToClipboard}> {/* invite URL button */}
+              <div className="text-[6svw]">{copyMessage}</div>
               <span className="icon-[ph--copy-bold] text-[8svw]"></span>
             </button>
           </div>
@@ -339,9 +352,15 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
 
         <div>  {/* participants */}
           <div className="h-[35svh] p-[5svw] mx-[5svw] border-[0.5svw] border-[#333333] rounded-[6svw] ">
-            <button className="w-full flex justify-end" onClick={() => setIsNameModalOpen(true)}>
-              <span className="icon-[mdi--rename-box-outline] text-[7svw]"></span>
-            </button>
+            <div className="w-full flex justify-end">
+              <div className="text-[4svw] font-medium">
+                Rename
+              </div>
+              <button onClick={() => setIsNameModalOpen(true)}>
+                <span className="icon-[mdi--rename-box-outline] text-[7svw]"></span>
+              </button>
+            </div>
+
             <div className=" h-[calc(100%-4svh)] overflow-x-hidden overflow-y-scroll">
               <ul className="flex flex-col items-center text-[6svw] text-[#333333]">
                 <li className="w-full flex items-center justify-between  my-[1svh]">
@@ -368,15 +387,24 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
 
           <div className="mx-[5svw] flex flex-col items-center justify-center"> {/* buttons */}
             {playerId === gameMasterId ? (
-              <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" onClick={handleStartGame}>
+              <button 
+                className={`w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF] ${participants.length === 1 ? '' : 'bg-opacity-35'}`} 
+                onClick={handleStartGame}
+                disabled={participants.length+1 === 1} //+1はgameMasterの分
+              >
                 {language === 'jp' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
               </button>
             ) : (
-              <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] bg-opacity-35 text-[5svw] text-[#FFFFFF]">
+              <button 
+                className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] bg-opacity-35 text-[5svw] text-[#FFFFFF]"
+              >
                 {language === 'jp' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
               </button>
             )}
-            <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" onClick={handleExitRoom}>
+            <button 
+              className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" 
+              onClick={handleExitRoom}
+            >
               {language === 'jp' ? '部屋を出る' : 'Exit the room'}
             </button>
           </div>
@@ -387,12 +415,20 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
         <p className="text-[4svw]">© 2024 Scene Hunter</p>
       </footer>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        backgroundColor={'#FFFFFF'}
+      >
         <QRCodeSVG value={`${deployUrl}/${roomNumber}`} size={256} />
       </Modal>
 
-      <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
-        <h2 className="absolute top-[0%] left-0 m-[4svw] text-[5svw] ">{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
+      <Modal 
+        isOpen={isNameModalOpen} 
+        onClose={() => setIsNameModalOpen(false)}
+        backgroundColor={'#E7E7E7'}
+      >
+        <h2 className="absolute top-[0%] left-0 m-[4svw] text-[5svw] ">{language === 'jp' ? '名前を変更' : 'Rename'}</h2>
         {showErrorMessage && <p className="text-red-500">{errorMessage}</p>}
         <input
           type="text"

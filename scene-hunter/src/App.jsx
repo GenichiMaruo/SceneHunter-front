@@ -384,6 +384,7 @@ function App({ roomId }) {
             isOpen={showCreateInput}
             title={language === 'jp' ? '部屋を作成' : 'Create Room'}
             onClose={() => setShowCreateInput(false)}
+            backgroundColor={'#E7E7E7'}
           >
             {showErrorMessage && <p className="text-red-500">{errorMessage}</p>}
             <input
@@ -395,8 +396,10 @@ function App({ roomId }) {
             />
             <button
               className={`w-[50vw] my-[5svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
-                ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''} `}
+                ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''} 
+                ${playerName ? 'bg-[#003B5C]' : 'bg-[#003B5C] bg-opacity-35'}`}
               onClick={handleEnterPlayerName}
+              disabled={!playerName}
             >
               {language === 'jp' ? '作成' : 'Create'}
             </button>
@@ -413,6 +416,7 @@ function App({ roomId }) {
             isOpen={showJoinInput}
             title={language === 'jp' ? '部屋に参加' : 'Join Room'}
             onClose={() => setShowJoinInput(false)}
+            backgroundColor={'#E7E7E7'}
           >
             {showErrorMessage && <p className="text-red-500">{errorMessage}</p>}
             <input
@@ -433,7 +437,8 @@ function App({ roomId }) {
               className={`w-[50vw] my-[2svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
                 ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''}
                 ${roomNumber ? 'bg-[#003B5C]' : 'bg-[#003B5C] bg-opacity-35'}`}
-              onClick={roomNumber ? handleEnterRoom : null}
+              onClick={handleEnterRoom}
+              disabled={!roomNumber}
             >
               {language === 'jp' ? '参加' : 'Join'}
             </button>
