@@ -396,11 +396,19 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
         <p className="text-[4svw]">© 2024 Scene Hunter</p>
       </footer>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        backgroundColor={'#FFFFFF'}
+      >
         <QRCodeSVG value={`${deployUrl}/${roomNumber}`} size={256} />
       </Modal>
 
-      <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
+      <Modal 
+        isOpen={isNameModalOpen} 
+        onClose={() => setIsNameModalOpen(false)}
+        backgroundColor={'#E7E7E7'}
+      >
         <h2 className="absolute top-[0%] left-0 m-[4svw] text-[5svw] ">{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
         {showErrorMessage && <p className="text-red-500">{errorMessage}</p>}
         <input

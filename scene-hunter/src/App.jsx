@@ -384,6 +384,7 @@ function App({ roomId }) {
             isOpen={showCreateInput}
             title={language === 'jp' ? '部屋を作成' : 'Create Room'}
             onClose={() => setShowCreateInput(false)}
+            backgroundColor={'#E7E7E7'}
           >
             {showErrorMessage && <p className="text-red-500">{errorMessage}</p>}
             <input
@@ -415,6 +416,7 @@ function App({ roomId }) {
             isOpen={showJoinInput}
             title={language === 'jp' ? '部屋に参加' : 'Join Room'}
             onClose={() => setShowJoinInput(false)}
+            backgroundColor={'#E7E7E7'}
           >
             {showErrorMessage && <p className="text-red-500">{errorMessage}</p>}
             <input

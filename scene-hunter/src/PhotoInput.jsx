@@ -207,7 +207,11 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
           </div>
         )}
 
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <Modal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)}
+          backgroundColor={'#E7E7E7'}
+        >
           <div className="flex items-start justify-start">
             {description && description.length > 0 && (
               <ul className="text-[4svw] ">
