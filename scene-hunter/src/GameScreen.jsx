@@ -295,12 +295,13 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
             <div className=" h-[calc(100%-4svh)] overflow-x-hidden overflow-y-scroll">
               <ul className="flex flex-col items-center text-[6svw] text-[#333333]">
                 <li className="w-full flex items-center justify-between  my-[1svh]">
-                  {playerId === gameMasterId && (
-                      <div className="flex items-center justify-center">
-                        <div className="">{gameMaster}</div>
-                        <span>✨️</span>
-                      </div>
-                  )}
+                  <div className="flex items-center justify-center">
+                    <div className="">{gameMaster}</div>
+                    {playerId === gameMasterId && (
+                      <span>✨️</span>
+                    )}                    
+                  </div>
+
                   <span role="img" aria-label="crown" className="">👑</span>
                 </li>
                 {participants.map((player) => (
