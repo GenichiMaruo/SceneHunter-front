@@ -344,7 +344,7 @@ function App({ roomId }) {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <div className="w-[20svw] text-[2svh] mx-[3svw] text-[#333333]">
-                  {language === 'jp' ? '言語' : 'Language'}
+                  {language === 'jp' ? '日本語' : 'English'}
                 </div>
                 <span className={isDropdownOpen ? "icon-[fe--arrow-up] text-[2svh] mr-[3svw]"
                   : "icon-[fe--arrow-down] text-[2svh] mr-[3svw]"}></span>
@@ -413,7 +413,7 @@ function App({ roomId }) {
               type="text"
               value={playerName}
               onChange={handleCreateInputChange}
-              placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter player name'}
+              placeholder={language === 'jp' ? 'プレイヤー名を入力' : 'Enter Player Name'}
             />
             <input
               className="text-center text-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] px-[3svw] py-[3svw] my-[2svw]"
@@ -424,7 +424,7 @@ function App({ roomId }) {
             />
             <button
               className={`w-[50vw] my-[2svw] px-[10svw] py-[2svw] bg-[#003B5C] text-[5svw] text-white rounded
-                ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''} 
+                ${language === 'jp' ? 'indent-[5svw] tracking-[5svw]' : ''}
                 ${roomNumber ? 'bg-[#003B5C]' : 'bg-[#003B5C] bg-opacity-35'}`}
               onClick={roomNumber ? handleEnterRoom : null}
             >
