@@ -292,17 +292,22 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
             <button className="w-full flex justify-end" onClick={() => setIsNameModalOpen(true)}>
               <span className="icon-[mdi--rename-box-outline] text-[7svw]"></span>
             </button>
-            <div className="h-[calc(100%-4svh)] overflow-x-hidden overflow-y-scroll">
+            <div className=" h-[calc(100%-4svh)] overflow-x-hidden overflow-y-scroll">
               <ul className="flex flex-col items-center text-[6svw] text-[#333333]">
                 <li className="w-full flex items-center justify-between">
-                  <span className="">{gameMaster}</span>
                   {playerId === gameMasterId && (
-                    <span>✨️</span>
+                    <div className="w-full flex items-center justify-between">
+                      <div className="flex items-center justify-center">
+                        <div className="">{gameMaster}</div>
+                        <span>✨️</span>
+                      </div>
+                      <span role="img" aria-label="crown" className="">👑</span>
+                    </div>
+
                   )}
-                  <span role="img" aria-label="crown" className="">👑</span>
                 </li>
                 {participants.map((player) => (
-                  <li key={player.id}>
+                  <li className="w-full flex items-center justify-between" key={player.id}>
                     {player.name}
                     {player.id === playerId && (
                       <span>✨️</span>
