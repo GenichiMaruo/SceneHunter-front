@@ -227,6 +227,11 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
     }
   };
 
+  const handleCopyToClipboardPIN = () => {
+    const pin = roomNumber;
+    navigator.clipboard.writeText(pin)
+  }
+
   const handleCopyToClipboard = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url).then(() => {
@@ -326,10 +331,13 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
       <div className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]"> {/* main */}
         <div className="flex justify-between items-start w-full h-[20svh] p-[5svw]"> {/* room status */}
           <div className="flex flex-col justify-between h-full"> {/* Left Section */}
-            <div className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#E7E7E7] text-[#333333]"> {/* room number */}
+            <button 
+              className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#E7E7E7] text-[#333333]"
+              onClick={handleCopyToClipboardPIN}
+            > {/* PIN button */}
               <div className="font-bold text-[4svw]">PIN</div>
               <div className="font-bold text-[6svw]">{roomNumber}</div>
-            </div>
+            </button>
             <button className="flex items-center justify-center w-[40svw] h-[7svh] px-[5svw] rounded-[2svw] bg-[#4CAF50] text-[#FFFFFF] font-medium" onClick={handleCopyToClipboard}> {/* invite URL button */}
               <div className="text-[6svw]">{copyMessage}</div>
               <span className="icon-[ph--copy-bold] text-[8svw]"></span>
