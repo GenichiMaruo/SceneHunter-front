@@ -342,17 +342,20 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
             <button className="w-full flex justify-end" onClick={() => setIsNameModalOpen(true)}>
               <span className="icon-[mdi--rename-box-outline] text-[7svw]"></span>
             </button>
-            <div className="h-[calc(100%-4svh)] overflow-x-hidden overflow-y-scroll">
+            <div className=" h-[calc(100%-4svh)] overflow-x-hidden overflow-y-scroll">
               <ul className="flex flex-col items-center text-[6svw] text-[#333333]">
-                <li className="w-full flex items-center justify-between">
-                  <span className="">{gameMaster}</span>
-                  {playerId === gameMasterId && (
-                    <span>✨️</span>
-                  )}
+                <li className="w-full flex items-center justify-between  my-[1svh]">
+                  <div className="flex items-center justify-center">
+                    <div className="">{gameMaster}</div>
+                    {playerId === gameMasterId && (
+                      <span>✨️</span>
+                    )}                    
+                  </div>
+
                   <span role="img" aria-label="crown" className="">👑</span>
                 </li>
                 {participants.map((player) => (
-                  <li key={player.id}>
+                  <li className="w-full flex items-center  my-[1svh]" key={player.id}>
                     {player.name}
                     {player.id === playerId && (
                       <span>✨️</span>
@@ -369,9 +372,9 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
                 {language === 'jp' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
               </button>
             ) : (
-              <p className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] bg-opacity-35 text-[5svw] text-[#FFFFFF]">
+              <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] bg-opacity-35 text-[5svw] text-[#FFFFFF]">
                 {language === 'jp' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
-              </p>
+              </button>
             )}
             <button className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" onClick={handleExitRoom}>
               {language === 'jp' ? '部屋を出る' : 'Exit the room'}
@@ -390,7 +393,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
 
       <Modal isOpen={isNameModalOpen} onClose={() => setIsNameModalOpen(false)}>
         <h2 className="absolute top-[0%] left-0 m-[4svw] text-[5svw] ">{language === 'jp' ? '名前を変更' : 'Change Name'}</h2>
-        {showErrorMessage && <p className="App-error">{errorMessage}</p>} {/* Error message display */}
+        {showErrorMessage && <p className="text-red-500">{errorMessage}</p>}
         <input
           type="text"
           value={newName}
