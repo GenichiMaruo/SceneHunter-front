@@ -202,7 +202,7 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
         )}
 
         {isCapturing && (
-          <div className="PhotoInput-overlay">
+          <div className="text-[2svh]">
             {language === 'jp' ? '撮影中は動かさないでください' : 'Please do not move during capture'}
           </div>
         )}
