@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Modal from './Modal';
 import './main.css';
 
-function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, setIsAlreadyTaken, onComplete }) {
+function PhotoInput({ isDemo, token, apiUrl, language, roomId, userId, isGameMaster, setIsAlreadyTaken, onComplete }) {
   const [isCapturing, setIsCapturing] = useState(false);
   const [error, setError] = useState(null);
   const [useFrontCamera, setUseFrontCamera] = useState(false);
@@ -103,6 +103,7 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
 
   const uploadPhoto = async (dataUrl) => {
     try {
+      if (isDemo) return;
       const blob = await (await fetch(dataUrl)).blob();
       const formData = new FormData();
       formData.append('user_id', userId);
@@ -127,6 +128,11 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
 
   const fetchDescription = async () => {
     try {
+      if (isDemo) {
+        setDescription(['This is a description of the scene.', 'It is a very interesting scene.', 'You should take a photo of it.']);
+        setIsModalOpen(true);
+        return
+      }
       const response = await fetch(`${apiUrl}/game/description`, {
         method: 'GET',
         headers: {
@@ -177,7 +183,7 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
 
 
         <canvas ref={canvasRef} className="hidden" />
-        
+
         {!isCapturing && !error && (
           <div className="h-[16svh] w-full flex flex-col flex-grow items-center justify-center">
             <div className="w-full flex items-center justify-center">
@@ -191,7 +197,7 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
             </div>
 
             {!isGameMaster && (
-              <button 
+              <button
                 className="flex item-center justify-center text-[2svh] w-[60svw] px-[15svw] py-[1svh] my-[1svw] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]"
                 onClick={fetchDescription}
               >
@@ -207,8 +213,8 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
           </div>
         )}
 
-        <Modal 
-          isOpen={isModalOpen} 
+        <Modal
+          isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           backgroundColor={'#E7E7E7'}
         >
@@ -217,7 +223,7 @@ function PhotoInput({ token, apiUrl, language, roomId, userId, isGameMaster, set
               <ul className="text-[4svw] ">
                 {description.map((line, index) => (
                   <div className="flex border-b-[0.5svh] border-[#333333]">
-                    <div className="mr-[1svw]">{index+1}.</div>
+                    <div className="mr-[1svw]">{index + 1}.</div>
                     <li className="text-left" key={index}>{line}</li>
                   </div>
                 ))}

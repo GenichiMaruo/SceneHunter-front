@@ -7,7 +7,7 @@ import WaitingScreen from './WaitingScreen';
 import Modal from './Modal';
 import './main.css';
 
-function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId, handleUpdatePlayerName, handleEndGame }) {
+function GameScreen({ isDemo, token, apiUrl, language, playerName, roomNumber, playerId, checkApiCallLimit, handleUpdatePlayerName, handleEndGame }) {
   const [deployUrl, setDeployUrl] = useState('https://scene-hunter.pages.dev');
   const [roomStatus, setRoomStatus] = useState('');
   const [currentRound, setCurrentRound] = useState(1);
@@ -32,22 +32,35 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
   useEffect(() => {
     const fetchRoomData = async () => {
       try {
-        const response = await fetch(`${apiUrl}/room/users`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const room = await response.json();
-          gameMasterIdRef.current = room.game_master_id;
-          setGameMaster(room.users[room.game_master_id].name);
-          setGameMasterId(room.game_master_id);
-          setParticipants(Object.values(room.users).filter(user => user.id !== room.game_master_id));
-          setTotalPlayers(room.total_players);
-          setRoomStatus(room.status);
-          setCurrentRound(room.current_round);
+        console.log('api:room/users');
+        if (checkApiCallLimit()) return null;
+        if (isDemo) {
+          setGameMaster(playerName);
+          setGameMasterId(playerId);
+          gameMasterIdRef.current = playerId;
+          // デモモードの場合はダミーデータをセット
+          setParticipants([{ id: 'user1', name: 'User 1' }, { id: 'user2', name: 'User 2' }, { id: 'user3', name: 'User 3' }]);
+          setTotalPlayers(4);
+          setRoomStatus('waiting');
+          setCurrentRound(1);
         } else {
-          console.error('Failed to fetch room data');
+          const response = await fetch(`${apiUrl}/room/users`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          if (response.ok) {
+            const room = await response.json();
+            gameMasterIdRef.current = room.game_master_id;
+            setGameMaster(room.users[room.game_master_id].name);
+            setGameMasterId(room.game_master_id);
+            setParticipants(Object.values(room.users).filter(user => user.id !== room.game_master_id));
+            setTotalPlayers(room.total_players);
+            setRoomStatus(room.status);
+            setCurrentRound(room.current_round);
+          } else {
+            console.error('Failed to fetch room data');
+          }
         }
       } catch (error) {
         console.error('Error fetching room data:', error);
@@ -56,99 +69,53 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
     fetchRoomData();
 
     const initiateEventSource = () => {
-      const eventSourceUrl = `${apiUrl}/notification?room_id=${roomNumber}`;
-      const es = new EventSource(eventSourceUrl);
-      console.log('EventSource connected:', eventSourceUrl);
+      if (isDemo) {
+        return;
+      } else {
+        const eventSourceUrl = `${apiUrl}/notification?room_id=${roomNumber}`;
+        const es = new EventSource(eventSourceUrl);
+        console.log('EventSource connected:', eventSourceUrl);
 
-      es.onmessage = (event) => {
-        if (event.data.startsWith('{')) {
-          const data = JSON.parse(event.data);
-          console.log('Received event:', data);
+        es.onmessage = (event) => {
+          if (event.data.startsWith('{')) {
+            const data = JSON.parse(event.data);
+            console.log('Received event:', data);
 
-          switch (data.message) {
-            case 'update game rounds':
-            case 'update game status':
-              handleGameStatusUpdate(data);
-              break;
-            case 'update photo uploaded users':
-              setRoomStatus(data.status);
-              setCurrentRound(data.current_round);
-              setShowWaitingScreen(true); // Move to waiting screen after photo capture
-              break;
-            case 'update user name':
-              updateUserName(data.result);
-              fetchRoomData();
-              break;
-            case 'change game master':
-            case 'update number of users':
-              fetchRoomData();
-              break;
-            default:
-              console.warn('Unhandled event type:', data.message);
+            switch (data.message) {
+              case 'update game rounds':
+              case 'update game status':
+                handleGameStatusUpdate(data);
+                break;
+              case 'update photo uploaded users':
+                setRoomStatus(data.status);
+                setCurrentRound(data.current_round);
+                setShowWaitingScreen(true); // Move to waiting screen after photo capture
+                break;
+              case 'update user name':
+                updateUserName(data.result);
+                fetchRoomData();
+                break;
+              case 'change game master':
+              case 'update number of users':
+                fetchRoomData();
+                break;
+              default:
+                console.warn('Unhandled event type:', data.message);
+            }
           }
-        }
-      };
-      es.onerror = (error) => {
-        console.error('EventSource failed:', error);
-        es.close();
-        setTimeout(initiateEventSource, 5000); // Retry connection after 5 seconds
-      };
-      setEventSource(es);
+        };
+        es.onerror = (error) => {
+          console.error('EventSource failed:', error);
+          es.close();
+          setTimeout(initiateEventSource, 5000); // Retry connection after 5 seconds
+        };
+        setEventSource(es);
+      }
     };
     if (!isEventSourceOpen.current) {
       initiateEventSource();
       isEventSourceOpen.current = true;
     }
-
-    const handleGameStatusUpdate = (data) => {
-      console.log('Game status update:', data);
-      if (data.result === 'game-master-photo' && isAlreadyTaken === false) {
-        console.log('PID:', playerId, 'GMID:', gameMasterIdRef.current);
-        if (playerId === gameMasterIdRef.current) {
-          setShowWaitingScreen(false);
-          setShowPhotoInput(true); // Move game master to photo capture mode
-        } else {
-          setShowPhotoInput(false);
-          setShowWaitingScreen(true); // Move players to waiting screen
-        }
-      } else if (data.result === 'player-photo' && isAlreadyTaken === false) {
-        console.log('change to photo input');
-        if (playerId !== gameMasterIdRef.current) {
-          setShowWaitingScreen(false);
-          setShowPhotoInput(true); // Players start photo capture
-        } else {
-          setShowPhotoInput(false);
-          setShowWaitingScreen(true); // Game master moves to waiting screen
-        }
-      } else if (isAlreadyTaken === true) {
-        setShowPhotoInput(false);
-        setShowWaitingScreen(true); // Move all users to waiting screen
-      } else if (data.result === 'result') {
-        setShowPhotoInput(false);
-        setShowWaitingScreen(false);
-        setShowGameResult(true); // All users transition to the result display screen
-      } else {
-        setRoomStatus(data.status);
-        setCurrentRound(data.current_round);
-      }
-    };
-
-    const updateUserName = (data) => {
-      const [userId, newName] = data.split(',');
-      if (gameMasterIdRef.current === '') {
-        fetchRoomData();
-      } else {
-        setParticipants(participants.map(player => {
-          if (player.id === userId) {
-            return { ...player, name: newName };
-          }
-          return player;
-        }));
-        if (gameMasterIdRef.current === userId) {
-          setGameMaster(newName);
-        }
-      }
-    };
 
     return () => {
       if (eventSource) {
@@ -156,6 +123,56 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
       }
     };
   }, [roomNumber]);
+
+  const handleGameStatusUpdate = (data) => {
+    console.log('Game status update:', data);
+    if (data.result === 'game-master-photo' && isAlreadyTaken === false) {
+      console.log('PID:', playerId, 'GMID:', gameMasterIdRef.current);
+      if (playerId === gameMasterIdRef.current) {
+        setShowWaitingScreen(false);
+        setShowPhotoInput(true); // Move game master to photo capture mode
+      } else {
+        setShowPhotoInput(false);
+        setShowWaitingScreen(true); // Move players to waiting screen
+      }
+    } else if (data.result === 'player-photo' && isAlreadyTaken === false) {
+      console.log('change to photo input');
+      if (playerId !== gameMasterIdRef.current) {
+        setShowWaitingScreen(false);
+        setShowPhotoInput(true); // Players start photo capture
+      } else {
+        setShowPhotoInput(false);
+        setShowWaitingScreen(true); // Game master moves to waiting screen
+      }
+    } else if (isAlreadyTaken === true) {
+      setShowPhotoInput(false);
+      setShowWaitingScreen(true); // Move all users to waiting screen
+    } else if (data.result === 'result') {
+      setShowPhotoInput(false);
+      setShowWaitingScreen(false);
+      setShowGameResult(true); // All users transition to the result display screen
+    } else {
+      setRoomStatus(data.status);
+      setCurrentRound(data.current_round);
+    }
+  };
+
+  const updateUserName = (data) => {
+    const [userId, newName] = data.split(',');
+    if (gameMasterIdRef.current === '') {
+      fetchRoomData();
+    } else {
+      setParticipants(participants.map(player => {
+        if (player.id === userId) {
+          return { ...player, name: newName };
+        }
+        return player;
+      }));
+      if (gameMasterIdRef.current === userId) {
+        setGameMaster(newName);
+      }
+    }
+  };
 
   const showTemporaryMessage = (message) => {
     setErrorMessage(message);
@@ -202,25 +219,36 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
       handleUpdatePlayerName(newName);
       setIsNameModalOpen(false);
     }
+    if (isDemo) {
+      updateUserName(`${playerId},${newName}`);
+    }
   };
 
   const handleStartGame = async () => {
     try {
-      const response = await fetch(`${apiUrl}/game/start`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data.message);
-        setRoomStatus(data.status);
-        setCurrentRound(data.current_round);
+      console.log('api:game/start');
+      if (checkApiCallLimit()) return null;
+      if (isDemo) {
+        setRoomStatus('playing');
+        setCurrentRound(1);
+        handleGameStatusUpdate({ id: '123456', message: 'update game status', result: 'game-master-photo' });
+        return;
       } else {
-        const errorData = await response.json();
-        console.error(errorData.message);
+        const response = await fetch(`${apiUrl}/game/start`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data.message);
+          setRoomStatus(data.status);
+          setCurrentRound(data.current_round);
+        } else {
+          const errorData = await response.json();
+          console.error(errorData.message);
+        }
       }
     } catch (error) {
       console.error('Error starting game:', error);
@@ -247,23 +275,30 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
 
   const handleExitRoom = async () => {
     try {
-      const response = await fetch(`${apiUrl}/room/exit`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data.message);
+      console.log('api:room/exit');
+      if (checkApiCallLimit()) return null;
+      if (isDemo) {
         window.location.href = '/';
         handleEndGame();
+        return;
       } else {
-        const errorData = await response.json();
-        console.error(errorData.message);
-        window.location.href = '/';
-        handleEndGame();
+        const response = await fetch(`${apiUrl}/room/exit`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data.message);
+          window.location.href = '/';
+          handleEndGame();
+        } else {
+          const errorData = await response.json();
+          console.error(errorData.message);
+          window.location.href = '/';
+          handleEndGame();
+        }
       }
     } catch (error) {
       console.error('Error exiting room:', error);
@@ -283,10 +318,12 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
 
   // 参加者の数が変わるたびにログを出力
   useEffect(() => {
-    console.log('participants:', participants.length+1);
+    console.log('participants:', participants.length + 1);
   }, [participants]);
 
   const calculateScore = async () => {
+    if (checkApiCallLimit()) return null;
+    if (isDemo) return;
     try {
       const response = await fetch(`${apiUrl}/game/submit`, {
         method: 'POST',
@@ -305,15 +342,29 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
     }
   };
 
-  const handleComplete = async () => {
+  const handlePhotoComplete = async () => {
     setShowWaitingScreen(true);
+    if (isDemo) {
+      handleGameStatusUpdate({ result: 'player-photo' });
+      // プレイヤーが写真を撮った設定で、5秒後に次のステータスに移行
+      setTimeout(() => {
+        handleGameStatusUpdate({ result: 'result' });
+      }, 5000);
+    }
     if (playerId !== gameMasterId) {
       await calculateScore();
     }
   };
 
+  const handleResultComplete = () => {
+    setShowGameResult(false);
+    // ゲームの状態をリセット
+    setRoomStatus('waiting');
+    setCurrentRound(1);
+  };
+
   if (showGameResult) {
-    return <GameResult token={token} apiUrl={apiUrl} language={language} isGameMaster={playerId === gameMasterId} onComplete={() => setShowGameResult(false)} />;
+    return <GameResult isDemo={isDemo} token={token} apiUrl={apiUrl} language={language} isGameMaster={playerId === gameMasterId} onComplete={() => handleResultComplete()} />;
   } if (showWaitingScreen) {
     const isGameMaster = playerId === gameMasterId;
     if (isGameMaster === true) {
@@ -322,7 +373,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
       return <WaitingScreen language={language} isGameMaster={isAlreadyTaken} />;
     }
   } if (showPhotoInput) {
-    return <PhotoInput token={token} apiUrl={apiUrl} language={language} roomId={roomNumber} userId={playerId} isGameMaster={playerId === gameMasterId} setIsAlreadyTaken={setIsAlreadyTaken} onComplete={() => handleComplete()} />;
+    return <PhotoInput isDemo={isDemo} token={token} apiUrl={apiUrl} language={language} roomId={roomNumber} userId={playerId} isGameMaster={playerId === gameMasterId} setIsAlreadyTaken={setIsAlreadyTaken} onComplete={() => handlePhotoComplete()} />;
   }
 
   return (
@@ -331,7 +382,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
       <div className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]"> {/* main */}
         <div className="flex justify-between items-start w-full h-[20svh] p-[5svw]"> {/* room status */}
           <div className="flex flex-col justify-between h-full"> {/* Left Section */}
-            <button 
+            <button
               className="flex items-center justify-between w-[40svw] h-[7svh] px-[5svw] border-[0.5svw] border-[#333333] rounded-[2svw] bg-[#E7E7E7] text-[#333333]"
               onClick={handleCopyToClipboardPIN}
             > {/* PIN button */}
@@ -368,7 +419,7 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
                     <div className="">{gameMaster}</div>
                     {playerId === gameMasterId && (
                       <span>✨️</span>
-                    )}                    
+                    )}
                   </div>
 
                   <span role="img" aria-label="crown" className="">👑</span>
@@ -387,22 +438,22 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
 
           <div className="mx-[5svw] flex flex-col items-center justify-center"> {/* buttons */}
             {playerId === gameMasterId ? (
-              <button 
-                className={`w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF] ${participants.length === 1 ? '' : 'bg-opacity-35'}`} 
+              <button
+                className={`w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF] ${participants.length === 1 ? '' : 'bg-opacity-35'}`}
                 onClick={handleStartGame}
-                disabled={participants.length+1 === 1} //+1はgameMasterの分
+                disabled={participants.length + 1 === 1} //+1はgameMasterの分
               >
                 {language === 'jp' ? 'このメンバーでゲームを始める' : 'Start the game with these members'}
               </button>
             ) : (
-              <button 
+              <button
                 className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] bg-opacity-35 text-[5svw] text-[#FFFFFF]"
               >
                 {language === 'jp' ? 'ゲーム開始を待機中' : 'Waiting for the game to start'}
               </button>
             )}
-            <button 
-              className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]" 
+            <button
+              className="w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF]"
               onClick={handleExitRoom}
             >
               {language === 'jp' ? '部屋を出る' : 'Exit the room'}
@@ -415,16 +466,16 @@ function GameScreen({ token, apiUrl, language, playerName, roomNumber, playerId,
         <p className="text-[4svw]">© 2024 Scene Hunter</p>
       </footer>
 
-      <Modal 
-        isOpen={isModalOpen} 
+      <Modal
+        isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         backgroundColor={'#FFFFFF'}
       >
         <QRCodeSVG value={`${deployUrl}/${roomNumber}`} size={256} />
       </Modal>
 
-      <Modal 
-        isOpen={isNameModalOpen} 
+      <Modal
+        isOpen={isNameModalOpen}
         onClose={() => setIsNameModalOpen(false)}
         backgroundColor={'#E7E7E7'}
       >
