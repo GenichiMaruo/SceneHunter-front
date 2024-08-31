@@ -30,11 +30,11 @@ function GameResult({ token, apiUrl, language, isGameMaster, currentUserId, onCo
           setRank(userRank);
         } else {
           console.error('Error fetching users');
-          setError(language === 'ja' ? 'ユーザー情報を取得できませんでした。' : 'Could not fetch user information.');
+          setError(language === 'jp' ? 'ユーザー情報を取得できませんでした。' : 'Could not fetch user information.');
         }
       } catch (error) {
         console.error('Error fetching users:', error);
-        setError(language === 'ja' ? 'ユーザー情報を取得できませんでした。' : 'Could not fetch user information.');
+        setError(language === 'jp' ? 'ユーザー情報を取得できませんでした。' : 'Could not fetch user information.');
       }
     };
 
@@ -42,46 +42,58 @@ function GameResult({ token, apiUrl, language, isGameMaster, currentUserId, onCo
   }, [apiUrl, token, language, currentUserId]);
 
   return (
-    <div className="GameResult">
-      <h1>{language === 'ja' ? '結果発表' : 'Results'}</h1>
-      {isGameMaster ? (
-        <div className="GameResult-message">
-          {language === 'ja' ? 'あなたはゲームマスターです' : 'You are the Game Master'}
-        </div>
-      ) : (
-        <>
-          {error && <div className="GameResult-error">{error}</div>}
-          {users.length > 0 && (
-            <div className="GameResult-scores">
-              {users.map(user => (
-                <div key={user.id} className="GameResult-user">
-                  <div className="GameResult-userName">
-                    {language === 'ja' ? `${user.name}の類似度:` : `${user.name}'s Similarity:`}
-                  </div>
-                  <div className="GameResult-userScore">
-                    {user.score.similarity !== undefined
-                      ? `${user.score.similarity}%`
-                      : language === 'ja'
-                        ? 'スコアなし'
-                        : 'No Score'}
-                  </div>
+    <div className="w-full h-100svh min-h-[100svh] flex flex-col items-center justify-center text-center overflow-hidden">
+      <header className="w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35"></header>
+      
+      <div className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]">
+        <div className="GameResult">
+          <h1>{language === 'jp' ? '結果発表' : 'Results'}</h1>
+          {isGameMaster ? (
+            <div className="GameResult-message">
+              {language === 'jp' ? 'あなたはゲームマスターです' : 'You are the Game Master'}
+            </div>
+          ) : (
+            <>
+              {error && <div className="GameResult-error">{error}</div>}
+              {users.length > 0 && (
+                <div className="GameResult-scores">
+                  {users.map(user => (
+                    <div key={user.id} className="GameResult-user">
+                      <div className="GameResult-userName">
+                        {language === 'jp' ? `${user.name}の類似度:` : `${user.name}'s Similarity:`}
+                      </div>
+                      <div className="GameResult-userScore">
+                        {user.score.similarity !== undefined
+                          ? `${user.score.similarity}%`
+                          : language === 'jp'
+                            ? 'スコアなし'
+                            : 'No Score'}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              )}
+              {rank && (
+                <div className="GameResult-rank">
+                  {language === 'jp'
+                    ? `あなたの順位は${rank}位です。`
+                    : `Your rank is ${rank}.`}
+                </div>
+              )}
+            </>
           )}
-          {rank && (
-            <div className="GameResult-rank">
-              {language === 'ja'
-                ? `あなたの順位は${rank}位です。`
-                : `Your rank is ${rank}.`}
-            </div>
-          )}
-        </>
-      )}
-      <button onClick={onComplete}>
-        {language === 'ja' ? '待機画面に戻る' : 'Return to Waiting Screen'}
-      </button>
+          <button onClick={onComplete}>
+            {language === 'jp' ? '待機画面に戻る' : 'Return to Waiting Screen'}
+          </button>
+        </div>
+      </div>
+
+      <footer className="flex justify-center items-center w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35">
+        <p className="text-[4svw]">© 2024 Scene Hunter</p>
+      </footer>
+      
     </div>
+
   );
 }
 

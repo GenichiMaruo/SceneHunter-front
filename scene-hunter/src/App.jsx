@@ -22,6 +22,8 @@ function App({ roomId }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isPC, setIsPC] = useState(false);
+  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -159,6 +161,16 @@ function App({ roomId }) {
     // 言語が変更されたときにUIが再レンダリングされる
     console.log('Selected Language:', language);
   }, [language]);
+
+  useEffect(() => { // PCでアクセスした場合のみモーダルを表示
+    const userAgent = navigator.userAgent;
+    const isMobile = /Mobi|Android/i.test(userAgent);
+
+    if (!isMobile) {
+      setIsPC(true);
+      setIsWarningModalOpen(true);
+    }
+  }, []);
 
   const handleLanguageChange = (newLanguage) => {
     setLanguage(newLanguage);
@@ -367,6 +379,15 @@ function App({ roomId }) {
       {screen === 'main' ? (
         <>
           {/* <div className="w-full text-center md:text-left lg:text-right">hoge</div> */}
+          <button 
+            className="absolute left-0 top-0 m-[10svw] z-[2]"
+            onClick={() => setIsWarningModalOpen(true)}
+          >
+            {isPC && (
+              <span className="icon-[mingcute--warning-fill] text-[4svh] text-[#8b1e1e]"></span>
+            )}
+          </button>
+
           <header className="w-full h-[13svh] bg-[#4ACEFF] bg-opacity-35"></header>
           <div id="main" className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]">
             <div className="mt-[7svh] mb-[7svh]">
@@ -489,6 +510,20 @@ function App({ roomId }) {
               {language === 'jp' ? '戻る' : 'Back'}
             </button>
           </Modal>
+          
+          <Modal 
+            isOpen={isWarningModalOpen} 
+            onClose={() => setIsWarningModalOpen(false)}
+            backgroundColor={'#E7E7E7'}
+          >
+            {isPC && (
+              <div className="text-[2.5svh] animate-rainbow">
+                <div>{language === 'jp' ? 'PCでは正常に動作しません' : 'This application does not work properly on PC'}</div>
+                <div>{language === 'jp' ? 'スマホでアクセスしてください' : 'Please access this application on a smartphone'}</div>
+              </div>
+            )}
+          </Modal>
+
         </>
       ) : (
         <GameScreen
