@@ -22,6 +22,7 @@ function App({ roomId }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
   const [isPC, setIsPC] = useState(false);
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
 
@@ -33,6 +34,7 @@ function App({ roomId }) {
     const debug = searchParams.get('debug');
     const port = searchParams.get('port');
     const ver = searchParams.get('ver');
+    const demo = searchParams.get('demo');
 
     if (ver) {
       setVersion(`${ver}`);
@@ -45,6 +47,9 @@ function App({ roomId }) {
       }
     } else {
       apiUrl.current = `${api}/${version}`;
+    }
+    if (demo === 'true') {
+      setIsDemo(true);
     }
 
     fetchTokenAndUserId();
@@ -86,8 +91,10 @@ function App({ roomId }) {
       }
     } else {
       let currentUserId = localStorage.getItem('player_id');
+      let currentName = localStorage.getItem('player_name');
       setToken(currentToken);
       setPlayerId(currentUserId);
+      setPlayerName(currentName);
     }
   };
 
@@ -97,16 +104,23 @@ function App({ roomId }) {
       if (checkApiCallLimit()) {
         return null;
       }
-      const response = await fetch(`${apiUrl.current}/token`);
-      if (response.ok) {
-        const tokenData = await response.json();
-        const newToken = tokenData.token;
-        setToken(newToken);
-        localStorage.setItem('token', newToken);
+      if (isDemo) {
+        setToken('demo_token');
+        localStorage.setItem('token', 'demo_token');
         localStorage.setItem('save_date_time', new Date().toISOString());
-        return newToken;
+        return 'demo_token';
       } else {
-        console.error('Failed to fetch token');
+        const response = await fetch(`${apiUrl.current}/token`);
+        if (response.ok) {
+          const tokenData = await response.json();
+          const newToken = tokenData.token;
+          setToken(newToken);
+          localStorage.setItem('token', newToken);
+          localStorage.setItem('save_date_time', new Date().toISOString());
+          return newToken;
+        } else {
+          console.error('Failed to fetch token');
+        }
       }
     } catch (error) {
       console.error('Error fetching new token:', error);
@@ -120,22 +134,25 @@ function App({ roomId }) {
       if (checkApiCallLimit()) {
         return null;
       }
-      const response = await fetch(`${apiUrl.current}/user`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-        return userData.ID;
-      } else if (response.status === 401) {
-        const newToken = await getNewToken();
-        if (newToken) {
-          return await fetchUserIdWithToken(newToken);
-        }
+      if (isDemo) {
+        return 'demo_user_id';
       } else {
-        console.error('Failed to fetch user ID:', response.statusText);
+        const response = await fetch(`${apiUrl.current}/user`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          return userData.ID;
+        } else if (response.status === 401) {
+          const newToken = await getNewToken();
+          if (newToken) {
+            return await fetchUserIdWithToken(newToken);
+          }
+        } else {
+          console.error('Failed to fetch user ID:', response.statusText);
+        }
       }
     } catch (error) {
       console.error('Error fetching user ID with token:', error);
@@ -188,22 +205,28 @@ function App({ roomId }) {
       if (checkApiCallLimit()) {
         return null;
       }
-      const response = await fetch(`${apiUrl.current}/room/username`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: player_name,
-        }),
-      });
-
-      if (response.ok) {
-        console.log('Player name updated');
+      if (isDemo) {
         localStorage.setItem('player_name', player_name);
+        setPlayerName(player_name);
+        return;
       } else {
-        console.error('Failed to update player name');
+        const response = await fetch(`${apiUrl.current}/room/username`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: player_name,
+          }),
+        });
+        if (response.ok) {
+          console.log('Player name updated');
+          localStorage.setItem('player_name', player_name);
+          setPlayerName(player_name);
+        } else {
+          console.error('Failed to update player name');
+        }
       }
     } catch (error) {
       console.error('Error updating player name:', error);
@@ -285,39 +308,43 @@ function App({ roomId }) {
       if (checkApiCallLimit()) {
         return null;
       }
-      const response = await fetch(`${apiUrl.current}/room/join`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          room: roomNumber,
-          name: playerName,
-          lang: language,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Room joined:', data);
+      if (isDemo) {
         setScreen('game');
-      } else if (response.status === 400) {
-        // すでに入室済みの場合プレイヤー名を更新
-        handleUpdatePlayerName(playerName);
-        console.log('Room joined:', response.statusText);
-        setScreen('game');
-      } else if (response.status === 401) {
-        localStorage.removeItem('token');
-        fetchTokenAndUserId();
-        handleEnterRoom();
-      } else if (response.status === 404) {
-        showTemporaryMessage('部屋が見つかりません');
+        return;
       } else {
-        console.error('Failed to join room');
-        showTemporaryMessage(
-          language === 'jp' ? '部屋番号が存在しません' : 'Room number does not exist'
-        );
+        const response = await fetch(`${apiUrl.current}/room/join`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            room: roomNumber,
+            name: playerName,
+            lang: language,
+          }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Room joined:', data);
+          setScreen('game');
+        } else if (response.status === 400) {
+          // すでに入室済みの場合プレイヤー名を更新
+          handleUpdatePlayerName(playerName);
+          console.log('Room joined:', response.statusText);
+          setScreen('game');
+        } else if (response.status === 401) {
+          localStorage.removeItem('token');
+          fetchTokenAndUserId();
+          handleEnterRoom();
+        } else if (response.status === 404) {
+          showTemporaryMessage('部屋が見つかりません');
+        } else {
+          console.error('Failed to join room');
+          showTemporaryMessage(
+            language === 'jp' ? '部屋番号が存在しません' : 'Room number does not exist'
+          );
+        }
       }
     } catch (error) {
       console.error('Error joining room:', error);
@@ -330,30 +357,37 @@ function App({ roomId }) {
       if (checkApiCallLimit()) {
         return null;
       }
-      const response = await fetch(`${apiUrl.current}/room/create`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: playerName,
-          lang: language,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Room created:', data);
-        setRoomNumber(data.room_id);
+      if (isDemo) {
+        setRoomNumber('123456');
         setScreen('game');
-        navigate(`/${data.room_id}`); // 部屋が作成された後にURLを変更
-      } else if (response.status === 401) {
-        localStorage.removeItem('token');
-        fetchTokenAndUserId();
-        handleEnterPlayerName();
+        navigate('/123456?demo=true');
+        return;
       } else {
-        console.error('Failed to create room');
+        const response = await fetch(`${apiUrl.current}/room/create`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: playerName,
+            lang: language,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Room created:', data);
+          setRoomNumber(data.room_id);
+          setScreen('game');
+          navigate(`/${data.room_id}`); // 部屋が作成された後にURLを変更
+        } else if (response.status === 401) {
+          localStorage.removeItem('token');
+          fetchTokenAndUserId();
+          handleEnterPlayerName();
+        } else {
+          console.error('Failed to create room');
+        }
       }
     } catch (error) {
       console.error('Error creating room:', error);
@@ -379,7 +413,7 @@ function App({ roomId }) {
       {screen === 'main' ? (
         <>
           {/* <div className="w-full text-center md:text-left lg:text-right">hoge</div> */}
-          <button 
+          <button
             className="absolute left-0 top-0 m-[10svw] z-[2]"
             onClick={() => setIsWarningModalOpen(true)}
           >
@@ -510,9 +544,9 @@ function App({ roomId }) {
               {language === 'jp' ? '戻る' : 'Back'}
             </button>
           </Modal>
-          
-          <Modal 
-            isOpen={isWarningModalOpen} 
+
+          <Modal
+            isOpen={isWarningModalOpen}
             onClose={() => setIsWarningModalOpen(false)}
             backgroundColor={'#E7E7E7'}
           >
@@ -527,12 +561,14 @@ function App({ roomId }) {
         </>
       ) : (
         <GameScreen
+          isDemo={isDemo}
           token={token}
           apiUrl={apiUrl.current}
           language={language}
           playerName={playerName}
           roomNumber={roomNumber}
           playerId={playerId}
+          checkApiCallLimit={checkApiCallLimit}
           handleUpdatePlayerName={handleUpdatePlayerName}
           handleGameEnd={handleGameEnd} />
       )}
