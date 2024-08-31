@@ -187,7 +187,7 @@ function PhotoInput({ isDemo, token, apiUrl, language, roomId, userId, isGameMas
         {!isCapturing && !error && (
           <div className="h-[16svh] w-full flex flex-col flex-grow items-center justify-center">
             <div className="w-full flex items-center justify-center">
-              <button className="flex item-center justify-center w-[60svw] px-[15svw] py-[1svh] my-[1svw] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]" onClick={startCapture}>
+              <button className="flex items-center justify-center w-[60svw] px-[15svw] py-[1svh] my-[1svw] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]" onClick={startCapture}>
                 <span className="icon-[iconoir--camera] text-[3svh]"></span>
                 <div className="text-[2svh] ">{language === 'jp' ? '写真を撮る' : 'Capture'}</div>
               </button>
@@ -197,8 +197,8 @@ function PhotoInput({ isDemo, token, apiUrl, language, roomId, userId, isGameMas
             </div>
 
             {!isGameMaster && (
-              <button
-                className="flex item-center justify-center text-[2svh] w-[60svw] px-[15svw] py-[1svh] my-[1svw] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]"
+              <button 
+                className="flex items-center justify-center text-[2svh] w-[60svw] px-[15svw] py-[1svh] my-[1svw] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]"
                 onClick={fetchDescription}
               >
                 {language === 'jp' ? '写真の説明' : 'Photo Description'}

@@ -438,8 +438,8 @@ function GameScreen({ isDemo, token, apiUrl, language, playerName, roomNumber, p
 
           <div className="mx-[5svw] flex flex-col items-center justify-center"> {/* buttons */}
             {playerId === gameMasterId ? (
-              <button
-                className={`w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF] ${participants.length === 1 ? '' : 'bg-opacity-35'}`}
+              <button 
+                className={`w-full h-[6svh] m-[2svw] rounded-[2svw] bg-[#003B5C] text-[5svw] text-[#FFFFFF] ${participants.length+1 > 1 ? '' : 'bg-opacity-35'}`} 
                 onClick={handleStartGame}
                 disabled={participants.length + 1 === 1} //+1はgameMasterの分
               >

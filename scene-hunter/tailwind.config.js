@@ -12,6 +12,22 @@ export default {
       lg: '1024px',
       xl: '1280px',
     },
+    extend: {
+      keyframes: {
+        rainbow: {
+          '0%': { color: '#FF0000' },  // Red
+          '16%': { color: '#FF7F00' },  // Orange
+          '33%': { color: '#FFFF00' },  // Yellow
+          '50%': { color: '#00FF00' },  // Green
+          '66%': { color: '#0000FF' },  // Blue
+          '83%': { color: '#4B0082' },  // Indigo
+          '100%': { color: '#8B00FF' }  // Violet
+        },
+      },
+      animation: {
+        'rainbow': 'rainbow 2s infinite',
+      },
+    },
   },
   plugins: [
     addDynamicIconSelectors(),
