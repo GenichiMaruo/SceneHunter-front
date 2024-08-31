@@ -12,9 +12,9 @@ function GameResult({ isDemo, token, apiUrl, language, isGameMaster, currentUser
         if (isDemo) {
           // デモモードの場合はダミーデータをセット
           setUsers([
-            { id: 'user1', name: 'User 1', score: { similarity: 90 } },
-            { id: 'user2', name: 'User 2', score: { similarity: 80 } },
-            { id: 'user3', name: 'User 3', score: { similarity: 70 } },
+            { id: 'user1', name: 'User1', score: { similarity: 90 } },
+            { id: 'user2', name: 'User2', score: { similarity: 80 } },
+            { id: 'user3', name: 'User3', score: { similarity: 70 } },
           ]);
           setRank(1); // デモモードの場合は1位とする
           return;
