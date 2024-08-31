@@ -8,7 +8,7 @@ import ErrorMessage from './ErrorMessage';
 import GameScreen from './GameScreen';
 
 function App({ roomId }) {
-  const [api, setApi] = useState('https://sh.yashikota.com/api');
+  const [api, setApi] = useState('https://scene-hunter.yashikota.com/api');
   const [version, setVersion] = useState('v2');
   const apiUrl = useRef('');
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'ja');
