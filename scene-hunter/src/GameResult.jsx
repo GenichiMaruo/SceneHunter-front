@@ -55,46 +55,92 @@ function GameResult({ isDemo, token, apiUrl, language, isGameMaster, currentUser
 
       <div className="w-full flex flex-col flex-grow relative bg-[#E7E7E7]">
         <div className="GameResult">
-          <h1>{language === 'jp' ? '結果発表' : 'Results'}</h1>
-          {error && <div className="GameResult-error">{error}</div>}
-          {users.length > 0 && (
-            <div className="GameResult-scores">
-              {users.map(user => (
-                <div key={user.id} className="GameResult-user">
-                  <div className="GameResult-userName">
-                    {language === 'jp' ? `${user.name}の類似度:` : `${user.name}'s Similarity:`}
-                  </div>
-                  <div className="GameResult-userScore">
-                    {user.score.similarity !== undefined
-                      ? `${user.score.similarity}%`
-                      : language === 'jp'
-                        ? 'スコアなし'
-                        : 'No Score'}
-                  </div>
+          <h1 className="w-full my-[2svh] text-[5svh] text-[#FF9443] font-bold">
+            {language === 'jp' ? '結果発表' : 'Results'}
+          </h1>
+
+          <div className="text-[2svh] mb-[1svh]">
+            {isGameMaster ? (
+              <>
+                <div className="text-[red]">
+                  {language === 'jp' ? 'あなたはゲームマスターです' : 'You are the Game Master'}
                 </div>
-              ))}
-            </div>
-          )}
-          {isGameMaster ? (
-            <>
-              <div className="GameResult-message">
-                {language === 'jp' ? 'あなたはゲームマスターです' : 'You are the Game Master'}
+              </>
+            ) : (
+              <>
+                {rank && (
+                  <div className="w-full flex flex-row items-center justify-center">
+                    {language === 'jp'
+                      ? `あなたの順位は`
+                      : `Your rank is `}
+                    <div>
+                      {rank}
+                    </div>
+                    {language === 'jp'
+                      ? `位です`
+                      : ``}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="h-[45svh] p-[5svw] mx-[5svw] border-[0.5svw] border-[#333333] rounded-[6svw] "> 
+            <div className="w-full flex left-0 mb-[1svh]">
+              <div className="text-[3svh] text-[#4CAF50] font-medium">
+                {language === 'jp' ? '参加者' : 'Players'}
               </div>
-            </>
-          ) : (
-            <>
-              {rank && (
-                <div className="GameResult-rank">
-                  {language === 'jp'
-                    ? `あなたの順位は${rank}位です。`
-                    : `Your rank is ${rank}.`}
+            </div>
+
+            <div className="flex flex-row items-center justify-between text-[2svh] text-[#888888]">
+              <div className="w-[15svw]">
+                {language === 'jp' ? '順位' : 'Rank'}
+              </div>
+              <div className="w-[25svw]">
+                {language === 'jp' ? '名前' : 'Name'}  
+              </div>
+              <div className="w-[15svw]">
+                {language === 'jp' ? '一致率' : 'Score'}
+              </div>
+            </div>
+
+            <div className=" h-[calc(100%-8svh)] overflow-x-hidden overflow-y-scroll">
+              {error && <div className="GameResult-error">{error}</div>}
+              {users.length > 0 && (
+                <div className="flex flex-col items-center text-[2svh] text-[#333333]">
+                  {users.map(user => (
+                    <div 
+                      key={user.id} 
+                      className="w-full m-[0.5svh] flex flex-row items-center justify-between"
+                    >
+                      <div className="w-[15svw]"> 
+                        {language === 'jp' ? '順位' : 'Rank'}
+                      </div>
+                      <div className="w-[40svw]">
+                        {user.name}
+                      </div>
+                      <div className="w-[15svw]">
+                        {user.score.similarity !== undefined
+                          ? `${user.score.similarity}%`
+                          : language === 'jp'
+                            ? 'スコアなし'
+                            : 'No Score'}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
-            </>
-          )}
-          <button onClick={onComplete}>
-            {language === 'jp' ? '待機画面に戻る' : 'Return to Waiting Screen'}
-          </button>
+            </div>
+
+          </div>
+          <div className="flex flex-col flex-grow items-center justify-center"> {/* buttons */}
+            <button className="flex items-center justify-center text-[2svh] w-[70svw] px-[10svw] py-[1svh] my-[2svw] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]">
+              {language === 'jp' ? '待機画面に戻る' : 'Return to Waiting Screen'}
+            </button>
+            <button className="flex items-center justify-center text-[2svh] w-[70svw] px-[10svw] py-[1svh] my-[2svw] bg-[#003B5C] text-[#E7E7E7] rounded-[2svw]">
+              {language === 'jp' ? 'ゲームを終了する' : 'End the Game'}
+            </button>
+          </div>
         </div>
       </div>
 
